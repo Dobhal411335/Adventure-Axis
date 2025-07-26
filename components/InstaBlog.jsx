@@ -237,7 +237,7 @@ const InstaBlog = () => {
     return (
         <div className='bg-[#fcf7f1] w-full overflow-hidden max-w-screen overflow-x-hidden'>
             {/*Blogs /  News & Announcement Section */}
-            <div className="w-full flex flex-col items-center md:mb-12 md:py-20 py-10 bg-[#ededed]">
+            <div className="w-full flex flex-col items-center md:py-20 py-10 bg-[#ededed]">
                 <div className="w-full flex flex-col md:flex-row gap-8 min-h-[350px]">
                     <div className="flex flex-col md:flex-row w-full gap-8 px-2">
                         {/* Blogs Section */}
@@ -413,7 +413,7 @@ const InstaBlog = () => {
 
             {/* Instagram-like Image Carousel using Carousel classes */}
             {!isInstaLoading && !isFbLoading && allPosts.length > 0 && (
-                <div className="w-full flex flex-col items-center md:py-12 py-10 px-4">
+                <div className="w-full flex flex-col items-center py-10 px-4">
                     <h2 className="text-center font-bold text-xl md:text-3xl lg:text-4xl uppercase">
                         Don’t just watch the trends — live them!
                     </h2>

@@ -54,7 +54,7 @@ const Footer = () => {
 
     return (
         <footer className={`print:hidden ${pathName.includes('admin') && 'hidden'}
-         ${pathName.includes('artisan') && 'block'} ${pathName.includes('product') && 'block'} ${pathName.includes('customEnquiry') && 'hidden'} ${pathName.includes('checkout') && 'hidden'}  ${pathName.includes('category') && 'block'} bg-[url('/footerBanner.jpg')] bg-cover bg-center bg-no-repeat py-4 text-black`}>
+         ${pathName.includes('artisan') && 'block'} ${pathName.includes('product') && 'block'} ${pathName.includes('customEnquiry') && 'hidden'} ${pathName.includes('checkout') && 'hidden'}  ${pathName.includes('category') && 'block'} bg-[#ededed] py-4 text-black`}>
             {/* <div className="w-full flex justify-center pb-8">
                 <div className="h-[3px] bg-black w-full mx-auto px-4" />
             </div> */}
@@ -81,14 +81,16 @@ const Footer = () => {
 
                 <div className="flex flex-col gap-1">
                     <h1 className="font-semibold text-xl flex items-center gap-2"> More Inquiry</h1>
-                    <Link href={'tel:+9107669280002'} className="gap-2 my-2 block rounded-full py-1 font-barlow text-black flex items-center">
-                        <Phone size={20} className="text-blue-600" />
-                        +91 0766-928-0002,
-                    </Link>
-                    <Link href={'tel:+919897468886'} className="gap-2 my-2 block rounded-full py-1 font-barlow text-black flex items-center">
-                        <Phone size={20} className="text-blue-600" />
-                        +91 9897468886,
-                    </Link>
+                    <div className="flex items-center md:flex-row flex-col gap-2">
+
+                        <Link href={'tel:+9107669280002'} className="my-2 text-sm block rounded-full py-1 font-barlow text-black flex items-center gap-2">
+                            <Phone size={20} className="text-blue-600" />
+                            +91 07669280002
+                        </Link>
+                        <Link href={'tel:+919897468886'} className="my-2 text-sm block rounded-full py-1 font-barlow text-black flex items-center gap-2">
+                            +91 9897468886
+                        </Link>
+                    </div>
                     <Link href={'mailto:info@adventureaxis.in'} className="gap-2 my-2 block rounded-full font-barlow text-black flex items-center">
                         <Send className="text-blue-600" size={20} />
                         info@adventureaxis.in
@@ -132,14 +134,15 @@ const Footer = () => {
             </div>
             <div className="md:hidden flex flex-col gap-1 p-5">
                 <h1 className="font-semibold text-xl flex items-center gap-2"> More Inquiry</h1>
-                <Link href={'tel:+9107669280002'} className="my-2 text-sm block rounded-full py-1 font-barlow text-black flex items-center gap-2">
-                    <Phone size={20} className="text-blue-600" />
-                    +91 07669280002
-                </Link>
-                <Link href={'tel:+919897468886'} className="my-2 text-sm block rounded-full py-1 font-barlow text-black flex items-center gap-2">
-                    <Phone size={20} className="text-blue-600" />
-                    +91 9897468886
-                </Link>
+                <div className="flex items-center md:flex-row flex-col gap-2">
+                    <Link href={'tel:+9107669280002'} className="my-2 text-sm block rounded-full py-1 font-barlow text-black flex items-center gap-2">
+                        <Phone size={20} className="text-blue-600" />
+                        +91 07669280002
+                    </Link>
+                    <Link href={'tel:+919897468886'} className="my-2 text-sm block rounded-full py-1 font-barlow text-black flex items-center gap-2">
+                        +91 9897468886
+                    </Link>
+                </div>
                 <Link href={'mailto:support@adventureaxis.in'} className="my-2 text-sm block rounded-full font-barlow text-black flex items-center gap-2">
                     <Send className="text-blue-600" size={20} />
                     support@adventureaxis.in
@@ -176,7 +179,7 @@ const Footer = () => {
             <Card className="my-2 px-2 py-8 max-w-xl lg:max-w-4xl xl:max-w-7xl mx-auto">
                 <CardContent className="flex flex-col lg:flex-row items-start justify-between">
                     <div className="text-justify">
-                        <Image src="/logo.png" width={200} height={100} alt="footer" />
+                        <Image src="/HeaderLogo.png" width={200} height={100} alt="footer" />
                         <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Adventure Axis offers a comprehensive range of adventure sports equipment under one roof. Our categories include Water Sports Equipment such as rafts, kayaks, dry bags, paddles, life jackets, helmets, and repair kits. In Safety & Rescue, we provide harnesses, carabiners, ropes, pulleys, fall arresters, rescue devices, and helmets. Our Clothing & Footwear range features tactical eyewear, base layers, fleece, insulated wear, and high-performance outdoor footwear. We also specialize in Camping & Outdoor gear and Expedition Equipment, ensuring you're fully equipped for any terrain or challenge.</p>
                         <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Our website is your gateway to the heart of Rishikesh, offering rich and soulful handmade creations crafted by local artisans.</p>
                     </div>

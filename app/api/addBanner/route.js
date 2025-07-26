@@ -15,25 +15,17 @@ export async function GET() {
 
 export async function POST(req) {
     try {
-        const { title, price, coupon, couponCode, couponAmount, couponPercent, addtoCartLink, viewDetailLink, subtitle, subDescription, frontImg, backImg, order } = await req.json();
+        const { buttonLink, frontImg, order } = await req.json();
 
         // Find the highest order number
         const lastBanner = await HeroBanner.findOne().sort({ order: -1 });
         const nextOrder = lastBanner ? lastBanner.order + 1 : 1; // Auto-increment order
 
         const newBanner = new HeroBanner({
-            title,
-            price,
-            coupon: couponCode || coupon || '',
-            couponAmount,
-            couponPercent,
-            addtoCartLink,
-            viewDetailLink,
-            subtitle,
-            subDescription,
+            buttonLink,
             order: nextOrder,
             frontImg,
-            backImg
+        
         });
         await newBanner.save();
         return NextResponse.json(newBanner, { status: 201 });
@@ -44,22 +36,15 @@ export async function POST(req) {
 
 export async function PATCH(req) {
     try {
-        const { id, title, price, coupon, couponCode, couponAmount, couponPercent, addtoCartLink, viewDetailLink, subtitle, subDescription, frontImg, backImg, order } = await req.json();
+        const { id, buttonLink, frontImg,order } = await req.json();
         const updatedBanner = await HeroBanner.findByIdAndUpdate(
             id,
             {
-                title,
-                price,
-                coupon: couponCode || coupon || '',
-                couponAmount,
-                couponPercent,
-                addtoCartLink,
-                viewDetailLink,
-                subtitle,
-                subDescription,
+                buttonLink,
+               
                 order,
                 frontImg,
-                backImg
+                
             },
             { new: true }
         );
@@ -83,11 +68,6 @@ export async function DELETE(req) {
         if (banner.frontImg?.key) {
             await deleteFileFromCloudinary(banner.frontImg.key);
         }
-
-        if (banner.backImg?.key) {
-            await deleteFileFromCloudinary(banner.backImg.key);
-        }
-
         // Delete banner from database
         await HeroBanner.findByIdAndDelete(id);
 

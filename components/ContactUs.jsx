@@ -99,7 +99,7 @@ const ContactUs = () => {
     return (
         <div className="bg-[#fdf7f2] min-h-screen w-full flex flex-col items-center justify-start pt-5">
             <div className="container mx-auto px-5 md:px-10">
-                <div className="flex flex-col lg:flex-row gap-8 w-full justify-center mt-10">
+                <div className="flex flex-col lg:flex-row gap-8 w-full justify-center mt-10 md:px-20 px-10">
                     {/* Contact Info */}
                     <div className="lg:w-1/2 w-full flex flex-col justify-center text-black">
                         <h2 className="text-2xl md:text-5xl font-bold mb-4">DISCOVER US</h2>

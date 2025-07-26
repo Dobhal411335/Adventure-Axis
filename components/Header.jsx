@@ -42,7 +42,7 @@ const Header = () => {
           setIsAuthDropdownOpen(false);
         }
       }
-      
+
       // Close profile menu if open and click is outside
       if (isProfileOpen && profileMenuRef.current && !profileMenuRef.current.contains(e.target)) {
         // Check if the click is not on the auth dropdown
@@ -55,7 +55,7 @@ const Header = () => {
     // Add event listeners
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
-    
+
     // Cleanup
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -117,7 +117,9 @@ const Header = () => {
          ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
     >
       <div className="md:flex hidden items-center justify-between gap-8 border-b py-1 border-gray-400 md:px-8 ">
-        <p className="text-md">Crafted by Hand, Cherished by Heart</p>
+        <Link href={"/"}>
+          <img className="w-44 object-contain drop-shadow-xl" src="/HeaderLogo.png" alt="Rishikesh Handmade" />
+        </Link>
         <div className="flex flex-row justify-center items-center gap-4">
           <div className="items-center z-50 gap-4 flex">
             <div className="flex items-center gap-3">
@@ -146,7 +148,7 @@ const Header = () => {
 
                     {/* Dropdown Menu */}
                     {isProfileOpen && (
-                      <div 
+                      <div
                         className="absolute top-14 right-0 mt-2 w-fit text-black bg-white shadow-lg rounded-lg border z-50"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -171,11 +173,11 @@ const Header = () => {
                   </>
                 ) : (
                   <div className="relative" ref={authDropdownRef}>
-                    <button 
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsAuthDropdownOpen(!isAuthDropdownOpen);
-                      }} 
+                      }}
                       className="flex flex-col items-center py-2"
                     >
                       <User className="ml-2" size={20} />
@@ -183,7 +185,7 @@ const Header = () => {
                     </button>
                     <AnimatePresence>
                       {isAuthDropdownOpen && (
-                        <motion.div 
+                        <motion.div
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 10 }}
@@ -191,16 +193,16 @@ const Header = () => {
                           className="absolute top-12 right-0 w-48 text-black bg-white shadow-lg rounded-lg border z-[9999]"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <Link 
-                            href="/sign-in" 
-                            onClick={() => setIsAuthDropdownOpen(false)} 
+                          <Link
+                            href="/sign-in"
+                            onClick={() => setIsAuthDropdownOpen(false)}
                             className="block px-4 py-2 hover:bg-blue-100 text-sm"
                           >
                             Sign In
                           </Link>
-                          <Link 
-                            href="/sign-up" 
-                            onClick={() => setIsAuthDropdownOpen(false)} 
+                          <Link
+                            href="/sign-up"
+                            onClick={() => setIsAuthDropdownOpen(false)}
                             className="block px-4 py-2 hover:bg-blue-100 text-sm border-t border-gray-100"
                           >
                             Create Account
@@ -251,7 +253,7 @@ const Header = () => {
 
               {/* Track Order Button */}
               <div className="group">
-                <Link 
+                <Link
                   href="/dashboard?section=track"
                   className="flex flex-col items-center p-2 rounded-lg hover:bg-neutral-100 transition-colors"
                 >
@@ -262,7 +264,7 @@ const Header = () => {
 
               {/* Language Selector */}
               <div className="group relative">
-                <div 
+                <div
                   className="flex flex-col items-center p-2 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer"
                   aria-label="Language"
                 >
@@ -277,20 +279,18 @@ const Header = () => {
         </div>
 
       </div>
-      <div className="lg:flex hidden items-center z-50 justify-center md:justify-between py-2 md:px-4 ">
-        <Link href={"/"}>
-          <img className="w-48 object-contain drop-shadow-xl" src="/HeaderLogo.png" alt="Rishikesh Handmade" />
-        </Link>
+      <div className="lg:flex hidden items-center justify-center relative z-50 py-2 md:px-4 w-full">
+  {/* MenuBar in center */}
+  <div className="absolute left-1/2 transform -translate-x-1/2">
+    <MenuBar menuItems={menuItems} />
+  </div>
 
-        <div className="relative flex items-center">
-          {/* <MenuBar menuItems={menuItems.filter(item => item.active)} /> */}
-          <MenuBar menuItems={menuItems} />
-        </div>
+  {/* SearchBar aligned to the right */}
+  <div className="ml-auto">
+    <SearchBar />
+  </div>
+</div>
 
-        <SearchBar />
-
-
-      </div>
       <div className="lg:hidden flex items-center z-50 justify-between md:justify-between py-1 px-2">
         <div className="relative flex items-center">
           {/* <MenuBar menuItems={menuItems.filter(item => item.active)} /> */}
@@ -382,36 +382,36 @@ const Header = () => {
               </>
             ) : (
               <div className="relative" ref={authDropdownRef}>
-                <button 
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsAuthDropdownOpen(!isAuthDropdownOpen);
-                  }} 
+                  }}
                   className="flex items-center px-4 py-2"
                 >
                   <User className="ml-2" size={20} />
                 </button>
                 {isAuthDropdownOpen && (
-                  <div 
+                  <div
                     className="absolute top-10 right-0 mt-2 w-48 text-black bg-white shadow-lg rounded-lg border z-50"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Link 
-                      href="/sign-in" 
+                    <Link
+                      href="/sign-in"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsAuthDropdownOpen(false);
-                      }} 
+                      }}
                       className="block px-4 py-2 hover:bg-blue-100"
                     >
                       Sign In
                     </Link>
-                    <Link 
-                      href="/sign-up" 
+                    <Link
+                      href="/sign-up"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsAuthDropdownOpen(false);
-                      }} 
+                      }}
                       className="block px-4 py-2 hover:bg-blue-100"
                     >
                       Create Account

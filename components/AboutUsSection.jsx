@@ -30,10 +30,10 @@ const AboutUsSection = () => {
                 const response = await fetch('/api/featured-packages');
                 const data = await response.json();
                 // console.log(data);
-                setFeaturedPackages(data?.length ? data : dummyPackages); // Use dummy data if API returns empty
+                setFeaturedPackages(data); // Use dummy data if API returns empty
             } catch (error) {
                 // console.error('Error fetching data:', error);
-                setFeaturedPackages(dummyPackages); // Use dummy data on error
+                setFeaturedPackages([]); // Use dummy data on error
             } finally {
                 setIsLoading(false);
                 setLoading(false);
@@ -91,11 +91,10 @@ const AboutUsSection = () => {
                 <hr className="h-[2px] w-[50%] mx-auto bg-black" />
 
                 <p className="text-gray-600 md:py-8 py-4 text-center font-barlow md:w-[50%] w-full mx-auto">
-                    Adventure Axis is a premier outdoor gear store based in Tapovan, Rishikesh, on the Badrinath Highway. As an authorized dealer for top global brands like NRS, Camp, Wiley X, and Lafuma, we specialize in high-quality equipment for water sports, camping, trekking, high-altitude expeditions, and safety needs.
+                    As an authorized dealer for top global brands like NRS, Camp, Wiley X, and Lafuma, we specialize in high-quality equipment for water sports, camping, trekking, high-altitude expeditions, and safety needs.
                     <br />
                     With over 25 years of industry experience, we are a trusted supplier to leading adventure companies across India, supporting activities such as rafting, bungee jumping, camping, and mountaineering. Our commitment to innovation and service excellence earned us the Great Place to Work® Certification in 2025.
                     <br />
-
                     We don’t just provide equipment — we deliver complete outdoor solutions, backed by expert leadership and a vision to elevate the adventure gear industry.
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-auto">

@@ -16,21 +16,20 @@ const VisionMission = () => {
             priority
           />
           <div className="relative z-10 text-center text-white">
-            <h1 className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">Our Vision & Mission</h1>
-            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg"> We Are A "Great Place To Work-Certified" Company!</h1>
+          </div>
         </div>
-        <div className="w-full px-2 container mx-auto flex gap-10 items-center mt-10">
+        <div className="w-full container mx-auto flex gap-5 md:gap-10 items-center mt-10 px-5 md:px-20">
           {/* Left: Intro & Image */}
           <div className="w-full flex flex-col items-start">
-            <h2 className="text-xl md:text-4xl font-bold mb-6 text-gray-800 text-start lg:text-start">“Rooted in Nature, Crafted by Tradition.”</h2>
+            <h2 className="text-xl md:text-4xl font-bold mb-6 text-gray-800 text-start lg:text-start">Certified to Inspire – Where Passion, People & Purpose Meet.</h2>
             <p className="text-md md:text-lg text-gray-700 leading-relaxed mb-6 text-start lg:text-justify">
-              At Rishikesh Handmade Craft, we are more than just an e-commerce platform — we are a movement to revive, support, and celebrate the timeless heritage of Rishikesh through handcrafted art. Nestled in the foothills of the Himalayas, Rishikesh is a land known not only for its spiritual aura but also for its deeply rooted artistic traditions. Our mission is to bring these soulful creations to a global audience while uplifting the lives of the skilled artisans behind them.<br /><br />
-              We partner directly with local craftsmen and women from Rishikesh and nearby villages who specialize in traditional art forms passed down through generations. These artisans pour their heart and soul into every product — whether it's an intricately carved wooden artifact, a hand-painted canvas, ethically made jewelry, or eco-friendly home décor. Each piece reflects the essence of Indian culture, spirituality, and sustainability.
+              As a result of the analyzes and evaluations made by Great Place To Work for our company in 2023, we were awarded the Great Place To Work Certificate" by providing the 'great workplace' criteria with a high trust culture. Our company is based in Tapovan, Badrinath Highway, Rishikesh. The number one destination for adventure activities we have been serving numerous adventure companies all over in India, for there equipment need for rafting, camping, bungee jumping, trekking and expeditions. It’s not enough to be good at providing equipment solutions. You also need to be good at what comes next. Our leaders are skilled at both. Learn about who they are and their vision for industry and that’s just scratching the surface.
             </p>
           </div>
 
         </div> {/* Right: Vision & Mission */}
-        <div className="container mx-auto w-full flex flex-col md:flex-row gap-8 px-2">
+        <div className="container mx-auto w-full flex flex-col md:flex-row gap-8 px-5 md:px-20">
           <div className="w-full md:w-2/3 flex justify-center mb-6 ">
             <Image src="/Vision.jpg" alt="Vision" width={300} height={300} className="rounded-xl shadow-lg object-cover w-fit h-auto " />
           </div>
@@ -39,27 +38,37 @@ const VisionMission = () => {
             <div className="rounded-xl  p-6 mb-4 border border-gray-400">
               <h3 className="text-2xl font-bold mb-2 text-amber-700">Our Vision</h3>
               <p className="text-gray-700 text-base">
-                To become a globally recognized platform that celebrates and sustains the timeless art of Rishikesh by empowering local artisans, promoting eco-conscious living, and connecting the world to the soul of Indian craftsmanship through natural, handmade creations.
+                To become India’s most trusted and innovative adventure equipment brand — empowering explorers, protecting the planet, and uplifting local communities — one expedition at a time.
+                <br />
+                We envision a world where adventure is safe, sustainable, and accessible to all. Through global-quality gear, eco-conscious practices, and strong community partnerships, Adventure Axis strives to lead the outdoor industry with integrity, impact, and inspiration — from the Himalayan trails to the farthest frontiers of exploration.
               </p>
             </div>
             {/* Mission */}
             <div className=" rounded-xl  p-6 border border-gray-400">
               <h3 className="text-2xl font-bold mb-2 text-amber-700">Our Mission</h3>
               <ul className="list-disc pl-6 text-gray-700 text-base space-y-2">
-                <li>To preserve and promote traditional handicrafts of Rishikesh and nearby regions by supporting skilled artisans and their generational knowledge.</li>
-                <li>To create a sustainable ecosystem for handmade goods, with a special focus on natural fiber products such as jute, hemp, cotton, bamboo, and banana fiber.</li>
-                <li>To provide fair trade opportunities, ensuring artisans receive the respect, recognition, and remuneration they deserve.</li>
-                <li>To deliver authentic, eco-friendly, and ethically made products that align with conscious consumer values.</li>
-                <li>To bridge the gap between local craft communities and global markets, making handcrafted products accessible to people who value culture, sustainability, and craftsmanship.</li>
-                <li>To inspire a movement of responsible shopping, where every purchase supports a story of heritage, nature, and human connection.</li>
+                To deliver high-performance, safety-tested adventure equipment that empowers every explorer — from professionals to enthusiasts — with reliability, innovation, and responsibility.
+                <br />
+                At Adventure Axis, our mission is to:
+                <br />
+                Equip adventure seekers with world-class gear suited for extreme environments
+                <br />
+                Promote eco-friendly and sustainable outdoor practices
+                <br />
+                Strengthen and support local businesses and communities in the Himalayan region
+                <br />
+                Maintain global partnerships while staying deeply rooted in local expertise
+                <br />
+                Foster a workplace culture built on trust, teamwork, and growth
+                <br />
+                We’re not just outfitting journeys — we’re building a movement that celebrates nature, encourages exploration, and makes every expedition safer and more meaningful.
               </ul>
             </div>
           </div>
-
         </div>
       </div>
-   {/* Get In Touch Section */}
-   <section className="w-full bg-black py-5 text-white flex flex-col md:flex-row items-center justify-between  md:px-24 gap-6 ">
+      {/* Get In Touch Section */}
+      <section className="w-full bg-black py-5 text-white flex flex-col md:flex-row items-center justify-between  md:px-24 gap-6 ">
         <div className="md:mb-6 md:mb-0 md:px-3">
           <h3 className="text-xl md:text-3xl font-bold gap-2 text-center md:text-start">Questions?
             <br className="md:hidden" />

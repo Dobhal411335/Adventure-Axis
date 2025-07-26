@@ -22,36 +22,10 @@ const ChangeBannerImage = () => {
     const [loadingCoupons, setLoadingCoupons] = useState(false);
     // const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        title: "",
-        price: "",
-        coupon: "",
-        addtoCartLink: "",
-        viewDetailLink: "",
-        subtitle: "",
-        subDescription: "",
+        buttonLink: "",
         frontImg: { url: "", key: "" },
-        backImg: { url: "", key: "" },
         order: 1,
     });
-    // console.log(coupons)
-
-    useEffect(() => {
-        const fetchCoupons = async () => {
-            setLoadingCoupons(true);
-            try {
-                // Fetch all available coupons
-                const res = await fetch('/api/discountCoupon');
-                const data = await res.json();
-                if (Array.isArray(data)) setCoupons(data);
-            } catch (err) {
-                // handle error
-            } finally {
-                setLoadingCoupons(false);
-            }
-        };
-        fetchCoupons();
-    }, []);
-
     // Fetch banners and determine the next order number
     useEffect(() => {
         const fetchBanners = async () => {
@@ -78,7 +52,7 @@ const ChangeBannerImage = () => {
 
     // Separate uploading states for each image
     const [uploadingFront, setUploadingFront] = useState(false);
-    const [uploadingBack, setUploadingBack] = useState(false);
+
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -107,7 +81,6 @@ const ChangeBannerImage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.frontImg?.url || !formData.frontImg?.key) return toast.error("Please upload a front image");
-        if (!formData.backImg?.url || !formData.backImg?.key) return toast.error("Please upload a back image");
         try {
             const method = editBanner ? "PATCH" : "POST";
             // Find the selected coupon object
@@ -119,11 +92,7 @@ const ChangeBannerImage = () => {
             const payload = {
                 ...formData,
                 id: editBanner,
-                couponCode: formData.coupon || '',
-                couponAmount: couponObj?.amount || null,
-                couponPercent: couponObj?.percent || null,
             };
-            // console.log("Submitting banner form data:", payload); // Debug: see exactly what is sent
             const response = await fetch("/api/addBanner", {
                 method,
                 headers: { "Content-Type": "application/json" },
@@ -142,16 +111,13 @@ const ChangeBannerImage = () => {
 
                 // Reset form
                 setFormData({
-                    title: "",
-                    price: "",
-                    coupon: "",
-                    addtoCartLink: "",
-                    viewDetailLink: "",
-                    subtitle: "",
-                    subDescription: "",
+                  
+                    
+                    buttonLink: "",
+                    
                     order: updatedBanners.length + 1,
                     frontImg: { url: "", key: "" },
-                    backImg: { url: "", key: "" },
+                  
                 });
             } else {
                 toast.error(data.error);
@@ -166,16 +132,12 @@ const ChangeBannerImage = () => {
     const handleEdit = (banner) => {
         setEditBanner(banner._id);
         setFormData({
-            title: banner.title,
-            price: banner.price,
-            coupon: banner.coupon,
-            addtoCartLink: banner.addtoCartLink,
-            viewDetailLink: banner.viewDetailLink,
-            subtitle: banner.subtitle,
-            subDescription: banner.subDescription,
+           
+            buttonLink: banner.buttonLink,
+          
             order: banner.order,
             frontImg: banner.frontImg || { url: "", key: "" },
-            backImg: banner.backImg || { url: "", key: "" },
+            
         });
     };
 
@@ -208,33 +170,6 @@ const ChangeBannerImage = () => {
     // Remove image from formData only
     const handleDeleteImage = () => {
         setFormData(prev => ({ ...prev, frontImg: { url: '', key: '' } }));
-    };
-
-    const handleDeleteImageBack = () => {
-        setFormData(prev => ({ ...prev, backImg: { url: '', key: '' } }));
-    };
-    const handleImageChangeBack = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        setUploadingBack(true);
-        const formDataUpload = new FormData();
-        formDataUpload.append('file', file);
-        try {
-            const res = await fetch('/api/cloudinary', {
-                method: 'POST',
-                body: formDataUpload
-            });
-            const data = await res.json();
-            if (res.ok && data.url) {
-                setFormData(prev => ({ ...prev, backImg: { url: data.url, key: data.key || '' } }));
-                toast.success('Back image uploaded!');
-            } else {
-                toast.error('Cloudinary upload failed: ' + (data.error || 'Unknown error'));
-            }
-        } catch (err) {
-            toast.error('Cloudinary upload error: ' + err.message);
-        }
-        setUploadingBack(false);
     };
 
     // Ref for file input (already declared above)
@@ -285,93 +220,12 @@ const ChangeBannerImage = () => {
                         </div>
                     )}
                 </div>
-                {/* Back Image Upload */}
-                <div className="mb-4">
-                    <Label className="block mb-2 font-bold">Back Image</Label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChangeBack}
-                        ref={fileInputBackRef}
-                        className="hidden"
-                        id="banner-back-image-input"
-                    />
-                    <Button
-                        type="button"
-                        variant="outline"
-                        className="mb-2 flex items-center gap-2 bg-blue-500 text-white"
-                        onClick={() => fileInputBackRef.current && fileInputBackRef.current.click()}
-                    >
-                        <span>Select Back Image</span>
-                        <UploadIcon className="w-4 h-4" />
-                    </Button>
-                    {uploadingBack && <div className="text-blue-600 font-semibold">Uploading...</div>}
-                    {formData.backImg.url && (
-                        <div className="relative w-48 h-28 border rounded overflow-hidden mb-2">
-                            <Image
-                                src={formData.backImg.url}
-                                alt="Back Image Preview"
-                                fill
-                                className="object-cover"
-                            />
-                            <button
-                                type="button"
-                                onClick={handleDeleteImageBack}
-                                className="absolute top-1 right-1 bg-white bg-opacity-80 rounded-full p-1 hover:bg-red-200"
-                                title="Remove image"
-                            >
-                                <Trash2Icon className="w-4 h-4 text-red-600" />
-                            </button>
-                        </div>
-                    )}
-                </div>
-                <div>
-                    <Label>Title</Label>
-                    <Input name="title" placeholder="Enter title" value={formData.title} onChange={handleInputChange} />
-                </div>
-                <div className="flex gap-2">
-                    <div className="flex-1">
-                        <Label>Price</Label>
-                        <Input name="price" placeholder="Enter price" value={formData.price} onChange={handleInputChange} />
-                    </div>
-                    <div className="flex-1">
-                        <Label>Coupon</Label>
-                        <Select
-                            value={formData.coupon}
-                            onValueChange={val => setFormData(prev => ({ ...prev, coupon: val }))}
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder={loadingCoupons ? 'Loading...' : 'Select coupon'} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {(Array.isArray(coupons) && coupons.length === 0) && (
-                                    <div className="p-2 text-gray-400">No coupons found</div>
-                                )}
-                                {(Array.isArray(coupons) ? coupons : []).map(coupon => (
-                                    <SelectItem key={coupon._id} value={coupon.couponCode} disabled={formData.coupon === coupon.couponCode}>
-                                        {coupon.couponCode} {coupon.percent ? `(${coupon.percent}% off)` : coupon.amount ? `(-₹${coupon.amount})` : ''}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
+               
+               
 
                 <div>
-                    <Label>Add To Cart Link</Label>
-                    <Input name="addtoCartLink" placeholder="Enter add to cart link" type="url" value={formData.addtoCartLink} onChange={handleInputChange} />
-                </div>
-                <div>
-                    <Label>View Detail Link</Label>
-                    <Input name="viewDetailLink" placeholder="Enter view detail link" type="url" value={formData.viewDetailLink} onChange={handleInputChange} />
-                </div>
-                <div>
-                    <Label>Subtitle</Label>
-                    <Input name="subtitle" placeholder="Enter subtitle" value={formData.subtitle} onChange={handleInputChange} />
-                </div>
-                <div>
-                    <Label>Sub Description</Label>
-                    <Input name="subDescription" placeholder="Enter sub description" value={formData.subDescription} onChange={handleInputChange} />
+                    <Label>Button Link</Label>
+                    <Input name="buttonLink" placeholder="Enter add to cart link" type="url" value={formData.buttonLink} onChange={handleInputChange} />
                 </div>
                 <div>
                     <Label>Order</Label>
@@ -389,17 +243,11 @@ const ChangeBannerImage = () => {
                             className="border-red-500 text-red-600 hover:bg-red-50"
                             onClick={() => {
                                 setEditBanner(null);
-                                setFormData({
-                                    title: "",
-                                    price: "",
-                                    coupon: "",
-                                    addtoCartLink: "",
-                                    viewDetailLink: "",
-                                    subtitle: "",
-                                    subDescription: "",
+                                setFormData({ 
+                                    buttonLink: "",
                                     order: banners.length + 1,
                                     frontImg: { url: "", key: "" },
-                                    backImg: { url: "", key: "" },
+                
                                 });
                             }}
                         >
@@ -413,9 +261,7 @@ const ChangeBannerImage = () => {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Subtitle</TableHead>
+                        <TableHead>Button Link</TableHead>
                         <TableHead>Order</TableHead>
                         <TableHead>Image</TableHead>
                         <TableHead>Actions</TableHead>
@@ -425,18 +271,14 @@ const ChangeBannerImage = () => {
                     {banners.length > 0 ? (
                         banners.map((banner) => (
                             <TableRow key={banner._id}>
-                                <TableCell>{banner.title}</TableCell>
-                                <TableCell>{banner.price}</TableCell>
-                                <TableCell>{banner.coupon}</TableCell>
+                                <TableCell>{banner.buttonLink}</TableCell>
                                 <TableCell>{banner.order}</TableCell>
                                 <TableCell className="flex flex-row gap-4 items-center justify-start">
                                     {banner.frontImg?.url ? (
                                         <Image src={banner.frontImg.url} alt="Front" width={100} height={50} className="rounded-lg mb-1" />
                                     ) : null}
-                                    {banner.backImg?.url ? (
-                                        <Image src={banner.backImg.url} alt="Back" width={100} height={50} className="rounded-lg mt-1" />
-                                    ) : null}
-                                    {!banner.frontImg?.url && !banner.backImg?.url && (
+                              
+                                    {!banner.frontImg?.url && (
                                         <span className="text-gray-400">No image</span>
                                     )}
                                 </TableCell>

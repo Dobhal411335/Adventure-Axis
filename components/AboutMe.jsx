@@ -6,23 +6,63 @@ import Link from "next/link";
 const accordionData = [
   {
     title: "What Makes Us Unique?",
-    content: `Authentic Handcrafted Products. Every item featured on our platform is 100% handmade, ensuring uniqueness and individuality. No two pieces are exactly the same, making your purchase truly special.`
+    content: `At Adventure Axis, we don’t just sell gear — we build expedition readiness from the ground up. Here's what sets us apart:
+
+✅ Legacy of Trust & Experience
+With 25+ years in the adventure equipment industry, we bring unmatched field knowledge, technical expertise, and proven reliability to every product and solution we offer.
+
+✅ Authorized Dealer for Global Brands
+We are official partners of NRS, Camp, Wiley X, Lafuma, and other leading international names — ensuring authentic gear, world-class quality, and industry-grade safety standards.
+
+✅ Complete Outdoor Equipment Hub
+From water sports to mountaineering, trekking, camping, and high-altitude expeditions, we offer an all-in-one destination for professionals and enthusiasts alike.
+
+✅ Innovation-Driven Solutions
+Our gear isn’t just rugged — it’s smart, tested, and tailored for real-world challenges. We help optimize outdoor performance with innovative, practical solutions.
+
+✅ Industry-Wide Trust
+We are a preferred supplier for India’s top adventure tour operators, rescue teams, training schools, and outdoor institutions — trusted across the country.
+
+✅ Recognized Workplace Excellence
+Proud recipient of the Great Place to Work® Certification (2025), reflecting our commitment to ethical practices, team spirit, and professional excellence.
+
+🎯 Adventure Axis – Where Every Expedition Begins with the Right Gear and the Right People.`
   },
   {
     title: "Sustainable & Eco-Friendly",
-    content: `We prioritize natural, locally sourced materials and environmentally conscious production techniques that minimize waste and reduce our carbon footprint.`
+    content: `At Adventure Axis, sustainability isn’t just a trend — it’s a commitment woven into everything we do. As a responsible adventure gear provider, we recognize the importance of preserving the very landscapes we help people explore.
+
+🌱 Eco-Conscious Product Selection
+We prioritize partnerships with brands that focus on sustainable manufacturing, eco-friendly materials, and low-impact packaging. Many of our products are made from recycled, biodegradable, or responsibly sourced components — built to last, without costing the planet.
+
+🌍 Leave No Trace Philosophy
+We actively promote the "Leave No Trace" principles across our community. Whether it’s trekking, rafting, or camping, we encourage every adventurer to respect nature`
   },
   {
     title: "Empowering Local Artisans",
-    content: `By eliminating middlemen, we ensure fair compensation to our artisans, helping them build sustainable livelihoods and encouraging the younger generation to continue their cultural legacy.`
-  },
-  {
-    title: "Cultural Preservation",
-    content: `Each product is a piece of Rishikesh’s heritage — infused with spiritual symbolism, traditional techniques, and cultural stories. We aim to keep these traditions alive by providing a platform where they are celebrated and valued.`
+    content: `Rooted in the Himalayan foothills of Rishikesh, Adventure Axis proudly works to uplift local talent, artisans, guides, and adventure operators by:
+
+Sourcing support gear and services from regional producers whenever possible
+
+Collaborating with local adventure companies for knowledge sharing and product testing
+
+Providing business opportunities, skills training, and supply chain support to small outdoor businesses
+
+Encouraging tourism that benefits indigenous communities and local ecosystems
+
+By strengthening local networks, we’re not just building a brand — we’re building a community-led adventure economy.`
   },
   {
     title: "Global Accessibility with Local Roots",
-    content: `Whether you’re shopping from India or abroad, our platform brings the soul of Rishikesh to your doorstep with a seamless online shopping experience and reliable worldwide shipping.\n\nAt Rishikesh Handmade Craft, we envision a world where conscious consumerism supports tradition, where handmade replaces mass-produced, and where every purchase carries purpose. When you choose us, you don’t just buy a product — you become a part of a larger story: one of culture, compassion, and community.\n\nThank you for supporting our mission to preserve heritage and empower artisans, one handmade piece at a time.`
+    content: `At Adventure Axis, we proudly operate at the intersection of global standards and local soul. While our store is rooted in Tapovan, Rishikesh — the gateway to the Himalayas — our reach extends across India and beyond, serving adventurers, expedition teams, and outdoor professionals worldwide.
+
+We offer globally recognized brands like NRS, Camp, Wiley X, and Lafuma, ensuring world-class quality and performance.
+
+Through our efficient logistics and online accessibility, we make premium gear available across remote regions, metros, and mountain bases.
+
+Yet, our foundation remains local — built on trust, regional expertise, and community connection within the Himalayan ecosystem.
+
+We bridge the gap between international innovation and local understanding, delivering outdoor solutions that are both globally reliable and regionally relevant.`
   }
 ];
 const teamMembers = [
@@ -65,23 +105,32 @@ const AboutMe = () => {
           priority
         />
         <div className="relative z-10 text-center text-white">
-          <h1 className="text-xl md:text-5xl font-bold mb-2 drop-shadow-lg">About Rishikesh Handmade</h1>
+          {/* <h1 className="text-xl md:text-5xl font-bold mb-2 drop-shadow-lg">About Rishikesh Handmade</h1> */}
         </div>
       </div>
 
       {/* Main Content */}
-      <section className="content-inner py-16 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-10 items-stretch">
+      <section className="content-inner md:p-10 p-4 overflow-hidden">
+      <div className="container mx-auto md:px-20 px-5">
+          <div className="flex flex-col md:flex-row gap-5 md:gap-10 items-stretch">
             {/* Left: Text and Accordion */}
-            <div className="lg:w-1/2 flex flex-col justify-center overflow-y-auto">
+            <div className="lg:w-1/2 w-full flex flex-col justify-center overflow-y-auto px-2">
               <div className="mb-8">
-                <h2 className="text-xl md:text-5xl font-bold mb-6 text-gray-800">“Rooted in Nature, Crafted by Tradition.”</h2>
+                <h2 className="text-xl md:text-5xl font-bold mb-6 text-gray-800">"Certified to Inspire – Where Passion, People & Purpose Meet."</h2>
                 <p className="text-md text-gray-700 leading-relaxed mb-6">
-                  Welcome to Rishikesh Handmade Craft — your gateway to the timeless art and culture of Rishikesh. Our platform is dedicated to preserving and promoting the rich heritage of this sacred region by showcasing an exclusive collection of eco-friendly, handcrafted items. From intricate wooden carvings and traditional paintings to artisanal jewelry and elegant home décor, each piece is thoughtfully created by skilled local artisans who carry forward generations of craftsmanship.<br /><br />
-                  At Rishikesh Handmade Craft, we believe in more than just selling products — we believe in telling stories. Every item on our platform embodies the soul of Rishikesh, blending natural materials with artistic traditions to create something truly unique and meaningful. By supporting our initiative, you contribute to the empowerment of local communities, the preservation of ancient skills, and the promotion of sustainable living.<br /><br />
-                  At Rishikesh Handmade Craft, we are more than just an e-commerce platform — we are a movement to revive, support, and celebrate the timeless heritage of Rishikesh through handcrafted art. Nestled in the foothills of the Himalayas, Rishikesh is a land known not only for its spiritual aura but also for its deeply rooted artistic traditions. Our mission is to bring these soulful creations to a global audience while uplifting the lives of the skilled artisans behind them.<br /><br />
-                  We partner directly with local craftsmen and women from Rishikesh and nearby villages who specialize in traditional art forms passed down through generations. These artisans pour their heart and soul into every product — whether it's an intricately carved wooden artifact, a hand-painted canvas, ethically made jewelry, or eco-friendly home décor. Each piece reflects the essence of Indian culture, spirituality, and sustainability.
+                  Adventure Axis is not just a store — it’s a legacy in the making. Based in Tapovan, Rishikesh, on the scenic Badrinath Highway, we have grown to become a complete outdoor adventure equipment hub and a recognized name across the expedition and outdoor gear industry in India.
+                  <br />
+
+                  With over 25 years of relentless innovation and experience, Adventure Axis has become synonymous with trust, durability, and cutting-edge gear solutions for every kind of adventurer — from rafting guides and mountain trekkers to rescue professionals and global expedition teams.
+                  <br />
+                  We are proud to be authorized dealers for some of the most respected international brands in the world, including NRS, Camp, Wiley X, and Lafuma. Our extensive catalog features water sports gear, high-altitude expedition equipment, camping essentials, helmets, oars, dry bags, harnesses, safety & rescue tools, and professional trekking gear — everything you need for a safe and successful adventure.
+                  <br />
+                  Our goal is more than just supplying equipment — we deliver practical, innovative, and complete outdoor solutions tailored to meet the demands of today’s adventure businesses and extreme-condition professionals. Through our field-tested expertise and global sourcing, we help clients streamline operations, improve safety, and perform at the highest level.
+                  <br />
+                  Recognized for our excellence in service and work culture, Adventure Axis earned the prestigious Great Place to Work® Certification in 2025. This reflects our deep-rooted commitment to quality, service integrity, and continuous growth in the adventure equipment sector.
+                  <br />
+                  🌍 Adventure Axis — Where Exploration Meets Innovation.
+                  The trusted partner of India's adventure community for complete expedition solutions.<br /><br />
                 </p>
               </div>
 
@@ -161,142 +210,6 @@ const AboutMe = () => {
           </h3>
         </div>
         <Link href="/contact" className="btn bg-white text-black font-bold px-8 py-3 rounded-lg shadow transition">Get In Touch</Link>
-      </section>
-
-      <section className="content-inner py-16">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-8 mb-10 items-center">
-            {/* Left: Heading and Paragraph */}
-            <div className="w-full lg:w-[57%]">
-              <h2 className="text-3xl md:text-5xl font-bold mb-4 text-black leading-tight">Our Team of Experts</h2>
-              <p className="text-md text-gray-700 mb-4">
-                Behind Rishikesh Handmade Craft is a dedicated team of experienced professionals and industry veterans who share a deep passion for traditional Indian craftsmanship. Our core team includes expert artisans, designers, curators, and community leaders — many of whom have over 20 years of hands-on experience in the handicraft and cottage industry.
-                <br />
-                <br />
-                These individuals have not only mastered their craft but have also played a pivotal role in shaping the future of local artisans. Through years of dedication, they have created opportunities, launched training initiatives, and set new benchmarks in quality and innovation. Their deep understanding of cultural artistry, sustainable practices, and market trends ensures that every product we offer meets the highest standards while staying true to its roots.
-              </p>
-            </div>
-            {/* Right: Two Images in a row (first two team members) */}
-            <div className=" hidden md:flex w-full lg:w-[43%] flex-row gap-8 items-start justify-center">
-              {loading ? (
-                <div>Loading Team Member...</div>
-              ) : teamMembers.length > 0 ? (
-                teamMembers.slice(0, 2).map((member, idx) => (
-                  <div key={member._id || idx} className="flex flex-col items-center">
-                    <div className={`relative w-72 h-72 rounded-2xl overflow-hidden shadow-lg ${idx === 0 ? "bg-[#f6e9da]" : "bg-[#d6f0fa]"} flex items-center justify-center`}>
-                      <Image src={member.image?.url || "/placeholder.jpeg"} alt={member.title} width={224} height={224} className="object-cover w-full h-full" />
-                    </div>
-                    <div className="mt-3 text-center">
-                      <div className="font-bold text-lg">{member.title}</div>
-                      <div className="text-xs text-gray-600">{member.designation}</div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div>No team members found.</div>
-              )}
-            </div>
-          </div>
-
-          {/* Team Grid (remaining team members) */}
-          <div className="hidden md:flex grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-8 mb-10">
-            {loading ? (
-              <div>Loading...</div>
-            ) : teamMembers.length > 2 ? (
-              teamMembers.slice(2).map((member, idx) => (
-                <div key={member._id || idx} className="flex flex-col items-center">
-                  <div className="w-72 h-72 rounded-2xl overflow-hidden shadow-lg bg-[#d6f0fa] flex items-center justify-center">
-                    <Image src={member.image?.url || "/placeholder.jpeg"} alt={member.title} width={224} height={224} className="object-cover w-full h-full" />
-                  </div>
-                  <div className="mt-3 text-center">
-                    <div className="font-bold text-lg">{member.title}</div>
-                    <div className="text-xs text-gray-600">{member.designation}</div>
-                  </div>
-                </div>
-              ))
-            ) : null}
-          </div>
-
-          {/* Team Grid (remaining team members for mobile) */}
-          <div className="md:hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 md:gap-8 gap-4 mb-10">
-            {loading ? (
-              <div>Loading Team Members...</div>
-            ) : teamMembers.length > 0 ? (
-              teamMembers.map((member, idx) => (
-                <div key={member._id || idx} className="flex flex-col items-center">
-                  <div className="md:w-72 w-full h-full md:h-72 rounded-2xl overflow-hidden shadow-lg bg-[#d6f0fa] flex items-center justify-center">
-                    <Image src={member.image?.url || "/placeholder.jpeg"} alt={member.title} width={224} height={224} className="object-cover w-full h-full" />
-                  </div>
-                  <div className="mt-3 text-center">
-                    <div className="font-bold text-md">{member.title}</div>
-                    <div className="text-xs text-gray-600">{member.designation}</div>
-                  </div>
-                </div>
-              ))
-            ) : null}
-          </div>
-
-          <div className="mb-10 text-base text-gray-700">
-            These individuals have not only mastered their craft but have also played a pivotal role in shaping the future of local artisans. Through years of dedication, they have created opportunities, launched training initiatives, and set new benchmarks in quality and innovation. Their deep understanding of cultural artistry, sustainable practices, and market trends ensures that every product we offer meets the highest standards while staying true to its roots.
-          </div>
-
-
-          {/* Testimonial Section Start */}
-          {/* <section className="w-full py-16 flex flex-col md:flex-row items-center justify-center gap-8 relative overflow-hidden">
-  
-            <div className="relative flex-1 flex items-center justify-center min-h-[400px]">
-              <img
-                src="/pic1_1.jpg" // Place your image in public folder or update the path
-                alt="Happy Client"
-                className="object-contain h-[420px] z-10 relative"
-              />
-     
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-lg flex items-center gap-3 px-4 py-2 z-20">
-                <div className="flex -space-x-2">
-                  <img src="/pic1_1.jpg" alt="user1" className="w-8 h-8 rounded-full border-2 border-white" />
-                  <img src="/pic1_1.jpg" alt="user2" className="w-8 h-8 rounded-full border-2 border-white" />
-                </div>
-                <div className="flex flex-col text-xs">
-                  <span className="font-semibold">Our Satisfied User</span>
-                  <span className="text-gray-500">+12K</span>
-                </div>
-              </div>
-             
-            </div>
-
-        
-            <div className="flex-1 flex items-center justify-center">
-              <div className="bg-white rounded-2xl shadow-lg p-8 max-w-xl w-full relative">
-                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-                  What Our Clients Say<br />About Us
-                </h2>
-                <p className="text-gray-600 mb-8">
-                  It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.
-                </p>
-                <div className="flex items-center gap-4">
-                  <img src="/pic1_1.jpg" alt="Kenneth Fong" className="w-12 h-12 rounded-full object-cover" />
-                  <div>
-                    <div className="font-semibold text-gray-800">Kenneth Fong</div>
-                    <div className="text-xs text-gray-500">Postgraduate Student</div>
-                  </div>
-                  <div className="ml-auto flex gap-2">
-                    <button className="w-8 h-8 rounded-full bg-[#FEEAD3] flex items-center justify-center text-gray-700 hover:bg-[#FDD7A2]">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                      </svg>
-                    </button>
-                    <button className="w-8 h-8 rounded-full bg-[#FEEAD3] flex items-center justify-center text-gray-700 hover:bg-[#FDD7A2]">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section> */}
-  
-        </div>
       </section>
     </div>
   );
