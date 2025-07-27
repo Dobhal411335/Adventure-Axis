@@ -290,7 +290,6 @@ const Header = () => {
     <SearchBar />
   </div>
 </div>
-
       <div className="lg:hidden flex items-center z-50 justify-between md:justify-between py-1 px-2">
         <div className="relative flex items-center">
           {/* <MenuBar menuItems={menuItems.filter(item => item.active)} /> */}
