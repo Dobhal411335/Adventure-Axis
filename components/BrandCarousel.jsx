@@ -50,14 +50,14 @@ const BrandCarousel = () => {
           {[...brands].map((brand, index) => (
             <div 
               key={`${brand._id}-${index}`} 
-              className="inline-flex items-center justify-center flex-shrink-0"
+              className="flex items-center justify-center flex-shrink-0 hover:scale-105 transition-all ease-in-out duration-300"
             >
               {brand.buttonLink ? (
                   <Link 
                   href={brand.buttonLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="block h-12 w-28 md:h-12 md:w-28 relative"
+                  className="block h-12 w-28 md:h-14 md:w-28 relative"
                   >
                   {brand.frontImg?.url ? (
                       <Image
@@ -65,8 +65,8 @@ const BrandCarousel = () => {
                       alt={brand.buttonLink || 'Brand logo'}
                       priority
                       height={100}
-                      width={100}
-                      className="object-contain"
+                      width={200}
+                      className="object-contain pt-1"
                       sizes="(max-width: 768px) 100px, 150px"
                       />
                     ) : (

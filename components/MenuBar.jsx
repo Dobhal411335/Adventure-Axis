@@ -7,49 +7,49 @@ import { ArrowDown, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 const staticMenuItems = [
-    {
-        catTitle: "About Us",
-        subCat: [
-            {
-                subCatPackage: [
-                    { title: "About Us", url: "/about-us", active: true },
-                    { title: "Vision & Mission", url: "/vision-mission", active: true },
-                    { title: "Team", url: "/team", active: true },
-                    { title: "What We Do ", url: "/what-we-do", active: true }
-                ],
-                active: true,
-            }
-        ],
-        active: true,
-    },
-    {
-        catTitle: "Our Policy",
-        subCat: [
-            {
-                subCatPackage: [
-                    { title: "Privacy Policy", url: "/privacy-policy", active: true },
-                    { title: "Refund & Cancellation", url: "/refund-cancellation", active: true },
-                    { title: "Return Policy", url: "/return-policy", active: true },
-                    { title: "Shipping Policy", url: "/shipping-policy", active: true },
-                    { title: "Terms & Conditions", url: "/terms-condition", active: true }
-                ],
-                active: true,
-            }
-        ],
-        active: true,
-    },
-    {
-        catTitle: "Contact Us",
-        subCat: [
-            {
-                subCatPackage: [
-                    { title: "", url: "", active: true }
-                ],
-                active: true,
-            }
-        ],
-        active: true,
-    }
+    // {
+    //     catTitle: "About Us",
+    //     subCat: [
+    //         {
+    //             subCatPackage: [
+    //                 { title: "About Us", url: "/about-us", active: true },
+    //                 { title: "Vision & Mission", url: "/vision-mission", active: true },
+    //                 { title: "Team", url: "/team", active: true },
+    //                 { title: "What We Do ", url: "/what-we-do", active: true }
+    //             ],
+    //             active: true,
+    //         }
+    //     ],
+    //     active: true,
+    // },
+    // {
+    //     catTitle: "Our Policy",
+    //     subCat: [
+    //         {
+    //             subCatPackage: [
+    //                 { title: "Privacy Policy", url: "/privacy-policy", active: true },
+    //                 { title: "Refund & Cancellation", url: "/refund-cancellation", active: true },
+    //                 { title: "Return Policy", url: "/return-policy", active: true },
+    //                 { title: "Shipping Policy", url: "/shipping-policy", active: true },
+    //                 { title: "Terms & Conditions", url: "/terms-condition", active: true }
+    //             ],
+    //             active: true,
+    //         }
+    //     ],
+    //     active: true,
+    // },
+    // {
+    //     catTitle: "Contact Us",
+    //     subCat: [
+    //         {
+    //             subCatPackage: [
+    //                 { title: "", url: "", active: true }
+    //             ],
+    //             active: true,
+    //         }
+    //     ],
+    //     active: true,
+    // }
 ];
 const MenuBar = (props) => {
     const menuRef = React.useRef(null);
@@ -232,10 +232,10 @@ const MenuBar = (props) => {
 
             {/* Desktop Navigation */}
             <NavigationMenu.Root className="hidden lg:flex relative justify-center" >
-                <NavigationMenu.List className="flex space-x-4">
+                <NavigationMenu.List className="flex space-x-2">
                     {menuItems.map((item, index) => (
                         <NavigationMenu.Item key={index} className="relative flex justify-center">
-                            <NavigationMenu.Trigger className="flex items-center px-4 py-2 text-sm font-semibold  data-[state=open]:text-black rounded-md">
+                            <NavigationMenu.Trigger className="flex items-center py-2 text-xs font-semibold  data-[state=open]:text-black rounded-md">
                                 {item.title} <ArrowDown className="ml-2" size={12} />
                             </NavigationMenu.Trigger>
                             <AnimatePresence>
@@ -272,15 +272,15 @@ const MenuBar = (props) => {
                         </NavigationMenu.Item>
                     ))}
                     {allMenuItems.length > 0 && allMenuItems.map((cat, index) => (
-                        <NavigationMenu.Item key={index} className="relative flex justify-center">
+                        <NavigationMenu.Item key={index} className="relative flex justify-end">
                             {cat.catTitle === "Contact Us" ? (
-                                <Link href="/contact" className="flex items-center px-4 py-2 text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
+                                <Link href="/contact" className="flex items-center whitespace-nowrap px-4 py-2 text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
                                     {cat.catTitle}
                                 </Link>
                             ) : (
                                 <>
-                                    <NavigationMenu.Trigger className="flex items-center px-4 py-2 text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
-                                        {cat.catTitle} <ArrowDown className="ml-2" size={12} />
+                                    <NavigationMenu.Trigger className="flex items-center whitespace-nowrap px-2 py-2 justify-center text-[12px] font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
+                                        {cat.catTitle} <ArrowDown className="ml-1" size={12} />
                                     </NavigationMenu.Trigger>
                                     <AnimatePresence>
                                         <NavigationMenu.Content asChild>
@@ -293,12 +293,12 @@ const MenuBar = (props) => {
                                                         animate={{ opacity: 1, y: 0 }}
                                                         exit={{ opacity: 0, y: -10 }}
                                                         transition={{ duration: 0.2, ease: "easeInOut" }}
-                                                        className={`absolute top-full mt-2 -translate-x-1/2 bg-white text-black shadow-lg rounded-md ${singleCategory ? 'w-48' : 'w-[400px] lg:w-[600px]'}`}
+                                                        className={`absolute top-full mt-2 -translate-x-1/2 bg-white text-black shadow-lg rounded-md ${singleCategory ? 'w-48' : 'w-[400px] lg:min-w-[200px]'}`}
                                                     >
                                                         <div className={
                                                             singleCategory
                                                                 ? "grid gap-4 px-3 py-3 grid-cols-2 lg:grid-cols-1"
-                                                                : "grid gap-4 p-6 grid-cols-2 lg:grid-cols-3"
+                                                                : "grid gap-2 p-6 grid-cols-2 lg:grid-cols-3"
                                                         }>
                                                             {activeSubCats.map((category, idx) => (
                                                                 Array.isArray(category.subCatPackage) && category.subCatPackage.length > 0 ? (

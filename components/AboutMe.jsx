@@ -51,14 +51,6 @@ Yet, our foundation remains local — built on trust, regional expertise, and co
 We bridge the gap between international innovation and local understanding, delivering outdoor solutions that are both globally reliable and regionally relevant.`
   }
 ];
-const teamMembers = [
-  { name: "John Doe", role: "CEO & Founder" },
-  { name: "Ivan Mathews", role: "iOS Developer" },
-  { name: "Macauley Herring", role: "Customer Success" },
-  { name: "Alya Levine", role: "CTO" },
-  { name: "Rose Hernandez", role: "Backend Developer" },
-  { name: "Elen Benitez", role: "Designer" },
-];
 const AboutMe = () => {
   const [openIndex, setOpenIndex] = useState(0);
   const [teamMembers, setTeamMembers] = useState([]);
