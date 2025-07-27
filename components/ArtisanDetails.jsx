@@ -199,7 +199,7 @@ const ArtisanDetails = ({ artisan }) => {
   const handleExpertSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = { ...expertForm, type: 'artisan', artisanId: artisan._id, queryName: artisan.title + artisan.firstName + artisan.lastName };
+      const payload = { ...expertForm, type: 'management', artisanId: artisan._id, queryName: artisan.title + artisan.firstName + artisan.lastName };
       const res = await fetch('/api/askExpertsEnquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -124,7 +124,7 @@ const Header = () => {
       </div>
       <div className="md:flex hidden items-center justify-between gap-8 border-b py-1 border-gray-400 md:px-8 ">
         <Link href={"/"}>
-          <img className="w-44 object-contain drop-shadow-xl" src="/HeaderLogo.png" alt="Rishikesh Handmade" />
+          <img className="w-56 hover:scale-105 transition-all duration-300 ease-in-out object-contain drop-shadow-xl" src="/HeaderLogo.png" alt="Rishikesh Handmade" />
         </Link>
         <div className="flex flex-row justify-center items-center gap-4">
           <div className="items-center z-50 gap-4 flex">

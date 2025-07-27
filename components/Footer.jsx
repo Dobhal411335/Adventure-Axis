@@ -268,7 +268,7 @@ const Footer = () => {
             <Card className="my-2 px-2 py-8 max-w-xl lg:max-w-4xl xl:max-w-7xl mx-auto">
                 <CardContent className="flex flex-col lg:flex-row items-start justify-between">
                     <div className="text-justify">
-                        <Image src="/HeaderLogo.png" width={200} height={100} alt="footer" />
+                        <Image src="/HeaderLogo.png" priority width={250} height={250} alt="footer" />
                         <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Adventure Axis offers a comprehensive range of adventure sports equipment under one roof. Our categories include Water Sports Equipment such as rafts, kayaks, dry bags, paddles, life jackets, helmets, and repair kits. In Safety & Rescue, we provide harnesses, carabiners, ropes, pulleys, fall arresters, rescue devices, and helmets. Our Clothing & Footwear range features tactical eyewear, base layers, fleece, insulated wear, and high-performance outdoor footwear. We also specialize in Camping & Outdoor gear and Expedition Equipment, ensuring you're fully equipped for any terrain or challenge.</p>
                         <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Our website is your gateway to the heart of Rishikesh, offering rich and soulful handmade creations crafted by local artisans.</p>
                     </div>

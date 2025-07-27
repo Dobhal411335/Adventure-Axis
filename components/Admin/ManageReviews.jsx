@@ -5,15 +5,10 @@ import toast from "react-hot-toast";
 import { Switch } from "../ui/switch";
 
 
-const statusOptions = [
-    { label: "Active", value: "active" },
-    { label: "Inactive", value: "inactive" },
-    { label: "All", value: "all" },
-];
 const typeOptions = [
     { label: "All Types", value: "all" },
-    { label: "Product", value: "product" },
-    { label: "Artisan", value: "artisan" }
+    { label: "Products", value: "product" },
+    { label: "Management", value: "management" }
 ];
 
 const columns = [
@@ -24,7 +19,6 @@ const columns = [
     "Rating",
     "Thumb",
     "Approved",
-    "Action",
     "View",
 ];
 
@@ -65,14 +59,22 @@ const ManageReviews = () => {
                     ...review,
                     // Ensure all object IDs are strings
                     _id: review._id?.toString(),
-                    product: review.product?._id ? {
-                        _id: review.product._id.toString(),
-                        title: review.product.title
-                    } : null,
-                    artisan: review.artisan?._id ? {
-                        _id: review.artisan._id.toString(),
-                        name: review.artisan.name
-                    } : null,
+                    packages: review.packages
+                        ? typeof review.packages === 'object' && review.packages._id
+                            ? {
+                                _id: review.packages._id.toString(),
+                                title: review.packages.title
+                            }
+                            : review.packages.toString()
+                        : null,
+                    artisan: review.artisan
+                        ? typeof review.artisan === 'object' && review.artisan._id
+                            ? {
+                                _id: review.artisan._id.toString(),
+                                name: review.artisan.name
+                            }
+                            : review.artisan.toString()
+                        : null,
                     // Ensure thumb is properly formatted
                     thumb: review.thumb?.url ? {
                         url: review.thumb.url,
@@ -99,10 +101,10 @@ const ManageReviews = () => {
         let filtered = [...allReviews];
 
         // Filter by status
-        if (statusFilter === 'active') {
-            filtered = filtered.filter(review => review.active && !review.deleted);
-        } else if (statusFilter === 'inactive') {
-            filtered = filtered.filter(review => !review.active && !review.deleted);
+        if (statusFilter === 'approved') {
+            filtered = filtered.filter(review => review.approved && !review.deleted);
+        } else if (statusFilter === 'disapproved') {
+            filtered = filtered.filter(review => !review.approved && !review.deleted);
         } else {
             filtered = filtered.filter(review => !review.deleted);
         }
@@ -112,15 +114,6 @@ const ManageReviews = () => {
             filtered = filtered.filter(review => review.type === typeFilter);
         }
         setFilteredReviews(filtered);
-        setCurrentPage(1);
-    };
-
-    const handleStatusChange = (e) => {
-        setStatusFilter(e.target.value);
-    };
-
-    const handleTypeChange = (e) => {
-        setTypeFilter(e.target.value);
     };
 
     const handleAction = async (id, action) => {
@@ -130,12 +123,10 @@ const ManageReviews = () => {
             // Determine the updates based on the action
             switch (action) {
                 case 'active':
-                    updates.active = true;
                     updates.deleted = false;
                     break;
                 case 'inactive':
-                    updates.active = false;
-                    updates.deleted = false;
+                    updates.deleted = true;
                     break;
                 default:
                     throw new Error('Invalid action');
@@ -170,7 +161,6 @@ const ManageReviews = () => {
                 approved: isApproving,
                 // If approving, ensure the review is also active and not deleted
                 ...(isApproving && {
-                    active: true,
                     deleted: false
                 })
             };
@@ -212,21 +202,7 @@ const ManageReviews = () => {
         <div className="w-full max-w-[1100px] mx-auto rounded-[14px] shadow-md px-4 py-6 md:py-8">
             {/* Filter Row */}
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6">
-            {/* Existing status filter */}
-            <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        {statusOptions.map(option => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+
 
                 {/* New type filter */}
                 <div className="flex-1">
@@ -244,7 +220,7 @@ const ManageReviews = () => {
                     </select>
                 </div>
             </div>
-      
+
             {/* Table */}
             <div className="overflow-x-auto bg-white rounded-xl">
                 <table className="min-w-full border-separate border-spacing-0">
@@ -264,7 +240,7 @@ const ManageReviews = () => {
                             currentReviews.map((review) => (
                                 <tr key={review._id} className="hover:bg-gray-100 transition">
                                     {/* Date */}
-                                    <td className="align-middle min-w-[150px] px-5">{review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' }) : "-"}</td>
+                                    <td className="align-middle min-w-[200px] px-5">{review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' }) : "-"}</td>
                                     {/* Title */}
                                     <td className="align-middle truncate max-w-[180px] px-5">{review.title || '-'}</td>
                                     {/* Name */}
@@ -291,16 +267,6 @@ const ManageReviews = () => {
                                             className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-300"
                                         />
                                     </td>
-                                    {/* Active Status */}
-                                    <td className="align-middle px-5">
-                                        <Switch
-                                            checked={!review.deleted && review.active}
-                                            onCheckedChange={() => handleAction(review._id, review.active ? 'inactive' : 'active')}
-                                            className={`data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-300 ${review.deleted ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                            disabled={review.deleted}
-                                            title={review.deleted ? 'Cannot activate deleted review' : ''}
-                                        />
-                                    </td>
                                     {/* View */}
                                     <td className="align-middle px-5">
                                         <button className="icon-btn hover:bg-gray-200 rounded p-1" onClick={() => setSelectedReview(review)}>
@@ -320,24 +286,30 @@ const ManageReviews = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="reviewlog-pagination-row">
-                    <div className="pagination">
-                        <button className="icon-btn" aria-label="Prev" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+                <div className="flex items-center justify-start gap-2 mt-6">
+                    <button
+                        className="border px-4 py-1.5 rounded-full text-[15px] disabled:opacity-50"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    >
+                        PREV
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                            key={i}
+                            className={`border px-4 py-1.5 rounded-full text-[15px] ${currentPage === i + 1 ? "bg-black text-white" : "bg-white text-black"}`}
+                            onClick={() => setCurrentPage(i + 1)}
+                        >
+                            {i + 1}
                         </button>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-                            <button
-                                key={num}
-                                className={`page-btn${num === currentPage ? " active" : ""}`}
-                                onClick={() => setCurrentPage(num)}
-                            >
-                                {num}
-                            </button>
-                        ))}
-                        <button className="icon-btn" aria-label="Next" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2"><path d="M9 6l6 6-6 6" /></svg>
-                        </button>
-                    </div>
+                    ))}
+                    <button
+                        className="border px-4 py-1.5 rounded-full text-[15px] disabled:opacity-50"
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    >
+                        NEXT
+                    </button>
                 </div>
             )}
 

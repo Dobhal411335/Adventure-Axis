@@ -8,25 +8,19 @@ export const GET = async (req) => {
         const { searchParams } = new URL(req.url);
         const status = searchParams.get('status');
         const productId = searchParams.get('productId');
+        // const packageId = searchParams.get('packageId') || productId;
         const type = searchParams.get('type');
         const artisanId = searchParams.get('artisanId');
         const approved = searchParams.get('approved');
 
         let filter = { deleted: false };
 
-        // Handle status filters
-        if (searchParams.has('approved')) {
-            filter.approved = searchParams.get('approved') === 'true';
-        }
-        if (searchParams.has('active')) {
-            filter.active = searchParams.get('active') === 'true';
-        } else if (status === 'active') {
-            filter.$or = [{ active: true }, { active: { $exists: false } }];
-        } else if (status === 'inactive') {
-            filter.active = false;
+        // Handle approved filter robustly (only set once)
+        if (approved !== null && approved !== undefined) {
+            filter.approved = approved === 'true';
         }
 
-        // Filter by product ID if provided
+        // Filter by package ID if provided
         if (productId) {
             filter.product = productId;
         }
@@ -35,14 +29,10 @@ export const GET = async (req) => {
         if (artisanId) {
             filter.artisan = artisanId;
         }
-        // Handle type filtering
-        if (type === 'all') {
-            filter.type = type;
-        }
 
-        // Filter by approved status if provided
-        if (approved !== null) {
-            filter.approved = approved === 'true';
+        // Handle type filtering (set type if provided and not 'all')
+        if (type && type !== 'all') {
+            filter.type = type;
         }
 
         const reviews = await Review.find(filter)
@@ -111,7 +101,6 @@ export const POST = async (req) => {
         }
         // All new reviews require admin approval
         reviewData.approved = false;
-        reviewData.active = true; // Will be set to true when approved by admin
 
         // Convert date to timestamp if it's a string
         if (reviewData.date && typeof reviewData.date === 'string') {
@@ -120,21 +109,6 @@ export const POST = async (req) => {
             // If no date provided, use current timestamp
             reviewData.date = Date.now();
         }
-
-        // // Validate required fields
-        // const requiredFields = ['name', 'title', 'description', 'rating'];
-        // const missingFields = requiredFields.filter(field => !reviewData[field]);
-
-        // if (missingFields.length > 0) {
-        //     console.error('Missing required fields:', missingFields);
-        //     return new NextResponse(
-        //         JSON.stringify({ 
-        //             success: false, 
-        //             message: `Missing required fields: ${missingFields.join(', ')}` 
-        //         }), 
-        //         { status: 400 }
-        //     );
-        // }
 
         // Create the review
         const review = new Review({
@@ -148,7 +122,6 @@ export const POST = async (req) => {
             product: reviewData.product,
             artisan: reviewData.artisan,
             approved: reviewData.approved,
-            active: true,
             deleted: false
         });
 
@@ -174,27 +147,9 @@ export const PUT = async (req) => {
             return NextResponse.json({ message: "Review not found" }, { status: 404 });
         }
 
-        // Track the old status for comparison
-        let oldStatus = {
-            active: review.active,
-            approved: review.approved,
-            deleted: review.deleted
-        };
-
-        // Handle active status changes
-        if (typeof data.active === 'boolean') {
-            review.active = data.active;
-            if (data.active) {
-                review.deleted = false; // If making active, ensure not deleted
-            }
-        }
-
         // Handle deleted status changes
         if (typeof data.deleted === 'boolean') {
             review.deleted = data.deleted;
-            if (data.deleted) {
-                review.active = false; // If deleting, ensure not active
-            }
         }
 
         if (typeof data.approved === 'boolean') {
@@ -231,7 +186,6 @@ export const DELETE = async (req) => {
             return NextResponse.json({ message: "Review not found" }, { status: 404 });
         }
         review.deleted = true;
-        review.active = false;
         await review.save();
         return NextResponse.json({ message: "Review deleted (soft)!" }, { status: 200 });
     } catch (error) {
