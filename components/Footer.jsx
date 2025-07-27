@@ -81,28 +81,35 @@ const Footer = () => {
 
                 <div className="flex flex-col gap-1">
                     <h1 className="font-semibold text-xl flex items-center gap-2"> More Inquiry</h1>
-                    <div className="flex items-center md:flex-row flex-col gap-2">
-
-                        <Link href={'tel:+9107669280002'} className="my-2 text-sm block rounded-full py-1 font-barlow text-white flex items-center gap-2">
+                    <div className="flex items-start gap-2">
+                        <Link href={'tel:+9107669280002'} className="my-2 block rounded-full py-1 font-barlow text-white flex items-center gap-2">
                             <Phone size={20} className="text-blue-600" />
                             +91 07669280002
                         </Link>
-                        <Link href={'tel:+919897468886'} className="my-2 text-sm block rounded-full py-1 font-barlow text-white flex items-center gap-2">
+                        <Link href={'tel:+919897468886'} className="my-2  block rounded-full py-1 font-barlow text-white flex items-center gap-2">
                             +91 9897468886
                         </Link>
                     </div>
-                    <Link href={'mailto:info@adventureaxis.in'} className="gap-2 my-2 block rounded-full font-barlow text-white flex items-center">
-                        <Send className="text-blue-600" size={20} />
-                        info@adventureaxis.in
-                    </Link>
-                    <Link href={'mailto:Accounts@adventureaxis.in'} className="gap-2 my-2 block rounded-full font-barlow text-white flex items-center">
-                        <Send className="text-blue-600" size={20} />
-                        Accounts@adventureaxis.in
-                    </Link>
-                    <Link href={'mailto:Sales@adventureaxis.in'} className="gap-2 my-2 block rounded-full font-barlow text-white flex items-center">
-                        <Send className="text-blue-600" size={20} />
-                        Sales@adventureaxis.in
-                    </Link>
+                    <div className="flex items-start  gap-2">
+                        <div className="py-2">
+
+                            <Send className="text-blue-600" size={20} />
+                        </div>
+                        <div className="flex items-start flex-col gap-4 py-2">
+
+                            <Link href={'mailto:support@adventureaxis.in'} className="block rounded-full font-barlow text-white flex items-center gap-2">
+                                support@adventureaxis.in
+                            </Link>
+                            <Link href={'mailto:Accounts@adventureaxis.in'} className=" block rounded-full font-barlow text-white flex items-center gap-2">
+
+                                Accounts@adventureaxis.in
+                            </Link>
+                            <Link href={'mailto:Sales@adventureaxis.in'} className="block rounded-full font-barlow text-white flex items-center gap-2">
+
+                                Sales@adventureaxis.in
+                            </Link>
+                        </div>
+                    </div>
                     <p className="gap-2 my-2 font-barlow text-white mb-5 flex items-center">
                         <MapPin className="text-blue-600" size={20} />
                         Regd. Or Branch Office: Badrinath Road,
@@ -115,47 +122,55 @@ const Footer = () => {
                 <div className="flex flex-col gap-2 px-2">
                     <h1 className="font-semibold text-xl my-4">Main Menu</h1>
                     {pages.filter(page => !page?.link?.includes('policy')).map(page => (
-                        <Link key={page._id} href={page.url} className="text-sm block text-black font-barlow ">
+                        <Link key={page._id} href={page.url} className="text-sm block text-white font-barlow ">
                             {page.title}
                         </Link>
                     ))}
-                    <Link href={'/contact'} className="text-sm block text-black font-barlow ">Contact</Link>
+                    <Link href={'/contact'} className="text-sm block text-white font-barlow ">Contact</Link>
                 </div>
 
                 <div className="flex flex-col gap-2 px-2">
                     <h1 className="font-semibold text-xl my-4">Our Policy</h1>
                     {pages.filter(page => page?.link?.includes('policy')).map(page => (
-                        <Link key={page._id} href={page.url} className="text-sm block text-black font-barlow">
+                        <Link key={page._id} href={page.url} className="text-sm block text-white font-barlow">
                             {page.title}
                         </Link>
                     ))}
-                    <Link href={'/faq'} className="text-sm block text-black font-barlow ">FAQ</Link>
+                    <Link href={'/faq'} className="text-sm block text-white font-barlow ">FAQ</Link>
                 </div>
             </div>
             <div className="md:hidden flex flex-col gap-1 p-5">
                 <h1 className="font-semibold text-xl flex items-center gap-2"> More Inquiry</h1>
-                <div className="flex items-center md:flex-row flex-col gap-2">
-                    <Link href={'tel:+9107669280002'} className="my-2 text-sm block rounded-full py-1 font-barlow text-black flex items-center gap-2">
+                <div className="flex items-start gap-2">
+                    <Link href={'tel:+9107669280002'} className="my-2 text-sm block rounded-full py-1 font-barlow text-white flex items-center gap-2">
                         <Phone size={20} className="text-blue-600" />
                         +91 07669280002
                     </Link>
-                    <Link href={'tel:+919897468886'} className="my-2 text-sm block rounded-full py-1 font-barlow text-black flex items-center gap-2">
+                    <Link href={'tel:+919897468886'} className="my-2 text-sm block rounded-full py-1 font-barlow text-white flex items-center gap-2">
                         +91 9897468886
                     </Link>
                 </div>
-                <Link href={'mailto:support@adventureaxis.in'} className="my-2 text-sm block rounded-full font-barlow text-black flex items-center gap-2">
-                    <Send className="text-blue-600" size={20} />
-                    support@adventureaxis.in
-                </Link>
-                <Link href={'mailto:Accounts@adventureaxis.in'} className="my-2 text-sm block rounded-full font-barlow text-black flex items-center gap-2">
-                    <Send className="text-blue-600" size={20} />
-                    Accounts@adventureaxis.in
-                </Link>
-                <Link href={'mailto:Sales@adventureaxis.in'} className="my-2 text-sm block rounded-full font-barlow text-black flex items-center gap-2">
-                    <Send className="text-blue-600" size={20} />
-                    Sales@adventureaxis.in
-                </Link>
-                <p className="my-2 text-sm font-barlow text-black mb-5 flex items-center gap-2">
+                <div className="flex items-start  gap-2">
+                    <div className="py-2">
+
+                        <Send className="text-blue-600" size={20} />
+                    </div>
+                    <div className="flex items-start flex-col gap-4 py-2">
+
+                        <Link href={'mailto:support@adventureaxis.in'} className="text-sm block rounded-full font-barlow text-white flex items-center gap-2">
+                            support@adventureaxis.in
+                        </Link>
+                        <Link href={'mailto:Accounts@adventureaxis.in'} className=" text-sm block rounded-full font-barlow text-white flex items-center gap-2">
+
+                            Accounts@adventureaxis.in
+                        </Link>
+                        <Link href={'mailto:Sales@adventureaxis.in'} className=" text-sm block rounded-full font-barlow text-white flex items-center gap-2">
+
+                            Sales@adventureaxis.in
+                        </Link>
+                    </div>
+                </div>
+                <p className="my-2 text-sm font-barlow text-white mb-5 flex items-center gap-2">
                     <MapPin className="text-blue-600" size={20} />
                     Regd. Or Branch Office: Badrinath Road,
                     <br />

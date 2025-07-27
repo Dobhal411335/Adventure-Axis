@@ -235,7 +235,7 @@ const MenuBar = (props) => {
                 <NavigationMenu.List className="flex space-x-2">
                     {menuItems.map((item, index) => (
                         <NavigationMenu.Item key={index} className="relative flex justify-center">
-                            <NavigationMenu.Trigger className="flex items-center py-2 text-xs font-semibold  data-[state=open]:text-black rounded-md">
+                          <NavigationMenu.Trigger className="flex items-center whitespace-nowrap px-2 py-2 justify-center text-[12px] font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
                                 {item.title} <ArrowDown className="ml-2" size={12} />
                             </NavigationMenu.Trigger>
                             <AnimatePresence>
@@ -246,7 +246,7 @@ const MenuBar = (props) => {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -10 }}
                                             transition={{ duration: 0.2, ease: "easeInOut" }}
-                                            className="absolute top-full mt-2 -translate-x-1/2 bg-white text-black shadow-lg rounded-md w-52"
+                                            className="absolute top-full mt-2 -translate-x-1/2 bg-white text-black shadow-lg rounded-md w-64"
                                         >
                                             <ul className="grid gap-2 p-2 text-sm">
                                                 {item.subMenu

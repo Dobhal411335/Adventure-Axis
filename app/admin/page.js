@@ -27,16 +27,7 @@ const Page = () => {
 
     const onSubmit = async (data) => {
 
-        if (menuItems.length > 4) {
-            toast.error("You can't add more than 5 menu items", {
-                style: {
-                    borderRadius: "10px",
-                    border: "2px solid red",
-                }
-            })
-            return
-        }
-
+       
         if (!data.title) {
             toast.error("Menu Title is required", {
                 style: {

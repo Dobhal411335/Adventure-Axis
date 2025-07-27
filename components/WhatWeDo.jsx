@@ -62,7 +62,7 @@ const WhatWeDo = () => {
           <div className="max-w-2xl flex flex-col items-center justify-center px-10">
             <h1 className="text-3xl  font-semibold text-black mb-2 drop-shadow-lg">The Impact of What We Do How <br /> We Make a Difference</h1>
             <div className="w-96 rounded-lg overflow-hidden">
-              <Image src="/pic7.png" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
+              <Image src="/pic7.jpg" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@ const WhatWeDo = () => {
           <div className="w-full flex flex-col items-center justify-center">
             <h1 className="text-xl font-semibold text-black text-center mb-2 drop-shadow-lg">The Impact of What We Do How <br /> We Make a Difference</h1>
             <div className="w-full rounded-lg overflow-hidden">
-              <Image src="/pic7.png" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
+              <Image src="/pic7.jpg" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
             </div>
           </div>
         </div>
@@ -80,7 +80,7 @@ const WhatWeDo = () => {
       <div className="md:hidden py-10 flex flex-col items-center justify-center">
         <h1 className="text-xl font-semibold text-center text-black mb-2 drop-shadow-lg">The Impact of What We Do How <br /> We Make a Difference</h1>
         <div className="w-96 rounded-lg overflow-hidden shadow-lg px-2">
-          <Image src="/pic7.png" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
+          <Image src="/pic7.jpg" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
         </div>
       </div>
 
@@ -150,9 +150,17 @@ const WhatWeDo = () => {
               </div>
             </div>
             {/* Right Side - keep width fixed and separated */}
-            <div className="lg:w-5/12 w-full flex items-center justify-center">
-              <div className="w-[100%] min-w-[260px] h-[95%] rounded-xl overflow-hidden shadow-lg bg-white flex items-center justify-center">
-                <Image src="/Rishikesh.jpg" alt="Rishikesh" width={400} height={500} className="object-cover w-full h-full" />
+            <div className="lg:w-5/12 w-full flex items-center justify-center sticky top-20 self-start p-10 md:p-0">
+              <div className="w-full max-w-md rounded-xl overflow-hidden bg-white shadow-lg">
+                <Image
+                  src="/Rishikesh.jpg"
+                  alt="Rishikesh"
+                  width={600}
+                  height={800}
+                  className="object-cover w-full h-auto"
+                  style={{ aspectRatio: '3/4' }}
+                  priority
+                />
               </div>
             </div>
           </div>
