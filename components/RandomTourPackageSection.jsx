@@ -153,7 +153,7 @@ const RandomTourPackageSection = () => {
     <section className="bg-[#fcf7f1] md:mt-19 w-full overflow-hidden max-w-screen overflow-x-hidden">
       <div className=" w-full h-full overflow-hidden max-w-screen">
         {/* Product Section */}
-        <div className="w-full py-10 px-2 bg-[#ededed]">
+        <div className="w-full py-10 px-2 bg-[#FCF7F1]">
           <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-center md:mt-10 uppercase">
           Equip Your Next Adventure.
           </h1>

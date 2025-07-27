@@ -57,7 +57,7 @@ const Banner = () => {
         <div className="bg-[#fcf7f1] w-full overflow-hidden max-w-screen overflow-x-hidden">
             {/* Promotional Banner Section */}
             {promotinalBanner.length > 0 && (
-                <div className="w-full py-10 px-2 md:py-20 bg-[#ededed]">
+                <div className="w-full py-10 px-2 md:py-20 bg-[#FCF7F1]">
                     <h2 className="text-2xl md:text-4xl font-bold text-center mb-5 uppercase">
                         <span className="italic">Click</span>,
                         <span >Collect</span>,

@@ -304,7 +304,7 @@ const ArtisanDetails = ({ artisan }) => {
           <img src={artisan.artisanBanner?.image?.url || artisan.artisanBanner?.image || "/placeholder.jpeg"} className="w-full h-full object-cover brightness-100 " alt="Office" />
         </div>
         {/* Overlay Content */}
-        <div className="relative bg-[#ededed] w-full px-2 md:w-full justify-center mx-auto flex flex-col md:flex-row md:items-start items-center pt-0 px-0 pb-8">
+        <div className="relative bg-[##FCF7F1] w-full px-2 md:w-full justify-center mx-auto flex flex-col md:flex-row md:items-start items-center pt-0 px-0 pb-8">
           {/* Profile Image: Overlapping Banner */}
           <div className="hidden md:flex absoute flex-shrink-0 -mt-32 ml-12 mr-10">
             <div className="bg-white rounded-lg shadow-xl border-4 border-white overflow-hidden w-72 md:h-[350px] flex items-center justify-center">
@@ -832,7 +832,7 @@ const ArtisanDetails = ({ artisan }) => {
       )}
       {/* Products Carousel */}
       {Array.isArray(artisan.products) && artisan.products.length > 0 && (
-        <div className="w-full py-10 px-2 md:p-20 bg-[#ededed]">
+        <div className="w-full py-10 px-2 md:p-20 bg-[#FCF7F1]">
           <h3 className="text-2xl md:text-3xl font-bold text-gray-800">
             <span className='border-t-4 border-black'>
               Product We Develop
@@ -1116,7 +1116,7 @@ const ArtisanDetails = ({ artisan }) => {
       )}
       {/* Certificate And Awards Section */}
       {Array.isArray(artisan.certificates) && artisan.certificates.length > 0 && (
-        <div className="w-full md:px-20 py-10 px-2 mx-auto bg-[#ededed]">
+        <div className="w-full md:px-20 py-10 px-2 mx-auto bg-[#FCF7F1]">
           <div className="w-full h-full md:h-[500px] mx-auto flex flex-col md:flex-row items-start justify-center px-5 py-1 gap-8">
             {/* Left Column: Text */}
             <div className="w-full md:w-1/2 flex flex-col justify-center gap-5 md:gap-10 h-full">
@@ -1569,7 +1569,7 @@ const ArtisanDetails = ({ artisan }) => {
             </Carousel>
           </div>
           {/* Review Card Overlay */}
-          <div className="md:hidden py-10 flex flex-col justify-start w-full items-start bg-[#ededed]">
+          <div className="md:hidden py-10 flex flex-col justify-start w-full items-start bg-[#FCF7F1]">
             <h3 className="text-2xl font-bold mb-4 px-2 text-gray-800">
               <span className='border-t-4 border-black '>
                 Review Section

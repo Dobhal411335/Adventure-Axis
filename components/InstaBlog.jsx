@@ -237,11 +237,11 @@ const InstaBlog = () => {
     return (
         <div className='bg-[#fcf7f1] w-full overflow-hidden max-w-screen overflow-x-hidden'>
             {/*Blogs /  News & Announcement Section */}
-            <div className="w-full flex flex-col items-center md:py-20 py-10 bg-[#ededed]">
+            {!isBlogsLoading && !news && blogs.length > 0 && (
+            <div className="w-full flex flex-col items-center md:py-20 py-10 bg-[#FCF7F1]">
                 <div className="w-full flex flex-col md:flex-row gap-8 min-h-[350px]">
                     <div className="flex flex-col md:flex-row w-full gap-8 px-2">
                         {/* Blogs Section */}
-
                         {!isBlogsLoading && blogs && blogs.length > 0 && (
                             <div className="flex-1 bg-[#fcf7f1] rounded-lg flex flex-col justify-between min-h-[350px] px-5 py-5 md:px-10">
                                 <div className="font-bold text-xl md:text-3xl mb-4 p-2">
@@ -410,6 +410,7 @@ const InstaBlog = () => {
                     </div>
                 </div>
             </div>
+            )}
 
             {/* Instagram-like Image Carousel using Carousel classes */}
             {!isInstaLoading && !isFbLoading && allPosts.length > 0 && (
@@ -470,7 +471,7 @@ const InstaBlog = () => {
             )}
 
             {/* Reviews Section */}
-            <div className="w-full mx-auto relative md:min-h-[600px] min-h-[500px] flex items-center justify-end relative">
+            <div className="w-full mx-auto relative md:h-[650px] min-h-[500px] flex items-center justify-end relative">
                 {/* Background Image */}
                 <div className="hidden md:flex absolute inset-0 w-full h-full z-0">
                     <img

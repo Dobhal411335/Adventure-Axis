@@ -12,8 +12,8 @@ export default async function Home() {
   return (
     <>
       <PopUpBanner />
-      <Boxes />
       <HeroSection />
+      <Boxes />
       <AboutUsSection />
       <Banner />
       <RandomTourPackageSection />

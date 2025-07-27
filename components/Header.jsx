@@ -1,6 +1,6 @@
 "use client"
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronDown, LogOutIcon, Mail, Phone, Truck, User2Icon } from "lucide-react"
 import Link from "next/link"
 import MenuBar from "./MenuBar"
@@ -17,9 +17,10 @@ import { ArrowDown, Menu, X } from "lucide-react";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
+import BrandCarousel from "./BrandCarousel";
 const Header = () => {
-  const authDropdownRef = React.useRef(null);
-  const profileMenuRef = React.useRef(null);
+  const authDropdownRef = useRef(null);
+  const profileMenuRef = useRef(null);
   const pathName = usePathname();
   const [isMounted, setIsMounted] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -116,6 +117,11 @@ const Header = () => {
         } bg-[#fcf7f1] text-black border-b sticky top-0 left-0 right-0 transition-all duration-300 font-barlow tracking-wider ease-in-out z-50 mx-auto w-full py-2
          ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
     >
+      <div className="md:flex hidden items-center justify-between gap-8 border-b border-gray-400 md:px-8 overflow-hidden bg-white">
+        <div className="w-full">
+          <BrandCarousel />
+        </div>
+      </div>
       <div className="md:flex hidden items-center justify-between gap-8 border-b py-1 border-gray-400 md:px-8 ">
         <Link href={"/"}>
           <img className="w-44 object-contain drop-shadow-xl" src="/HeaderLogo.png" alt="Rishikesh Handmade" />
@@ -261,17 +267,19 @@ const Header = () => {
                   <span className="text-xs font-medium mt-1">Track Order</span>
                 </Link>
               </div>
+              {/* SearchBar aligned to the right */}
+              <div className="group">
+                <SearchBar />
+              </div>
 
+              {/* Language Selector */}
               {/* Language Selector */}
               <div className="group relative">
                 <div
-                  className="flex flex-col items-center p-2 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer"
+                  className="flex items-center p-2 z-55"
                   aria-label="Language"
                 >
-                  <div className="flex flex-col items-start justify-start">
-                    <LanguageSelector size={20} />
-                    <span className="text-sm font-medium">Language</span>
-                  </div>
+                  <LanguageSelector />
                 </div>
               </div>
             </div>
@@ -279,17 +287,14 @@ const Header = () => {
         </div>
 
       </div>
-      <div className="lg:flex hidden items-center justify-center relative z-50 py-2 md:px-4 w-full">
-  {/* MenuBar in center */}
-  <div className="absolute left-1/2 transform -translate-x-1/2">
-    <MenuBar menuItems={menuItems} />
-  </div>
+      <div className="lg:flex hidden items-center justify-center relative z-50 py-6 md:px-4 w-full">
+        {/* MenuBar in center */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <MenuBar menuItems={menuItems} />
+        </div>
 
-  {/* SearchBar aligned to the right */}
-  <div className="ml-auto">
-    <SearchBar />
-  </div>
-</div>
+
+      </div>
       <div className="lg:hidden flex items-center z-50 justify-between md:justify-between py-1 px-2">
         <div className="relative flex items-center">
           {/* <MenuBar menuItems={menuItems.filter(item => item.active)} /> */}

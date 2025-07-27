@@ -67,6 +67,13 @@ const data = {
       icon: Plus,
     },
     { divider: true },
+
+    {
+      name: "Add Brand Name",
+      url: "/admin/add_brand_name",
+      icon: Plus,
+    },
+    { divider: true },
     {
       name: "Create Discount",
       url: "/admin/create_discount",

@@ -39,20 +39,6 @@ We prioritize partnerships with brands that focus on sustainable manufacturing, 
 We actively promote the "Leave No Trace" principles across our community. Whether it’s trekking, rafting, or camping, we encourage every adventurer to respect nature`
   },
   {
-    title: "Empowering Local Artisans",
-    content: `Rooted in the Himalayan foothills of Rishikesh, Adventure Axis proudly works to uplift local talent, artisans, guides, and adventure operators by:
-
-Sourcing support gear and services from regional producers whenever possible
-
-Collaborating with local adventure companies for knowledge sharing and product testing
-
-Providing business opportunities, skills training, and supply chain support to small outdoor businesses
-
-Encouraging tourism that benefits indigenous communities and local ecosystems
-
-By strengthening local networks, we’re not just building a brand — we’re building a community-led adventure economy.`
-  },
-  {
     title: "Global Accessibility with Local Roots",
     content: `At Adventure Axis, we proudly operate at the intersection of global standards and local soul. While our store is rooted in Tapovan, Rishikesh — the gateway to the Himalayas — our reach extends across India and beyond, serving adventurers, expedition teams, and outdoor professionals worldwide.
 

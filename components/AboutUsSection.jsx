@@ -80,7 +80,7 @@ const AboutUsSection = () => {
         );
     }
     return (
-        <section className="bg-[#ededed] relative py-10 w-full px-5 overflow-hidden max-w-screen overflow-x-hidden">
+        <section className="bg-[#FCF7F1] relative py-10 w-full px-5 overflow-hidden max-w-screen overflow-x-hidden">
             <div className="w-full">
                 <h2 className="font-bold text-2xl md:text-4xl text-center mt-2 md:mt-7 uppercase">
                     <span className="italic"> Your Partner in Every Expedition.</span>

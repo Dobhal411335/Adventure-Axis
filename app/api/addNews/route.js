@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/connectDB";
 import News from "@/models/News";
 import { deleteFileFromCloudinary } from "@/utils/cloudinary";
-connectDB();
 
 export async function GET() {
+    await connectDB();
     try {
         const news = await News.find().sort({ createdAt: -1});
         return NextResponse.json(news, { status: 200 });
@@ -14,6 +14,7 @@ export async function GET() {
 }
 
 export async function POST(req) {
+    await connectDB();
     try {
         const { title, date, description, image, order } = await req.json();
 
@@ -30,6 +31,7 @@ export async function POST(req) {
 }
 
 export async function PATCH(req) {
+    await connectDB();
     try {
         const { id, title, date, description, image, order } = await req.json();
         const updatedNews = await News.findByIdAndUpdate(id, { title, date, description, order, image }, { new: true });
@@ -40,6 +42,7 @@ export async function PATCH(req) {
 }
 
 export async function DELETE(req) {
+    await connectDB();
     try {
         const { id } = await req.json();
 
