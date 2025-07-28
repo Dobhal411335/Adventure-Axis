@@ -46,7 +46,7 @@ const BrandCarousel = () => {
   return (
     <div className="relative w-full overflow-hidden">
       <div className="flex items-center">
-        <div className="flex space-x-8 animate-marquee whitespace-nowrap">
+        <div className="flex space-x-8 bg-white whitespace-nowrap">
           {[...brands].map((brand, index) => (
             <div 
               key={`${brand._id}-${index}`} 

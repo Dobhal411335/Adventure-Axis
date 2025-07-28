@@ -114,7 +114,7 @@ const Header = () => {
         pathName.includes("customEnquiry")
         ? "hidden"
         : "block"
-        } bg-[#fcf7f1] text-black border-b sticky top-0 left-0 right-0 transition-all duration-300 font-barlow tracking-wider ease-in-out z-50 mx-auto w-full py-2
+        } bg-white text-black border-b sticky top-0 left-0 right-0 transition-all duration-300 font-barlow tracking-wider ease-in-out z-50 mx-auto w-full py-2
          ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
     >
       <div className="md:flex hidden items-center justify-between gap-8 border-b border-gray-400 md:px-8 overflow-hidden bg-white">
@@ -151,11 +151,10 @@ const Header = () => {
                         className="rounded-full cursor-pointer"
                       />
                     </button>
-
                     {/* Dropdown Menu */}
                     {isProfileOpen && (
                       <div
-                        className="absolute top-14 right-0 mt-2 w-fit text-black bg-white shadow-lg rounded-lg border z-50"
+                        className="absolute top-14 right-0 mt-2 w-fit text-black bg-white shadow-lg rounded-lg border z-[9999]"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <p className="px-4 pt-2 text-sm font-bold text-gray-700">{session.user.name}</p>
@@ -287,7 +286,7 @@ const Header = () => {
         </div>
 
       </div>
-      <div className="lg:flex hidden items-center justify-center relative z-50 py-6 md:px-4 w-full">
+      <div className="lg:flex hidden items-center justify-center relative z-10 py-6 md:px-4 w-full">
         {/* MenuBar in center */}
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <MenuBar menuItems={menuItems} />

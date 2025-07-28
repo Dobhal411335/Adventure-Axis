@@ -37,14 +37,14 @@ const Social = () => {
     <div
       style={{
         position: "fixed",
-        top: "45%",
+        top: "50%",
         right: 0,
         transform: "translateY(-50%)",
         zIndex: 1000,
         background: "#fff",
         borderRadius: "16px 0 0 16px",
         boxShadow: "0 2px 16px rgba(0,0,0,0.09)",
-        padding: "18px 10px",
+        padding: "18px 5px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

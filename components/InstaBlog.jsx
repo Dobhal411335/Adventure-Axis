@@ -502,7 +502,7 @@ const InstaBlog = () => {
                                             <div className="text-md md:text-2xl text-gray-800 font-bold leading-relaxed text-left mb-2">
                                                 {review?.title || 'No review text.'}
                                             </div>
-                                            <div className="text-md md:text-md text-gray-800 font-medium leading-relaxed text-left">
+                                            <div className="text-sm md:text-md text-gray-800 font-medium leading-relaxed text-left">
                                                 {review?.shortDescription || 'No review text.'}
                                             </div>
                                         </div>

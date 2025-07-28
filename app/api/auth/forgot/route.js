@@ -67,8 +67,8 @@ export async function POST(req) {
                     <!-- Header -->
                     <tr>
                         <td style="padding: 30px 0; text-align: center; background-color: #ECB504; border-top-left-radius: 8px; border-top-right-radius: 8px;">
-                            <a href="https://rishikeshhandmade.com/" class="header">
-            <img src="https://rishikeshhandmade.com/logo.png" alt="Rishikesh HandMade Logo">
+                            <a href="https://adventureaxis.in/" class="header">
+            <img src="https://adventureaxis.in/logo.png" alt="Adventure Axis Logo">
         </a>
                             <h1 style="color: #ffffff; margin: 0; margin-top:12px; font-size: 24px;">Password Reset Request</h1>
                         </td>
@@ -90,7 +90,7 @@ export async function POST(req) {
                     <tr>
                         <td style="padding: 20px 30px; text-align: center; background-color: #f8f9fa; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
                            <div class="footer">
-            <p>If you have any questions, feel free to contact: <a href="mailto:info@rishikeshhandmade.com">info@rishikeshhandmade.com</a>.</p>
+            <p>If you have any questions, feel free to contact: <a href="mailto:info@adventureaxis.in">info@adventureaxis.in</a>.</p>
             <p>&copy; ${new Date().getFullYear()} Rishikesh HandMade. All rights reserved.</p>
         </div>
                         </td>

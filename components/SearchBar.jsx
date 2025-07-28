@@ -133,7 +133,7 @@ export default function SearchBar({ placeholder }) {
                 </button>
             </DialogTrigger>
             <DialogContent
-                className={`fixed top-[30%] w-full max-w-none rounded-none shadow-lg border-none p-0 bg-[#fefaf4] z-[1000] transition-all duration-200 overflow-y-visible ${query && relatedProducts.length > 0 ? 'min-h-[50vh] max-h-[100vh]' : 'h-auto'}`}
+                className={`fixed top-[30%] w-full max-w-7xl rounded-none shadow-lg border-none p-0 bg-[#fefaf4] z-[1000] transition-all duration-200 overflow-y-visible ${query && relatedProducts.length > 0 ? 'min-h-[50vh] max-h-[100vh]' : 'h-auto'}`}
                 style={{ margin: 0 }}
             >
 

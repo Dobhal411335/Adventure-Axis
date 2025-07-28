@@ -31,7 +31,7 @@ export async function POST(req) {
     const emailRecipients = users.map(user => ({ email: user.email }));
 
     const emailData = {
-      sender: { name: "Rishikesh HandMade", email: "rishikeshhandmade@gmail.com" },
+      sender: { name: "Adventure Axis", email: "info@adventureaxis.in" },
       to: emailRecipients,
       subject,
       htmlContent: `
@@ -80,8 +80,8 @@ export async function POST(req) {
                     <!-- Header -->
                     <tr>
                         <td style="padding: 30px 0; text-align: center; background-color:rgb(176, 176, 176); border-top-left-radius: 8px; border-top-right-radius: 8px;">
-                            <a href="https://rishikeshhandmade.com/" class="header">
-            <img src="https://rishikeshhandmade.com/logo.png" alt="Rishikesh HandMade Logo">
+                            <a href="https://adventureaxis.in/" class="header">
+            <img src="https://adventureaxis.in/logo.png" alt="Adventure Axis Logo">
         </a>
                             <h1 style="color: #ffffff; margin: 0; margin-top:12px; font-size: 24px;">Promotional Email</h1>
                         </td>
@@ -100,8 +100,8 @@ export async function POST(req) {
                             <p>Working hours:</p>
                             <p>MON to SAT : 9:30AM - 08:00 PM</p>
                             <p>Sunday Closed</p>
-            <p>If you have any questions, feel free to contact: <a href="mailto:info@rishikeshhandmade.com">info@rishikeshhandmade.com</a>.</p>
-            <p>&copy; ${new Date().getFullYear()} Rishikesh HandMade. All rights reserved.</p>
+            <p>If you have any questions, feel free to contact: <a href="mailto:info@adventureaxis.in">info@adventureaxis.in</a>.</p>
+            <p>&copy; ${new Date().getFullYear()} Adventure Axis. All rights reserved.</p>
         </div>
                         </td>
                     </tr>
@@ -124,7 +124,7 @@ export async function POST(req) {
 
     return NextResponse.json({ success: true, data: response.data }, { status: 200 });
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.log("Error sending email:", error.message);
     return NextResponse.json({ success: false, message: "Error sending email." }, { status: 500 });
   }
 }

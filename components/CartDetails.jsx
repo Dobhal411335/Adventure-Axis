@@ -24,6 +24,12 @@ const CartDetails = () => {
   };
   const { cart: rawCart, updateCartQty, removeFromCart } = useCart();
   const cart = Array.isArray(rawCart) ? rawCart : [];
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // console.log(cart);
 
   const router = useRouter();
@@ -354,7 +360,6 @@ const CartDetails = () => {
         <div className="flex flex-col md:flex-row gap-6">
           {/* Left: Product Table */}
           <div className="w-full">
-
             {/* Desktop Table */}
             <div className="hidden md:block">
               <table className="w-full border-collapse rounded overflow-hidden shadow text-xs md:text-base">
@@ -407,66 +412,79 @@ const CartDetails = () => {
                 </tbody>
               </table>
             </div>
+            <div className="md:hidden flex">
+              <div className="w-full border-collapse rounded overflow-hidden shadow text-xs md:text-base">
+                  <div className="md:hidden flex flex-col gap-4">
+                    {cart.map((item, idx) => (
+                      <div
+                        key={item.id}
+                        className={`grid grid-cols-2 gap-2 p-2 rounded shadow ${idx % 2 === 0 ? "bg-orange-100" : "bg-gray-100"
+                          }`}
+                      >
+                        {/* Left Column: Image + Quantity */}
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <img
+                            src={item.image?.url || item.image}
+                            alt={item.name}
+                            className="w-32 h-32 object-contain rounded"
+                          />
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => updateCartQty(item.id, Math.max(1, item.qty - 1))}
+                              className="w-7 h-7 bg-black text-white rounded-full flex items-center justify-center"
+                            >
+                              -
+                            </button>
+                            <span className="w-7 text-center font-semibold">{item.qty}</span>
+                            <button
+                              onClick={() => updateCartQty(item.id, item.qty + 1)}
+                              className="w-7 h-7 bg-black text-white rounded-full flex items-center justify-center"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
 
-            {/* Mobile Card Layout */}
-            <div className="block md:hidden space-y-4">
-              {cart.map((item) => (
-                <div key={item.id} className="bg-orange-100 rounded-lg shadow p-2 flex items-center gap-3">
-
-                  {/* Product Image */}
-                  <img
-                    src={item.image?.url || item.image}
-                    alt={item.name}
-                    className="w-14 h-14 rounded object-cover flex-shrink-0"
-                  />
-
-                  {/* Product Info */}
-                  <div className="flex flex-grow text-xs gap-1">
-                    <div className="flex items-center flex-col gap-2" >
-
-                    <div className="italic text-xs">{item.productCode || "N/A"}</div>
-                    <div className="font-semibold text-xs">{item.name}</div>
-                    </div>
-                    <div>Base: ₹{item.originalPrice ?? item.price}</div>
-                    <div>Discount: {getDiscount(item)}</div>
-                    <div>Final: ₹{getAfterDiscount(item)}</div>
-                    <div>Weight: {item.weight ?? 0}g</div>
-                    <div>CGST: ₹{(item.price * item.cgst / 100).toFixed(2)} | SGST: ₹{(item.price * item.sgst / 100).toFixed(2)}</div>
-
-                    {/* Quantity and Total */}
-                    <div className="flex justify-between items-center mt-1">
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => updateCartQty(item.id, Math.max(1, item.qty - 1))}
-                          className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center"
-                        >
-                          -
-                        </button>
-                        <span className="px-2 font-bold">{item.qty}</span>
-                        <button
-                          onClick={() => updateCartQty(item.id, item.qty + 1)}
-                          className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center"
-                        >
-                          +
-                        </button>
+                        {/* Right Column: Product Info */}
+                        <div className="text-sm space-y-1">
+                          <div>
+                            <span className="font-semibold">Name:</span> {item.name}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Code:</span> {item.productCode || "N/A"}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Base Price:</span> ₹{item.originalPrice ?? item.price}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Discount:</span> {getDiscount(item)}
+                          </div>
+                          <div>
+                            <span className="font-semibold">After Discount:</span> ₹{getAfterDiscount(item)}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Weight:</span> {item.weight ?? 0}g
+                          </div>
+                          <div>
+                            <span className="font-semibold">CGST:</span> ₹{(item.price * item.cgst / 100).toFixed(2)}
+                          </div>
+                          <div>
+                            <span className="font-semibold">SGST:</span> ₹{(item.price * item.sgst / 100).toFixed(2)}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Total:</span> ₹{getAmount(item)}
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="mt-2 bg-red-500 hover:bg-red-600 text-white rounded px-3 py-1 text-sm"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
-                      <div className="font-bold text-sm">₹{getAmount(item)}</div>
-                    </div>
+                    ))}
                   </div>
-
-                  {/* Remove Button */}
-                  <div className="ml-2">
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 text-xl flex items-center justify-center"
-                      title="Remove"
-                    >
-                      &#10006;
-                    </button>
-                  </div>
-
-                </div>
-              ))}
+              </div>
             </div>
 
 

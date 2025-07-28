@@ -152,12 +152,180 @@ const CheckOut = () => {
   const [appliedPromoDetails, setAppliedPromoDetails] = useState(null);
   const [showOverview, setShowOverview] = useState(false);
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState(null);
-  const [shipping, setShipping] = useState('free');
   // Load cart data from localStorage and handle authentication state
+  const [shipping, setShipping] = useState('free');
+  const isBuyNow = typeof window !== "undefined" && 
+    new URLSearchParams(window.location.search).get('mode') === 'buy-now';
+  const sendOrderConfirmationEmail = async (orderData, products, paymentMethod) => {
+ 
+    try {
+      const {
+        firstName = '',
+        lastName = '',
+        street = '',
+        city = '',
+        state = '',
+        pincode = '',
+        phone = '',
+        altPhone = '',
+        email,
+        orderId,
+        subTotal = 0,
+        totalDiscount = 0,
+        promoCode = '',
+        promoDiscount = '',
+        totalTax = 0,
+        shippingCost = 0,
+        cart = [],
+        cartTotal = 0
+      } = orderData;
+      const emailResponse = await fetch('/api/brevo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          subject: 'Order Confirmation',
+          htmlContent: `<!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Order Confirmation</title>
+              <style type="text/css">
+                body { font-family: Arial, sans-serif; background: #f8f9fa; }
+                .container { background: #fff; border-radius: 8px; margin: 32px auto; max-width: 600px; padding: 32px 24px; }
+                .header { text-align: center; }
+                .summary-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+                .summary-table th, .summary-table td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; font-size: 14px; }
+                .summary-table th { background: #f3f4f6; }
+                .product-img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; }
+                .dashboard-btn { 
+                  display: block; 
+                  width: 100%; 
+                  margin: 32px 0 0 0; 
+                  text-align: center; 
+                  background: #f97316; 
+                  color: #fff; 
+                  padding: 12px 0; 
+                  border-radius: 6px; 
+                  text-decoration: none; 
+                  font-weight: bold; 
+                  font-size: 16px; 
+                }
+                .shipping-address {
+                  margin: 24px 0;
+                  padding: 16px;
+                  background: #f9f9f9;
+                  border-radius: 6px;
+                }
+              </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h2>Thank you for your order!</h2>
+                <p>Hello, ${firstName} ${lastName}</p>
+              </div>
+              <div class="footer">
+                <p>Order Date: ${new Date().toLocaleDateString()}</p>
+              </div>
+              
+              <div class="shipping-address">
+                <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px; font-weight: 600;">Shipping Address</h3>
+                <p> Name: ${firstName} ${lastName}</p>
+                <p> Address: ${street}</p>
+                <p> City: ${city}, State: ${state} Pincode: ${pincode}</p>
+                <p>Phone: ${phone}${altPhone ? `<br>Alt. Phone: ${altPhone}` : ''}</p>
+              </div>
+          
+          
+              
+              <h3 style="margin-top:32px; font-size:18px;">Order Summary</h3>
+              <table class="summary-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Qty</th>
+                    <th>Size</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${Array.isArray(products) ? products.map(item => `
+                    <tr>
+                      <td><img src="${item.image?.url || item.image || ''}" class="product-img" alt="${item.name || ''}" /></td>
+                      <td>${item.name || 'Product'}</td>
+                      <td>${item.qty || 1}</td>
+                      <td>${item.size || '-'}</td>
+                      <td>₹${Number(item.price || 0).toFixed(2)}</td>
+                    </tr>
+                  `).join('') : ''}
+                </tbody>
+              </table>
+              <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border-radius: 6px;">
+              <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px; font-weight: 600;">Order Summary</h3>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Subtotal:</span>
+                <span>₹${Number(subTotal || 0).toFixed(2)}</span>
+              </div>
+              ${totalDiscount > 0 ? `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #10b981;">
+                  <span>Discount${promoCode ? ` (${promoCode})` : ''}:</span>
+                  <span>-₹${Number(totalDiscount || 0).toFixed(2)}</span>
+                </div>
+              ` : ''}
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Tax (GST):</span>
+                <span>₹${Number(totalTax || 0).toFixed(2)}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                <span>Shipping:</span>
+                <span>${Number(shippingCost || 0) > 0 ? `₹${Number(shippingCost).toFixed(2)}` : 'Free'}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 600; margin-top: 12px;">
+                <span>Total Amount:</span>
+                <span>₹${Number(cartTotal || 0).toFixed(2)}</span>
+              </div>
+            </div>
+              <div style="margin: 24px 0; padding: 16px; background: #fff7ed; border-radius: 6px; border-left: 4px solid #f97316;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">Order Status: Pending</h3>
+                    <p style="margin: 0; font-size: 14px; color: #4b5563;">
+                      Payment Method: ${paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+          
+              <p style="margin: 24px 0; font-size: 14px; color: #6b7280; text-align: center;">
+                Thank you for shopping with us! You can check your order status anytime in your dashboard.
+              </p>
+          
+              <a href="https://info@adventureaxis.in/dashboard?section=orders" class="dashboard-btn">View Order in Dashboard</a>
+            </div>
+          </body>
+          </html>`
+        })
+      });
+
+      if (!emailResponse.ok) {
+        const error = await emailResponse.json().catch(() => ({}));
+        // console.error('Failed to send order confirmation email:', error);
+        return false;
+      }
+      // console.log('Order confirmation email sent to:', orderData.email);
+      return true;
+    } catch (error) {
+      // console.error('Error sending confirmation email:', error);
+      return false;
+    }
+  };
   const handleOnlinePaymentWithOrder = async (finalAmount, cart, customer, setLoading, setError, routerInstance, checkoutData, formFields, user) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       // 1. Validate input
       if (!cart || !Array.isArray(cart) || cart.length === 0) {
@@ -176,19 +344,19 @@ const CheckOut = () => {
               weight: Number(buyNowProduct.weight) || 0,
               cgst: Number(buyNowProduct.cgst) || 0,
               sgst: Number(buyNowProduct.sgst) || 0,
-              image: typeof buyNowProduct.image === 'string' 
-                ? buyNowProduct.image 
+              image: typeof buyNowProduct.image === 'string'
+                ? buyNowProduct.image
                 : buyNowProduct.image?.url || ''
             }];
           }
         }
-        
+
         // If cart is still empty after checking for buy now product, throw error
         if (!cart || cart.length === 0) {
           throw new Error('Cart is empty or invalid');
         }
       }
-  
+
       // 2. Prepare products array with validation
       const products = cart.map(item => {
         const productId = item._id || item.productId || item.id;
@@ -196,7 +364,7 @@ const CheckOut = () => {
           // console.error('Invalid product in cart:', item);
           throw new Error('One or more products in cart are invalid');
         }
-  
+
         // Handle image URL - ensure it's always a string
         let imageUrl = '';
         if (typeof item.image === 'string') {
@@ -204,7 +372,7 @@ const CheckOut = () => {
         } else if (item.image?.url) {
           imageUrl = item.image.url;
         }
-  
+
         return {
           _id: productId,
           productId,
@@ -222,12 +390,12 @@ const CheckOut = () => {
           discountPercent: Number(item.discountPercent) || 0
         };
       });
-  
+
       // 3. Prepare customer data
-      const customerName = formFields.firstName 
-        ? `${formFields.firstName} ${formFields.lastName || ''}`.trim() 
+      const customerName = formFields.firstName
+        ? `${formFields.firstName} ${formFields.lastName || ''}`.trim()
         : customer.name || '';
-  
+
       const customerData = {
         name: customerName,
         email: formFields.email || customer.email || '',
@@ -240,11 +408,11 @@ const CheckOut = () => {
           formFields.pincode
         ].filter(Boolean).join(', ')
       };
-  
+
       // 4. Create order in backend and get Razorpay order
       const response = await fetch('/api/razorpay', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
@@ -256,25 +424,25 @@ const CheckOut = () => {
           customer: customerData
         })
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'Failed to create Razorpay order');
       }
-  
+
       const orderData = await response.json();
       const { id: razorpayOrderId, orderId } = orderData;
-  
+
       if (!razorpayOrderId) {
         throw new Error('Order creation failed. No order ID returned from server.');
       }
-  
+
       // 5. Load Razorpay script
       const loaded = await loadRazorpayScript();
       if (!loaded) {
         throw new Error('Failed to load Razorpay SDK. Please try again.');
       }
-  
+
       // 6. Open Razorpay payment modal
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -283,14 +451,14 @@ const CheckOut = () => {
         name: "Rishikesh Handmade",
         description: "Order Payment",
         order_id: razorpayOrderId,
-        handler: createPaymentHandler(cart, checkoutData, formFields, user, orderId, setError, setShowConfirmationModal, setOrderId, routerInstance),
+        handler: createPaymentHandler(cart, checkoutData, formFields, user, orderId, setError, setShowConfirmationModal, setOrderId, routerInstance, formFields, customerData,isBuyNow), // Pass customer data for email
         prefill: {
           name: customerData.name,
           email: customerData.email,
           contact: customerData.phone,
         },
-        theme: { 
-          color: "#3399cc" 
+        theme: {
+          color: "#3399cc"
         },
         modal: {
           ondismiss: () => {
@@ -298,19 +466,19 @@ const CheckOut = () => {
           }
         }
       };
-  
+
       const rzp = new window.Razorpay(options);
       rzp.open();
-  
+
     } catch (error) {
       // console.error('Payment error:', error);
       setError(error.message || 'Payment processing failed. Please try again.');
       setLoading(false);
     }
   };
-  
+
   // Separate handler function for better organization
-  const createPaymentHandler = (cart, checkoutData, formFields, user, orderId, setError, setShowConfirmationModal, setOrderId, routerInstance) => {
+  const createPaymentHandler = (cart, checkoutData, formFields, user, orderId, setError, setShowConfirmationModal, setOrderId, routerInstance, customerData, isBuyNow) => {
     return async (response) => {
       try {
         // 1. Verify payment with backend
@@ -325,40 +493,94 @@ const CheckOut = () => {
             checkoutData,
             formFields,
             user,
-            agree: true
+            agree: true,
+            customerData
           })
         });
-  
+
         if (!verificationResponse.ok) {
           const errorData = await verificationResponse.json().catch(() => ({}));
           throw new Error(errorData.error || 'Payment verification failed');
         }
-  
+
         const verificationData = await verificationResponse.json();
-        
-        if (!verificationData.success) {
+
+        if (verificationData.success) {
+          toast.success('Order placed successfully! Invoice sent to your email.');
+        } else {
           throw new Error(verificationData.error || 'Payment verification failed');
         }
-  
+
+
+        // 2. Prepare order data for email
+        const orderData = {
+          ...formFields,
+          email: formFields.email || customerData.email,
+          orderId: orderId,
+          paymentId: response.razorpay_payment_id,
+          paymentMethod: 'online',
+          orderDate: new Date().toISOString()
+        };
+
+        // 3. Send order confirmation email
+        const emailSent = await sendOrderConfirmationEmail(
+          {
+            ...orderData,  // This already includes form fields and email
+            firstName: formFields.firstName || '',
+            lastName: formFields.lastName || '',
+            street: formFields.street || '',
+            city: formFields.city || '',
+            state: formFields.state || '',
+            pincode: formFields.pincode || '',
+            phone: formFields.phone || '',
+            altPhone: formFields.altPhone || '',
+            subTotal: checkoutData?.subTotal || 0,
+            totalDiscount: checkoutData?.totalDiscount || 0,
+            promoCode: checkoutData?.promoCode || checkoutData?.appliedCoupon?.code || '',
+            promoDiscount: checkoutData?.promoDiscount || checkoutData?.appliedCoupon?.discount || 0,
+            totalTax: checkoutData?.totalTax || checkoutData?.taxTotal || 0,
+            shippingCost: checkoutData?.shippingCost || checkoutData?.shipping || 0,
+            cartTotal: checkoutData?.cartTotal || 0,
+
+          },
+          (isBuyNow && checkoutData?.cart) 
+          ? checkoutData.cart.map(item => ({
+              ...item,
+              image: typeof item.image === 'string' ? item.image : item.image?.url || '',
+              name: item.name || 'Product',
+              qty: item.qty || 1,
+              price: item.price || 0,
+              size: item.size || ''
+            }))
+          : cart.map(item => ({
+              ...item,
+              image: typeof item.image === 'string' ? item.image : item.image?.url || '',
+              name: item.name || 'Product',
+              qty: item.qty || 1,
+              price: item.price || 0,
+              size: item.size || ''
+            })),
+        'online'
+      );
+
+        if (emailSent) {
+          toast.success('Order confirmation email sent!');
+        } else {
+          toast.error('Failed to send order confirmation email. Your order is still confirmed.');
+        }
         // 2. Handle successful payment
         setError(null);
         setShowConfirmationModal(true);
         setOrderId(orderId);
-  
-        // 3. Clear cart and local storage
-        const isBuyNow = typeof window !== "undefined" && 
-          new URLSearchParams(window.location.search).get('mode') === 'buy-now';
-  
         if (isBuyNow) {
           localStorage.removeItem("buyNowItem");
         } else {
           localStorage.removeItem("checkoutCart");
           localStorage.removeItem("cart");
         }
-  
         // 4. Show order overview instead of redirecting
         setShowOverview(true);
-  
+
       } catch (error) {
         // console.error('Payment verification error:', error);
         setError(error.message || 'Payment verification failed');
@@ -859,7 +1081,7 @@ const CheckOut = () => {
       // Customer details
       firstName: firstName,
       lastName: lastName,
-      email: session?.user?.email || email,
+      email: email || session?.user?.email || '', // Use form email first, then session email
       phone: phone,
 
       // Address details
@@ -978,18 +1200,6 @@ const CheckOut = () => {
       setShowConfirmationModal(true);
       setOrderId(data.order?._id);
 
-      // Show success message to session?.user
-      toast.success('Order placed successfully!', {
-        position: 'top-center',
-        style: {
-          borderRadius: '10px',
-          background: '#4CAF50',
-          color: 'white',
-          padding: '16px',
-          fontSize: '16px',
-          fontWeight: 'bold'
-        }
-      });
 
       return data.order;
     } catch (error) {
@@ -1017,7 +1227,7 @@ const CheckOut = () => {
     }
     if (!payment) errors.payment = 'Please select a payment method';
     if (!agree) errors.agree = 'You must agree to the terms and conditions';
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -1025,7 +1235,7 @@ const CheckOut = () => {
   // Place Order handler
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       // Scroll to first error
       const firstError = Object.keys(formErrors)[0];
@@ -1037,7 +1247,7 @@ const CheckOut = () => {
       }
       return;
     }
-    
+
     setLoading(true);
     setError("");
     let addressSaved = false;
@@ -1152,10 +1362,10 @@ const CheckOut = () => {
       // Check for buy now product in localStorage
       const buyNowProductRaw = typeof window !== 'undefined' ? localStorage.getItem('buyNowProduct') : null;
       const isBuyNow = buyNowProductRaw !== null;
-      
+
       // Get products based on mode (buy now or regular cart)
       let productsToProcess = [];
-      
+
       if (isBuyNow) {
         // Parse buy now product and add to products array
         const buyNowProduct = JSON.parse(buyNowProductRaw);
@@ -1172,8 +1382,8 @@ const CheckOut = () => {
             cgst: Number(buyNowProduct.cgst) || 0,
             sgst: Number(buyNowProduct.sgst) || 0,
             // Handle image URL
-            image: typeof buyNowProduct.image === 'string' 
-              ? buyNowProduct.image 
+            image: typeof buyNowProduct.image === 'string'
+              ? buyNowProduct.image
               : buyNowProduct.image?.url || ''
           }];
         }
@@ -1203,9 +1413,9 @@ const CheckOut = () => {
 
         // Calculate shipping cost - use the most reliable source
         const shippingCost = Number(
-          checkoutData?.shippingCost || 
-          checkoutData?.shipping || 
-          checkoutData?.finalShipping || 
+          checkoutData?.shippingCost ||
+          checkoutData?.shipping ||
+          checkoutData?.finalShipping ||
           0
         );
 
@@ -1315,134 +1525,212 @@ const CheckOut = () => {
           setLoading(false);
           return;
         }
-        
+        // Add this email sending logic right here:
+        try {
+          const emailSent = await sendOrderConfirmationEmail(
+            {
+              ...formFields,
+              orderId: orderId,
+              paymentMethod: 'cod',
+              orderDate: new Date().toISOString(),
+              subTotal: checkoutData?.subTotal || 0,
+              totalDiscount: checkoutData?.totalDiscount || 0,
+              promoCode: checkoutData?.promoCode || '',
+              totalTax: checkoutData?.totalTax || checkoutData?.taxTotal || 0,
+              shippingCost: checkoutData?.shippingCost || checkoutData?.shipping || 0,
+              cartTotal: checkoutData?.cartTotal || 0,
+              // Include other form fields needed in the email
+              email: formFields.email || session?.user?.email,
+              firstName: formFields.firstName || '',
+              lastName: formFields.lastName || '',
+              street: formFields.street || '',
+              city: formFields.city || '',
+              state: formFields.state || '',
+              pincode: formFields.pincode || '',
+              phone: formFields.phone || '',
+              altPhone: formFields.altPhone || ''
+            },
+            // Pass cart items as second parameter
+            (isBuyNow && checkoutData?.cart) 
+            ? checkoutData.cart.map(item => ({
+                ...item,
+                image: typeof item.image === 'string' ? item.image : item.image?.url || '',
+                name: item.name || 'Product',
+                qty: item.qty || 1,
+                price: item.price || 0,
+                size: item.size || ''
+              }))
+            : checkoutData?.cart.map(item => ({
+                ...item,
+                image: typeof item.image === 'string' ? item.image : item.image?.url || '',
+                name: item.name || 'Product',
+                qty: item.qty || 1,
+                price: item.price || 0,
+                size: item.size || ''
+              })),
+          'cod'
+        );
+
+          if (emailSent) {
+            toast.success('Order confirmation email sent!');
+          }
+        } catch (emailError) {
+          // console.error('Error sending order confirmation email:', emailError);
+          toast.error('Order placed, but failed to send confirmation email');
+        }
+
         // Clear buy now product from localStorage if this was a buy now order
         if (isBuyNow && typeof window !== 'undefined') {
           localStorage.removeItem('buyNowProduct');
         }
         // Optionally send confirmation email here
-        try {
-          await fetch('/api/brevo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              to: email,
-              subject: 'Order Confirmation',
-              htmlContent: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation</title>
-    <style type="text/css">
-      body { font-family: Arial, sans-serif; background: #f8f9fa; }
-      .container { background: #fff; border-radius: 8px; margin: 32px auto; max-width: 600px; padding: 32px 24px; }
-      .header { text-align: center; }
-      .summary-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
-      .summary-table th, .summary-table td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; font-size: 14px; }
-      .summary-table th { background: #f3f4f6; }
-      .product-img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; }
-      .dashboard-btn { display: block; width: 100%; margin: 32px 0 0 0; text-align: center; background: #f97316; color: #fff; padding: 12px 0; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; }
-    </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h2>Thank you for your order!</h2>
-      <p>Hello, ${firstName} ${lastName}</p>
-    </div>
-    <div class="footer">
-      <p>Order ID: ${orderId}</p>
-      <p>Order Date: ${new Date().toLocaleDateString()}</p>
-    </div>
-    <h3 style="margin-top:32px; font-size:18px;">Order Summary</h3>
-    <table class="summary-table">
-      <thead>
-        <tr>
-          <th>Image</th>
-          <th>Name</th>
-          <th>Qty</th>
-          <th>Size</th>
-          <th>Weight</th>
-          <th>Shipping Charge</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${Array.isArray(checkoutData?.cart) ? checkoutData.cart.map(item => `
-          <tr>
-            <td><img src="${item.image?.url || item.image || ''}" class="product-img" alt="${item.name || ''}" /></td>
-            <td>${item.name || ''}</td>
-            <td>${item.qty || 1}</td>
-            <td>${item.size || '-'}</td>
-            <td>${typeof item.weight !== 'undefined' && item.weight !== null ? item.weight + 'g' : '-'}</td>
-<td>${typeof item.shipping !== 'undefined' && item.shipping !== null ? item.shipping + 'g' : '-'}</td>
-<td>₹${typeof item.price !== 'undefined' && item.price !== null ? Number(item.price).toFixed(2) : '-'}</td>
-          </tr>
-        `).join('') : ''}
-      </tbody>
-    </table>
-    </table>
-    
-    <!-- Order Summary -->
-    <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border-radius: 6px;">
-      <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px; font-weight: 600;">Order Summary</h3>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        <span>Subtotal:</span>
-        <span>₹${checkoutData?.subTotal ? Number(checkoutData.subTotal).toFixed(2) : '0.00'}</span>
-      </div>
-      ${checkoutData?.totalDiscount > 0 ? `
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #10b981;">
-          <span>Discount:</span>
-          <span>-₹${Number(checkoutData.totalDiscount).toFixed(2)}</span>
-        </div>
-      ` : ''}
-      ${checkoutData?.promoCode ? `
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span>Promo Code (${checkoutData.promoCode}):</span>
-          <span>-₹${checkoutData.promoDiscount ? Number(checkoutData.promoDiscount).toFixed(2) : '0.00'}</span>
-        </div>
-      ` : ''}
-      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        <span>Tax (GST):</span>
-        <span>₹${checkoutData?.totalTax ? Number(checkoutData.totalTax).toFixed(2) : '0.00'}</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
-        <span>Shipping:</span>
-        <span>${checkoutData?.shippingCost ? `₹${Number(checkoutData.shippingCost).toFixed(2)}` : 'Free'}</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 600; margin-top: 12px;">
-        <span>Total Amount:</span>
-        <span>₹${checkoutData?.cartTotal ? Number(checkoutData.cartTotal).toFixed(2) : '0.00'}</span>
-      </div>
-    </div>
+        // try {
+        //   const emailResponse = await fetch('/api/brevo', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({
+        //       to: email,
+        //       subject: 'Order Confirmation',
+        //       htmlContent: `<!DOCTYPE html>
+        // <html lang="en">
+        // <head>
+        //     <meta charset="UTF-8">
+        //     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        //     <title>Order Confirmation</title>
+        //     <style type="text/css">
+        //       body { font-family: Arial, sans-serif; background: #f8f9fa; }
+        //       .container { background: #fff; border-radius: 8px; margin: 32px auto; max-width: 600px; padding: 32px 24px; }
+        //       .header { text-align: center; }
+        //       .summary-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+        //       .summary-table th, .summary-table td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; font-size: 14px; }
+        //       .summary-table th { background: #f3f4f6; }
+        //       .product-img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; }
+        //       .dashboard-btn { 
+        //         display: block; 
+        //         width: 100%; 
+        //         margin: 32px 0 0 0; 
+        //         text-align: center; 
+        //         background: #f97316; 
+        //         color: #fff; 
+        //         padding: 12px 0; 
+        //         border-radius: 6px; 
+        //         text-decoration: none; 
+        //         font-weight: bold; 
+        //         font-size: 16px; 
+        //       }
+        //       .shipping-address {
+        //         margin: 24px 0;
+        //         padding: 16px;
+        //         background: #f9f9f9;
+        //         border-radius: 6px;
+        //       }
+        //     </style>
+        // </head>
+        // <body>
+        //   <div class="container">
+        //     <div class="header">
+        //       <h2>Thank you for your order!</h2>
+        //       <p>Hello, ${firstName} ${lastName}</p>
+        //     </div>
 
-    <!-- Order Status -->
-    <div style="margin: 24px 0; padding: 16px; background: #fff7ed; border-radius: 6px; border-left: 4px solid #f97316;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">Order Status: ${order.status || 'Pending'}</h3>
-          <p style="margin: 0; font-size: 14px; color: #4b5563;">
-            Payment Method: ${order.payment === 'online' ? 'Online Payment' : 'Cash on Delivery'}
-          </p>
-        </div>
-      </div>
-    </div>
+        //     <div class="shipping-address">
+        //       <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px; font-weight: 600;">Shipping Address</h3>
+        //       <p>${firstName} ${lastName}</p>
+        //       <p>${street}</p>
+        //       <p>${city}, ${state} ${pincode}</p>
+        //       <p>Phone: ${phone}${altPhone ? `<br>Alt. Phone: ${altPhone}` : ''}</p>
+        //     </div>
 
-    <p style="margin: 24px 0; font-size: 14px; color: #6b7280;">
-      Thank you for shopping with us! You can check your order status anytime in your dashboard.
-    </p>
+        //     <div class="footer">
+        //       <p>Order ID: ${data.orderId || orderId}</p>
+        //       <p>Order Date: ${new Date().toLocaleDateString()}</p>
+        //     </div>
 
-    <a href="https://rishikeshhandmade.com/dashboard?section=orders" class="dashboard-btn">View Order in Dashboard</a>
-  </div>
-</body>
-</html>`
-            })
-          });
-        } catch (e) { /* handle email error */ }
+        //     <h3 style="margin-top:32px; font-size:18px;">Order Summary</h3>
+        //     <table class="summary-table">
+        //       <thead>
+        //         <tr>
+        //           <th>Image</th>
+        //           <th>Name</th>
+        //           <th>Qty</th>
+        //           <th>Size</th>
+        //           <th>Price</th>
+        //         </tr>
+        //       </thead>
+        //       <tbody>
+        //         ${Array.isArray(productsToProcess) ? productsToProcess.map(item => `
+        //           <tr>
+        //             <td><img src="${item.image?.url || item.image || ''}" class="product-img" alt="${item.name || ''}" /></td>
+        //             <td>${item.name || 'Product'}</td>
+        //             <td>${item.qty || 1}</td>
+        //             <td>${item.size || '-'}</td>
+        //             <td>₹${Number(item.price || 0).toFixed(2)}</td>
+        //           </tr>
+        //         `).join('') : ''}
+        //       </tbody>
+        //     </table>
+
+        //     <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border-radius: 6px;">
+        //       <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px; font-weight: 600;">Order Summary</h3>
+        //       <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        //         <span>Subtotal:</span>
+        //         <span>₹${checkoutData?.subTotal ? Number(checkoutData.subTotal).toFixed(2) : '0.00'}</span>
+        //       </div>
+        //       ${checkoutData?.totalDiscount > 0 ? `
+        //         <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #10b981;">
+        //           <span>Discount (${checkoutData.promoCode}):</span>
+        //           <span>-₹${Number(checkoutData.totalDiscount).toFixed(2)}</span>
+        //         </div>
+        //       ` : ''}
+        //       <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        //         <span>Tax (GST):</span>
+        //         <span>₹${checkoutData?.totalTax ? Number(checkoutData.totalTax).toFixed(2) : '0.00'}</span>
+        //       </div>
+        //       <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+        //         <span>Shipping:</span>
+        //         <span>${checkoutData?.shippingCost ? `₹${Number(checkoutData.shippingCost).toFixed(2)}` : '-'}</span>
+        //       </div>
+        //       <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 600; margin-top: 12px;">
+        //         <span>Total Amount:</span>
+        //         <span>₹${checkoutData?.cartTotal ? Number(checkoutData.cartTotal).toFixed(2) : '0.00'}</span>
+        //       </div>
+        //     </div>
+
+        //     <div style="margin: 24px 0; padding: 16px; background: #fff7ed; border-radius: 6px; border-left: 4px solid #f97316;">
+        //       <div style="display: flex; justify-content: space-between; align-items: center;">
+        //         <div>
+        //           <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">Order Status: Pending</h3>
+        //           <p style="margin: 0; font-size: 14px; color: #4b5563;">
+        //             Payment Method: ${confirmedPaymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}
+        //           </p>
+        //         </div>
+        //       </div>
+        //     </div>
+
+        //     <p style="margin: 24px 0; font-size: 14px; color: #6b7280; text-align: center;">
+        //       Thank you for shopping with us! You can check your order status anytime in your dashboard.
+        //     </p>
+
+        //     <a href="https://info@adventureaxis.in/dashboard?section=orders" class="dashboard-btn">View Order in Dashboard</a>
+        //   </div>
+        // </body>
+        // </html>`
+        //     })
+        //   });
+
+        //   if (!emailResponse.ok) {
+        //     const error = await emailResponse.json().catch(() => ({}));
+        //     console.error('Failed to send order confirmation email:', error);
+        //   } else {
+        //     console.log('Order confirmation email sent to:', email);
+        //   }
+        // } catch (error) {
+        //   console.error('Error sending confirmation email:', error);
+        //   // Don't fail the order if email sending fails
+        // }
         setOrderId(orderId); // orderId should be the Razorpay/order DB ID you get back
         setShowConfirmationModal(true);
-        toast.success('Order placed successfully!');
+        // toast.success('Order placed successfully!');
         toast.success('Invoice Sent to Email');
         // router.push(`/dashboard?orderId=${data.orderId}`);
         await clearCart();
@@ -1472,7 +1760,7 @@ const CheckOut = () => {
           email,
           phone
         };
-        
+
         // Use the prepared products array that includes buy now product if in buy now mode
         const paymentProducts = productsToProcess.map(item => ({
           ...item,
@@ -1490,7 +1778,7 @@ const CheckOut = () => {
           sgst: Number(item.sgst) || 0,
           originalPrice: Number(item.originalPrice) || Number(item.price) || 0
         }));
-        
+
         await handleOnlinePaymentWithOrder(
           checkoutData?.cartTotal,
           paymentProducts, // Use the prepared products array
@@ -1498,14 +1786,14 @@ const CheckOut = () => {
           setLoading,
           setError,
           router,
-          { 
-            ...checkoutData, 
-            orderId: generateOrderId(), 
+          {
+            ...checkoutData,
+            orderId: generateOrderId(),
             transactionId: generateTransactionId(),
             isBuyNow // Pass buy now flag to the payment handler
           },
-          { 
-            ...formFields, 
+          {
+            ...formFields,
             paymentMethod: 'online',
             isBuyNow // Include in form fields as well
           },
@@ -1650,7 +1938,7 @@ const CheckOut = () => {
                       setAltPhone(e.target.value);
                     }}
                   />
-                
+
                 </div>
               </div>
             </div>
@@ -1777,9 +2065,9 @@ const CheckOut = () => {
                   <div className="flex-1">
                     <div className="font-medium text-sm leading-tight mb-1">{item.name}</div>
                     <div className="flex items-center justify-between">
-                    
+
                       <div className="flex items-center border rounded-md bg-gray-100 px-2">
-                      Qty: 
+                        Qty:
                         <span className="px-3 py-1 text-base font-semibold">{item.qty}</span>
 
                       </div>
@@ -2039,17 +2327,17 @@ const CheckOut = () => {
               }
               return;
             }
-            
+
             if (!payment) {
               setFormErrors(prev => ({ ...prev, payment: 'Please select a payment method' }));
               return;
             }
-            
+
             if (!agree) {
               setFormErrors(prev => ({ ...prev, agree: 'You must agree to the terms and conditions' }));
               return;
             }
-            
+
             setConfirmedPaymentMethod(payment); // payment = 'cod' or 'online'
             setShowOverview(true);
           }}

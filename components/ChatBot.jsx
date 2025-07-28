@@ -34,7 +34,7 @@ const productQnA = [
   },
   {
     q: "🧑‍💬 Chat With Admin",
-    a: `Yes, our customer support is available [Days & Hours]. You can also email us at support@rishikeshhandmade.com or call +91 7351009107, 9411571947.`
+    a: `Yes, our customer support is available [Days & Hours]. You can also email us at support@info@adventureaxis.in or call +91 7351009107, 9411571947.`
   }
 ];
 
@@ -132,7 +132,7 @@ export default function ChatBot() {
           {
             from: "Bot",
             sender: "bot",
-            text: "Hi there! 👋 Welcome to Rishikesh Handmade!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?",
+            text: "Hi there! 👋 Welcome to Adventure Axis!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?",
             createdAt: new Date().toISOString(),
           },
         ]);
@@ -147,7 +147,7 @@ export default function ChatBot() {
       {
         from: "Bot",
         sender: "bot",
-        text: "Hi there! 👋 Welcome to Rishikesh Handmade!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?",
+        text: "Hi there! 👋 Welcome to Adventure Axis!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?",
         createdAt: new Date().toISOString(),
       },
     ]);
@@ -178,7 +178,7 @@ export default function ChatBot() {
           {
             from: "Bot",
             sender: "bot",
-            text: `Hi there! 👋 Welcome to Rishikesh Handmade!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?`,
+            text: `Hi there! 👋 Welcome to Adventure Axis!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?`,
             createdAt: new Date().toISOString()
           }
         ]);
@@ -335,7 +335,7 @@ export default function ChatBot() {
         {
           from: "Bot",
           sender: "bot",
-          text: `Hi there! 👋 Welcome to Rishikesh Handmade!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?`,
+          text: `Hi there! 👋 Welcome to Adventure Axis!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?`,
           createdAt: new Date().toISOString()
         }
       ]);
@@ -356,7 +356,7 @@ export default function ChatBot() {
     setMessages((msgs) => [
       ...msgs,
       { from: "You", sender: session?.user?.id || "user", text: qna.q, createdAt: new Date().toISOString() },
-      { from: "Bot", sender: "bot", text: qna.a + "\n\nFor more help, contact us at support@rishikeshhandmade.com or call +91 7351009107, 9411571947.", createdAt: new Date().toISOString() },
+      { from: "Bot", sender: "bot", text: qna.a + "\n\nFor more help, contact us at support@info@adventureaxis.in or call +91 7351009107, 9411571947.", createdAt: new Date().toISOString() },
     ]);
   };
 
@@ -435,7 +435,7 @@ export default function ChatBot() {
       {/* Floating chat bubble */}
       {!open && (
         <button
-          className="fixed bottom-6 right-4 z-100 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center transition-all duration-300"
+          className="fixed bottom-6 right-4 z-50 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center transition-all duration-300"
           aria-label="Open chat"
           onClick={handleBubbleClick}
         >
@@ -445,12 +445,12 @@ export default function ChatBot() {
       {/* Chat window */}
       {open && (
         <div
-          className={`fixed bottom-2 right-[4%] z-50 w-[330px] max-w-[95vw] bg-white rounded-xl shadow-2xl flex flex-col border border-gray-200 animate-fadeIn
+          className={`fixed bottom-10 md:bottom-2 right-[4%] z-[9999] w-[330px] max-w-[95vw] bg-white rounded-xl shadow-2xl flex flex-col border border-gray-200 animate-fadeIn
           ${
             // Shrink to content only for support mode or product not found
             showSupportOptions || isProductNotFound || step === 0 || step === 1 || step === 2 || step === "product-info"
-              ? 'max-h-[30rem]'
-              : 'h-screen'
+              ? 'md:max-h-[30rem] h-full'
+              : 'md:h-screen'
             }
         `}
         >

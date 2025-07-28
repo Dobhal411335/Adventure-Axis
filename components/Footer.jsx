@@ -95,17 +95,14 @@ const Footer = () => {
 
                             <Send className="text-blue-600" size={20} />
                         </div>
-                        <div className="flex items-start flex-col gap-4 py-2">
-
+                        <div className="flex items-start flex-col gap-1 py-2">
                             <Link href={'mailto:support@adventureaxis.in'} className="block rounded-full font-barlow text-white flex items-center gap-2">
                                 support@adventureaxis.in
                             </Link>
                             <Link href={'mailto:Accounts@adventureaxis.in'} className=" block rounded-full font-barlow text-white flex items-center gap-2">
-
                                 Accounts@adventureaxis.in
                             </Link>
                             <Link href={'mailto:Sales@adventureaxis.in'} className="block rounded-full font-barlow text-white flex items-center gap-2">
-
                                 Sales@adventureaxis.in
                             </Link>
                         </div>
@@ -118,7 +115,7 @@ const Footer = () => {
                     </p>
                 </div>
             </div>
-            <div className="md:hidden flex items-center gap-2 lg:justify-between justify-start px-5">
+            <div className="md:hidden flex items-center gap-2 justify-start px-5">
                 <div className="flex flex-col gap-2 px-2">
                     <h1 className="font-semibold text-xl my-4">Main Menu</h1>
                     {pages.filter(page => !page?.link?.includes('policy')).map(page => (
@@ -155,7 +152,7 @@ const Footer = () => {
 
                         <Send className="text-blue-600" size={20} />
                     </div>
-                    <div className="flex items-start flex-col gap-4 py-2">
+                    <div className="flex items-start flex-col gap-1 py-2">
 
                         <Link href={'mailto:support@adventureaxis.in'} className="text-sm block rounded-full font-barlow text-white flex items-center gap-2">
                             support@adventureaxis.in

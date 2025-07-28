@@ -142,14 +142,19 @@ const MenuBar = (props) => {
         <>
             {/* Mobile Menu */}
             <div className="lg:hidden">
-                <button onClick={() => setIsOpen(!isOpen)}>
+                <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsOpen(prev => !prev);
+                    }}
+                >
                     {isOpen ? <X className="text-blue-600" size={24} /> : <Menu className="text-blue-600" size={24} />}
                 </button>
             </div>
 
             <div className={clsx(
                 "absolute top-8  md:top-12 mt-4 rounded-xl left-0 w-[90vw] text-black bg-white shadow-md lg:hidden transition-all duration-300 overflow-hidden",
-                isOpen ? "max-h-[500px]" : "max-h-0"
+                isOpen ? "max-h-[500px] overflow-y-auto" : "max-h-0"
             )} ref={menuRef}>
                 {menuItems.map((item, index) => (
                     <div key={index} className="border-b">

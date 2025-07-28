@@ -1,10 +1,193 @@
 "use client"
 import React from 'react';
 import Image from 'next/image';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import { toast } from 'react-hot-toast';
+const downloadInvoiceAsPdf = async (orderData) => {
+  try {
+    // Create a temporary div to render the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.width = '800px';
+    tempDiv.style.padding = '20px';
+    document.body.appendChild(tempDiv);
+
+    // Generate the HTML content
+    const {
+      orderId,
+      orderDate,
+      customerName,
+      customerEmail,
+      customerPhone,
+      shippingAddress,
+      items,
+      subTotal,
+      totalDiscount,
+      promoCode,
+      totalTax,
+      shippingCost,
+      cartTotal
+    } = orderData;
+
+    // Generate items HTML
+    const itemsHtml = items.map(item => `
+      <tr>
+         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
+      <img 
+        src="${item.image || 'https://via.placeholder.com/60'}" 
+        alt="${item.name || 'Product'}" 
+        style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"
+        onerror="this.onerror=null; this.src='https://via.placeholder.com/50';"
+      />
+    </td>
+         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.name}</td>
+         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.qty}</td>
+         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">₹${item.price.toFixed(2)}</td>
+         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">₹${(item.price * item.qty).toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    // Set the HTML content
+    tempDiv.innerHTML = `
+      <div style="max-width: 800px; margin: 0 auto; padding: 24px; background: #fff; border-radius: 10px; font-family: Arial, sans-serif;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <img src="/logo.png" alt="Rishikesh Handmade" style="max-height: 80px; margin-bottom: 16px;">
+          <h1 style="margin: 0; color: #333; font-size: 24px;">INVOICE</h1>
+          <p style="margin: 8px 0 0; color: #666;">Order #${orderId}</p>
+          <p style="margin: 4px 0 0; color: #666;">${new Date(orderDate).toLocaleDateString()}</p>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 32px;">
+          <div>
+            <h3 style="margin: 0 0 8px; color: #333; font-size: 16px;">Bill To:</h3>
+            <p style="margin: 4px 0; color: #555;">${customerName}</p>
+            <p style="margin: 4px 0; color: #555;">${shippingAddress}</p>
+            <p style="margin: 4px 0; color: #555;">${customerEmail}</p>
+            <p style="margin: 4px 0; color: #555;">${customerPhone}</p>
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+          <thead>
+            <tr style="background: #f5f5f5;">
+              <th style="text-align: left; padding: 12px; border: 1px solid #ddd;">Image</th>
+              <th style="text-align: left; padding: 12px; border: 1px solid #ddd;">Item</th>
+              <th style="text-align: right; padding: 12px; border: 1px solid #ddd;">Qty</th>
+              <th style="text-align: right; padding: 12px; border: 1px solid #ddd;">Price</th>
+              <th style="text-align: right; padding: 12px; border: 1px solid #ddd;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+
+        <div style="margin-left: auto; width: 300px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>Subtotal:</span>
+            <span>₹${Number(subTotal).toFixed(2)}</span>
+          </div>
+          ${totalDiscount > 0 ? `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #10b981;">
+              <span>Discount${promoCode ? ` (${promoCode})` : ''}:</span>
+              <span>-₹${Number(totalDiscount).toFixed(2)}</span>
+            </div>
+          ` : ''}
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>Tax (GST):</span>
+            <span>₹${Number(totalTax).toFixed(2)}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #eee;">
+            <span>Shipping:</span>
+            <span>${Number(shippingCost) > 0 ? `₹${Number(shippingCost).toFixed(2)}` : 'Free'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; margin-bottom: 16px;">
+            <span>Total Amount:</span>
+            <span>₹${Number(cartTotal).toFixed(2)}</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 32px; padding: 16px; background: #f9f9f9; border-radius: 6px; text-align: center;">
+          <p style="margin: 0; color: #666;">Thank you for your order!</p>
+          <p style="margin: 8px 0 0; color: #666;">For any queries, please contact support@info@adventureaxis.in</p>
+        </div>
+      </div>
+    `;
+
+    // Convert HTML to canvas
+    const canvas = await html2canvas(tempDiv, {
+      scale: 2, // Higher quality
+      useCORS: true,
+      allowTaint: true,
+      scrollY: -window.scrollY
+    });
+
+    // Convert canvas to PDF
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgWidth = 210; // A4 width in mm
+    const pageHeight = 295; // A4 height in mm
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    // Add new page if content is too long
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    // Save the PDF
+    pdf.save(`Invoice-${orderId}.pdf`);
+
+    // Clean up
+    document.body.removeChild(tempDiv);
+  } catch (error) {
+    // console.error('Error generating PDF:', error);
+    toast.error('Failed to generate invoice. Please try again.');
+  }
+};
 
 const CheckOutOverview = ({ checkoutData, paymentMethod, onEdit, onConfirm, loading, error, showConfirmationModal, orderId, onGoToDashboard }) => {
-  // Debug: Log modal props
-  // console.log('[CheckOutOverview] showConfirmationModal:', showConfirmationModal, 'orderId:', orderId);
+  // Scroll to top when component mounts
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  // In your component, use it like this:
+  const handleDownloadInvoice = () => {
+    if (!checkoutData) return;
+  
+    const orderData = {
+      orderId: orderId || `ORD-${Math.random().toString(36).substr(2, 8).toUpperCase()}`,
+      orderDate: new Date().toISOString(),
+      customerName: `${checkoutData.firstName || ''} ${checkoutData.lastName || ''}`.trim(),
+      customerEmail: checkoutData.email || '',
+      customerPhone: checkoutData.phone || '',
+      shippingAddress: `${checkoutData.street || ''}, ${checkoutData.city || ''}, ${checkoutData.state || ''} ${checkoutData.pincode || ''}`,
+      items: (checkoutData.cart || []).map(item => ({
+        name: item.name || 'Product',
+        qty: item.qty || 1,
+        price: item.price || 0,
+        total: (item.qty || 1) * (item.price || 0),
+        image: item.image?.url || item.image || ''
+      })),
+      subTotal: checkoutData.subTotal || 0,
+      totalDiscount: checkoutData.totalDiscount || 0,
+      promoCode: checkoutData.promoCode || '',
+      totalTax: checkoutData.taxTotal || checkoutData.totalTax || '', // Changed from totalTax to taxTotal based on your data
+      shippingCost: checkoutData?.shippingCost || checkoutData?.shipping || 0,
+      cartTotal: checkoutData.cartTotal || 0
+    };
+  
+    downloadInvoiceAsPdf(orderData);
+  };
   if (!checkoutData) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
@@ -56,115 +239,19 @@ const CheckOutOverview = ({ checkoutData, paymentMethod, onEdit, onConfirm, load
             </p>
             {/* <div className="mb-2 font-semibold">Order ID & Date:</div> */}
             {/* <div className="mb-4 text-center text-base text-black">{orderId} &nbsp;|&nbsp; {new Date().toLocaleDateString()}</div> */}
-            <div className="flex flex-col md:flex-row gap-4 w-full justify-center">
+            <div className="flex flex-col md:flex-row gap-4 w-full items-center justify-center">
               <button
-                className="bg-black text-white px-6 py-3 rounded-lg font-semibold text-lg w-full md:w-auto mb-2 md:mb-0"
-                onClick={() => {
-                  // Build address HTML
-                  const addressHtml = `
-    <div class=\"mb-4 w-full text-sm text-gray-700 bg-[#fcf7f2] rounded-lg px-4 py-3\">
-      <div class=\"font-semibold text-base mb-2\">Shipping/Billing Info</div>
-      <div class=\"grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1\">
-        <div><span class=\"font-medium\">Name:</span> ${checkoutData.firstName || ''} ${checkoutData.lastName || ''}</div>
-        <div><span class=\"font-medium\">Email:</span> ${checkoutData.email || ''}</div>
-        <div><span class=\"font-medium\">Phone:</span> ${checkoutData.phone || ''}</div>
-        <div><span class=\"font-medium\">Address:</span> ${checkoutData.address || `${checkoutData.street || ''}, ${checkoutData.city || ''}, ${checkoutData.state || ''}, ${checkoutData.pincode || ''}`}</div>
-        <div><span class=\"font-medium\">City:</span> ${checkoutData.city || ''}</div>
-        <div><span class=\"font-medium\">State:</span> ${checkoutData.state || ''}</div>
-        <div><span class=\"font-medium\">Pincode:</span> ${checkoutData.pincode || ''}</div>
-      </div>
-    </div>
-  `;
-                  // Build product table HTML
-                  const productTableHtml = `
-    <div class=\"mb-6 w-full overflow-x-auto\">
-      <div class=\"font-semibold text-base mb-2\">Order Details</div>
-      <table class=\"w-full text-xs md:text-sm border border-gray-200 rounded-lg\">
-        <thead>
-          <tr class=\"bg-gray-100\">
-            <th class=\"p-2 border\">Image</th>
-            <th class=\"p-2 border\">Name</th>
-            <th class=\"p-2 border\">Qty</th>
-            <th class=\"p-2 border\">Size</th>
-            <th class=\"p-2 border\">Weight</th>
-            <th class=\"p-2 border\">Shipping</th>
-            <th class=\"p-2 border\">Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${Array.isArray(checkoutData.cart) ? checkoutData.cart.map(item => `
-            <tr>
-              <td class=\"border p-1\"><img src=\"${item.image?.url || item.image || ''}\" alt=\"${item.name || ''}\" class=\"h-10 w-10 object-cover rounded\" /></td>
-              <td class=\"border p-1\">${item.name || ''}</td>
-              <td class=\"border p-1\">${item.qty || 1}</td>
-              <td class=\"border p-1\">${item.size || '-'}</td>
-              <td class=\"border p-1\">${typeof item.weight !== 'undefined' && item.weight !== null ? item.weight + 'g' : '-'}</td>
-              <td class=\"border p-1\">${typeof item.shipping !== 'undefined' && item.shipping !== null ? item.shipping + 'g' : '-'}</td>
-              <td class=\"border p-1\">₹${typeof item.price !== 'undefined' && item.price !== null ? Number(item.price).toFixed(2) : '-'}</td>
-            </tr>
-          `).join('') : ''}
-        </tbody>
-      </table>
-      <div class=\"text-right text-base mt-2 font-semibold\">Total: ₹${checkoutData.cartTotal ? Number(checkoutData.cartTotal).toFixed(2) : '-'}</div>
-    </div>
-  `;
-                  // Order info
-                  const orderInfoHtml = `
-    <div class=\"mb-2 font-semibold\">Order ID & Date:</div>
-    <div class=\"mb-4 text-center text-base text-black\">${orderId || ''} &nbsp;|&nbsp; ${new Date().toLocaleDateString()}</div>
-  `;
-                  // Modal content (thank you message)
-                  const content = document.getElementById('invoice-print-section');
-                  let thankYouHtml = '';
-                  if (content) {
-                    // Only extract the thank you and info portion, not the commented-out address/table
-                    // We'll grab the innerHTML and remove the outer div if needed
-                    thankYouHtml = content.innerHTML;
-                  }
-                  const printWindow = window.open('', '', 'width=900,height=900');
-             printWindow.document.write(`
-    <html>
-      <head>
-        <title>Order Invoice</title>
-        <style>
-          body { background: #fff; font-family: Arial, sans-serif; color: #222; }
-          .invoice-section { max-width: 800px; margin: 0 auto; padding: 24px; background: #fff; border-radius: 10px; }
-          .invoice-section img { max-height: 56px; margin-bottom: 12px; }
-          .invoice-section .info, .invoice-section .summary { margin-bottom: 18px; }
-          .invoice-section table { width: 100%; border-collapse: collapse; margin: 18px 0; }
-          .invoice-section th, .invoice-section td { border: 1px solid #e5e7eb; padding: 6px 8px; font-size: 14px; }
-          .invoice-section th { background: #f3f4f6; }
-          .invoice-section .summary { text-align: right; font-size: 16px; }
-          @media print {
-            body { background: #fff; }
-            .invoice-section { box-shadow: none; border: none; }
-          }
-        </style>
-      </head>
-      <body>
-        <div class=\"invoice-section\">
-          <img src='/logo.png' alt='Rishikesh Handmade Logo' style='height:56px;object-fit:contain;margin-bottom:12px;display:flex;align-items:center;width:100%;' />
-          ${addressHtml}
-
-          ${productTableHtml}
-          ${orderInfoHtml}
-          ${thankYouHtml}
-        </div>
-      </body>
-    </html>
-  `);
-                  printWindow.document.close();
-                  printWindow.focus();
-                  setTimeout(() => {
-                    // printWindow.print();
-                    // printWindow.close();
-                  }, 500);
-                }}
+                onClick={handleDownloadInvoice}
+                className="w-fit bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-md transition duration-200 mb-4 flex items-center justify-center"
               >
-                Get receipt (Invoice)
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download Invoice
               </button>
               <button
-                className="text-red-600 font-bold underline text-lg w-full md:w-auto"
+              className="w-fit bg-black hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition duration-200 mb-4 flex items-center justify-center"
+
                 onClick={onGoToDashboard}
               >
                 Or Go To Dashboard &gt;&gt;
@@ -254,8 +341,8 @@ const CheckOutOverview = ({ checkoutData, paymentMethod, onEdit, onConfirm, load
             </div>
             <button
               className="w-full py-3 bg-black text-white rounded font-semibold text-base mt-2 mb-4 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
-              
-              onClick={()=>{
+
+              onClick={() => {
                 // console.log('Overview confirm button clicked');
                 onConfirm();
               }}

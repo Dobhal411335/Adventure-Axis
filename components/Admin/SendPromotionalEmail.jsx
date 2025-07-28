@@ -94,7 +94,7 @@ export default function SendPromoEmailPage({ allUsers = [] }) {
                 })
             }
         } catch (error) {
-            console.error("Error sending email:", error)
+            console.error("Error sending email:", error.message)
         } finally {
             setLoading(false)
         }
