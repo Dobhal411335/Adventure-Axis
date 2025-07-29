@@ -206,7 +206,7 @@ const fetchStories = async () => {
           fetchStories();
         } else {
           if (data.message && data.message.includes('already exists')) {
-            toast.error('This artisan story already exists!');
+            toast.error('This Management story already exists!');
           } else {
             toast.error(data.message || 'Failed to update story');
           }
@@ -225,7 +225,7 @@ const fetchStories = async () => {
           fetchStories();
         } else {
           if (data.message && data.message.includes('already exists')) {
-            toast.error('This artisan story already exists!');
+            toast.error('This Management story already exists!');
           } else {
             toast.error(data.message || 'Failed to create story');
           }
@@ -280,7 +280,7 @@ const fetchStories = async () => {
       <div className="container-fluid px-3">
         <div className="row justify-center">
           <div className="w-full max-w-5xl mx-auto">
-            <h4 className="my-4 text-center font-bold text-2xl">Create Artisan Story</h4>
+            <h4 className="my-4 text-center font-bold text-2xl">Create Management Story</h4>
             <div className="bg-white rounded shadow p-6 mb-6">
               <form onSubmit={handleSubmit}>
                 <div className="flex gap-4 mb-4">
@@ -289,7 +289,7 @@ const fetchStories = async () => {
                     <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full border rounded px-3 py-2" required />
                   </div>
                   <div className="w-64">
-                    <label className="block font-semibold mb-1">Artisan User</label>
+                    <label className="block font-semibold mb-1">Management User</label>
                     {artisanDetails ? (
                       <input
                         type="text"

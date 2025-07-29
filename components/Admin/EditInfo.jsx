@@ -19,12 +19,12 @@ const sectionConfig = [
   },
   {
     key: 'artisanBlogs',
-    label: 'Artisan Blogs / Experience',
+    label: 'Management Blogs / Experience',
     component: ManageArtisanBlogs,
   },
   {
     key: 'artisanStory',
-    label: 'Artisan Story',
+    label: 'Management Story',
     component: ArtisonStory,
   },
   {
@@ -76,14 +76,14 @@ const EditInfo = () => {
       {/* Show artisan details at the top if present */}
       <div className="back mb-2">
         <button className='px-4 py-1 bg-gray-500 text-white rounded flex items-center' onClick={() => router.back()}>
-          <ArrowLeftIcon className="w-4 h-4 mr-2" /> Back to View Artisan
+          <ArrowLeftIcon className="w-4 h-4 mr-2" /> Back to View Management
         </button>
       </div>
       {artisanDetails && (
         <div className="mb-4 p-4 bg-blue-50 rounded shadow flex gap-8 items-center">
           <div>
-            <div className="font-bold text-lg">Artisan Name: {artisanDetails.title} {artisanDetails.firstName} {artisanDetails.lastName}</div>
-            <div className="font-semibold text-md">Artisan Number: {artisanDetails.artisanNumber}</div>
+            <div className="font-bold text-lg">Management Name: {artisanDetails.title} {artisanDetails.firstName} {artisanDetails.lastName}</div>
+            <div className="font-semibold text-md">Management Number: {artisanDetails.artisanNumber}</div>
           </div>
         </div>
       )}

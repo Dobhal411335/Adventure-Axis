@@ -33,7 +33,7 @@ const ProductDetailPage = async ({ params }) => {
     const { slug } = await params;
 const decodedId = decodeURIComponent(slug);
     const rawProduct = await Product.findOne({ slug: decodedId })
-    .populate('size price gallery video description info categoryTag productTagLine reviews quantity coupons taxes')
+    .populate('size price gallery video description info categoryTag productTagLine reviews quantity coupons taxes pdfs')
     .populate({ path: 'artisan', populate: { path: 'artisanStories' } })
     .lean();
   

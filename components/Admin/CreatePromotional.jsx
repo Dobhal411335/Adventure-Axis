@@ -71,7 +71,7 @@ const CreatePromotional = ({ artisanId, artisanDetails = null }) => {
   // Handler to remove uploaded image and delete from Cloudinary
   const handleRemoveImageUpload = async () => {
     if (imageObj && imageObj.key) {
-      toast.loading('Deleting image from Cloudinary...', { id: 'cloud-delete-promo' });
+      toast.loading('Deleting image...', { id: 'cloud-delete-promo' });
       try {
         const res = await fetch('/api/cloudinary', {
           method: 'DELETE',
@@ -80,12 +80,12 @@ const CreatePromotional = ({ artisanId, artisanDetails = null }) => {
         });
         const data = await res.json();
         if (res.ok) {
-          toast.success('Image deleted from Cloudinary!', { id: 'cloud-delete-promo' });
+          toast.success('Image deleted!', { id: 'cloud-delete-promo' });
         } else {
           toast.error('Cloudinary error: ' + (data.error || 'Failed to delete image'), { id: 'cloud-delete-promo' });
         }
       } catch (err) {
-        toast.error('Failed to delete image from Cloudinary (network or server error)', { id: 'cloud-delete-promo' });
+        toast.error('Failed to delete image (network or server error)', { id: 'cloud-delete-promo' });
       }
     }
     setImageObj({ url: '', key: '' });
@@ -232,7 +232,7 @@ const CreatePromotional = ({ artisanId, artisanDetails = null }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedArtisan) {
-      toast.error('Please select an artisan');
+      toast.error('Please select an management');
       return;
     }
     try {

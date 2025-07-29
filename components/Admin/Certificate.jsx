@@ -190,7 +190,7 @@ const Certificate = ({ artisanId, artisanDetails = null }) => {
 
     // Frontend validation
     if (!selectedArtisan) {
-      toast.error("Please select an artisan.");
+      toast.error("Please select an Management.");
       setLoading(false);
       return;
     }
@@ -288,11 +288,11 @@ const Certificate = ({ artisanId, artisanDetails = null }) => {
       <div className="container-fluid">
         <div className="row justify-center">
           <div className="w-full max-w-5xl mx-auto">
-            <h3 className="my-4 text-center font-bold text-2xl">Create Artisan Certificate</h3>
+            <h3 className="my-4 text-center font-bold text-2xl">Create Management Certificate</h3>
             <div className="bg-white rounded shadow p-6 mb-6">
               <form id="certificateForm" onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block font-semibold mb-1">Artisan User</label>
+                  <label className="block font-semibold mb-1">Management User</label>
                   <input
                     type="text"
                     className="w-full border rounded px-3 py-2 bg-gray-100"
@@ -305,7 +305,7 @@ const Certificate = ({ artisanId, artisanDetails = null }) => {
                         })()
                     }
                     readOnly
-                    placeholder="Artisan Name"
+                    placeholder="Management Name"
                   />
                 </div>
                 <div className="mb-3">
@@ -469,7 +469,7 @@ const Certificate = ({ artisanId, artisanDetails = null }) => {
                         ) : (
                           <TableRow key={group.artisan._id + '-empty'}>
                             <TableCell className="px-4 py-3 text-center font-medium">{idx + 1}</TableCell>
-                            <TableCell className="px-4 py-3" colSpan={4}>No certificates for this artisan.</TableCell>
+                            <TableCell className="px-4 py-3" colSpan={4}>No certificates for this Management.</TableCell>
                           </TableRow>
                         )
                       ))
@@ -505,7 +505,7 @@ const Certificate = ({ artisanId, artisanDetails = null }) => {
                     <h4 className="font-bold text-lg mb-4">Certificate Details</h4>
                     <div className="grid grid-cols-1 gap-4 mb-2">
                       <div className="bg-white p-3 rounded border border-gray-200 shadow-md mb-2">
-                        <div className="font-semibold text-gray-800">Artisan</div>
+                        <div className="font-semibold text-gray-800">Management</div>
                         <div className="text-gray-600">{selectedCertificate.artisan ? `${selectedCertificate.artisan.title ? selectedCertificate.artisan.title + ' ' : ''}${selectedCertificate.artisan.firstName} ${selectedCertificate.artisan.lastName}` : '-'}</div>
                       </div>
                       <div className="bg-white p-3 rounded border border-gray-200 shadow-md mb-2">

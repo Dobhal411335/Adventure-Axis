@@ -50,13 +50,13 @@ const data = {
     },
     { divider: true },
     {
-      name: "Create Artisan",
-      url: "/admin/create_artisan",
+      name: "Create Management",
+      url: "/admin/create_management",
       icon: User,
     },
     {
-      name: "View / Edit Artisan",
-      url: "/admin/edit_artisan",
+      name: "View / Edit Management",
+      url: "/admin/edit_management",
       icon: User,
     },
     { divider: true },
@@ -93,8 +93,8 @@ const data = {
     },
     { divider: true },
     {
-      name: "Add Team",
-      url: "/admin/add_team",
+      name: "Add Associates",
+      url: "/admin/add_associate",
       icon: Plus,
     },
     { divider: true },

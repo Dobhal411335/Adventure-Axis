@@ -29,11 +29,11 @@ export default function EditArtisan({ artisan }) {
     try {
       setLoading(true);
       const res = await fetch('/api/createArtisan');
-      if (!res.ok) throw new Error('Failed to fetch artisans');
+      if (!res.ok) throw new Error('Failed to fetch management');
       const data = await res.json();
       setUsers(data);
     } catch (err) {
-      toast.error("Failed to fetch users. Please try again later.");
+      toast.error("Failed to fetch management. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -48,11 +48,11 @@ export default function EditArtisan({ artisan }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: artisanToDelete._id, imageKey: artisanToDelete.profileImage?.key || undefined })
       });
-      if (!res.ok) throw new Error("Failed to delete artisan");
-      toast.success("Artisan deleted successfully");
+      if (!res.ok) throw new Error("Failed to delete management");
+      toast.success("Management deleted successfully");
       if (onDeleted) onDeleted(artisanToDelete._id);
     } catch (err) {
-      toast.error("Failed to delete artisan");
+      toast.error("Failed to delete management");
     } finally {
       setShowDeleteModal(false);
       setArtisanToDelete(null);
@@ -93,7 +93,7 @@ export default function EditArtisan({ artisan }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Artisan Number</label>
+          <label className="block text-sm font-medium mb-1">Management Number</label>
           <input
             type="text"
             value={filterNumber}
@@ -125,8 +125,8 @@ export default function EditArtisan({ artisan }) {
           <TableHeader>
             <TableRow className="bg-gray-100">
               <TableHead className="px-4 py-3">S.No.</TableHead>
-              <TableHead className="px-4 py-3">Artisan Name</TableHead>
-              <TableHead className="px-4 py-3">Artisan Number</TableHead>
+              <TableHead className="px-4 py-3">Management Name</TableHead>
+              <TableHead className="px-4 py-3">Management Number</TableHead>
               <TableHead className="px-4 py-3">Edit Info</TableHead>
               <TableHead className="px-4 py-3">Actions</TableHead>
             </TableRow>
@@ -138,7 +138,7 @@ export default function EditArtisan({ artisan }) {
               </TableRow>
             ) : filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-6">No artisans found.</TableCell>
+                <TableCell colSpan={5} className="text-center py-6">No Management found.</TableCell>
               </TableRow>
             ) : (
               filteredUsers.map((artisan, idx) => (
@@ -161,7 +161,7 @@ export default function EditArtisan({ artisan }) {
                     </Link>
                   </TableCell>
                   <TableCell className="px-4 py-3 space-x-2">
-                    <Link href={`/admin/artisan_dashboard/${artisan._id}`}>
+                    <Link href={`/admin/management_dashboard/${artisan._id}`}>
                       <Button size="sm" variant="outline">View</Button>
                     </Link>
                     {/* <Button size="sm" variant="secondary" onClick={() => onEdit && onEdit(artisan)}>Edit</Button> */}
@@ -177,9 +177,9 @@ export default function EditArtisan({ artisan }) {
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Artisan</DialogTitle>
+            <DialogTitle>Delete Management</DialogTitle>
           </DialogHeader>
-          <p>Are you sure you want to delete this artisan?</p>
+          <p>Are you sure you want to delete this management?</p>
           <DialogFooter>
             <Button variant="secondary" onClick={cancelDelete}>Cancel</Button>
             <Button variant="destructive" onClick={confirmDelete}>Delete</Button>

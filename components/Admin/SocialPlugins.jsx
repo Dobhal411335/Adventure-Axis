@@ -73,7 +73,7 @@ const SocialPlugins = ({ artisanId, artisanDetails = null }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedArtisan) {
-      toast.error('Please select an artisan.');
+      toast.error('Please select an Management.');
       return;
     }
     setIsSubmitting(true);
@@ -170,11 +170,11 @@ const SocialPlugins = ({ artisanId, artisanDetails = null }) => {
   return (
     <div className="page-content flex justify-center">
       <div className="w-full max-w-4xl mx-auto">
-        <h4 className="text-center my-4 font-bold text-2xl">Artisan Social Plugin</h4>
+        <h4 className="text-center my-4 font-bold text-2xl">Management Social Plugin</h4>
         <div className="bg-white rounded shadow p-6 mb-6">
           <form id="socialPluginForm" onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block font-semibold mb-1">Artisan User</label>
+              <label className="block font-semibold mb-1">Management User</label>
               <input
                 type="text"
                 className="w-full border rounded px-3 py-2 bg-gray-100"
@@ -231,8 +231,8 @@ const SocialPlugins = ({ artisanId, artisanDetails = null }) => {
               <TableHeader>
                 <TableRow className="bg-gray-100">
                   <TableHead className="px-4 py-3 text-center">S.No</TableHead>
-                  <TableHead className="px-4 py-3 text-center">Artisan Name</TableHead>
-                  <TableHead className="px-4 py-3 text-center">Artisan Number</TableHead>
+                  <TableHead className="px-4 py-3 text-center">Management Name</TableHead>
+                  <TableHead className="px-4 py-3 text-center">Management Number</TableHead>
                   <TableHead className="px-4 py-3 text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>

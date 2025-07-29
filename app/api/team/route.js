@@ -10,7 +10,7 @@ export async function GET() {
         const banners = await Team.find().sort({ order: 1 });
         return NextResponse.json(banners, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: "Failed to fetch Team" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to fetch Associate" }, { status: 500 });
     }
 }
 
@@ -28,7 +28,7 @@ export async function POST(req) {
         await newBanner.save();
         return NextResponse.json(newBanner, { status: 201 });
     } catch (error) {
-        return NextResponse.json({ error: `Failed to create Team: ${error.message}` }, { status: 500 });
+        return NextResponse.json({ error: `Failed to create Associate: ${error.message}` }, { status: 500 });
     }
 }
 
@@ -40,7 +40,7 @@ export async function PATCH(req) {
         const updatedBanner = await Team.findByIdAndUpdate(id, { title, designation, order, image }, { new: true });
         return NextResponse.json(updatedBanner, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: "Failed to update Team" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to update Associate" }, { status: 500 });
     }
 }
 
@@ -53,7 +53,7 @@ export async function DELETE(req) {
         // Find the banner first
         const banner = await Team.findById(id);
         if (!banner) {
-            return NextResponse.json({ error: "Team not found" }, { status: 404 });
+            return NextResponse.json({ error: "Associate not found" }, { status: 404 });
         }
 
         // Delete the image from Uploadthing (if key exists)
@@ -64,8 +64,8 @@ export async function DELETE(req) {
         // Delete banner from database
         await Team.findByIdAndDelete(id);
 
-        return NextResponse.json({ message: "Team deleted successfully" }, { status: 200 });
+        return NextResponse.json({ message: "Associate deleted successfully" }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: `Failed to delete Team: ${error.message}` }, { status: 500 });
+        return NextResponse.json({ error: `Failed to delete Associate: ${error.message}` }, { status: 500 });
     }
 }

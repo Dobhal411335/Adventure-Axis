@@ -104,7 +104,8 @@ export default function ProductDetailView({ product }) {
 
   // console.log(product)
   const [selectedImage, setSelectedImage] = React.useState(product?.gallery?.mainImage?.url || []);
-
+  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
   const [quantity, setQuantity] = React.useState(1);
   const [showSizeChart, setShowSizeChart] = React.useState(false);
   const [selectedSize, setSelectedSize] = React.useState(null);
@@ -810,6 +811,66 @@ export default function ProductDetailView({ product }) {
               <span className="text-gray-500 text-xs w-52">Your payment information is processed securly. We do not store credit card details nor have access to your credit card infomation</span>
             </div>
             <h2 className="font-bold mx-auto">"Shop with Confidence - 100% Money-Back Guarantee!"</h2>
+          </div>
+          <div className="py-2">
+          <button
+              className="bg-black text-white py-3 px-8 font-semibold hover:bg-gray-800 w-full"
+              onClick={() => setShowPdfModal(true)}
+            >
+              Get Package PDF
+            </button>
+            {/* PDF Modal */}
+            <Dialog open={showPdfModal} onOpenChange={setShowPdfModal}>
+              <DialogContent className="max-w-lg">
+                <DialogTitle>Package PDFs</DialogTitle>
+                {Array.isArray(product.pdfs) && product.pdfs.length > 0 ? (
+                  <div className="divide-y divide-gray-200">
+                    {product.pdfs.map((pdf, idx) => (
+                      <div key={pdf._id || pdf.key || idx} className="flex items-center justify-between py-2 gap-2">
+                        <span className="font-medium text-gray-800">{pdf.name}</span>
+                        <div className="flex gap-2">
+                          <button
+                            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm font-semibold"
+                            onClick={() => setPdfPreviewUrl(pdf.url)}
+                          >
+                            Preview
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* PDF Preview Modal */}
+                    <Dialog open={!!pdfPreviewUrl} onOpenChange={() => setPdfPreviewUrl(null)}>
+                      <DialogContent className="md:max-w-2xl">
+                        <DialogTitle>PDF Preview</DialogTitle>
+                        {pdfPreviewUrl && (
+                          <iframe
+                          className="h-[500px]"
+                            src={pdfPreviewUrl}
+                            width="100%"
+                            height="600px"
+                            style={{ border: '1px solid #ccc', borderRadius: 8 }}
+                            title="Package PDF Preview"
+                          />
+                        )}
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">Close</button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                ) : (
+                  <div className="text-gray-500 py-4">No PDFs available for this package.</div>
+                )}
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded">Close</button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
           {/* Action Buttons */}
           <div className="flex gap-4 mb-6 items-center">

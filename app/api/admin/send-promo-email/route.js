@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import User from "@/models/User";
+import Newsletter from "@/models/NewsLetter";
 import axios from "axios";
 import connectDB from "@/lib/connectDB";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
   try {
@@ -21,14 +24,25 @@ export async function POST(req) {
 
     await connectDB();
 
-    // Get only selected recipients' emails from the database
+    // First check in User collection
     const users = await User.find({ email: { $in: recipients } }, "email");
+    
+    // Then check in Newsletter collection for any remaining emails
+    const newsletterEmails = await Newsletter.find({ email: { $in: recipients } }, "email");
 
-    if (users.length === 0) {
+    // Combine both results
+    const allEmails = [
+      ...users.map(user => user.email),
+      ...newsletterEmails.map(item => item.email)
+    ];
+
+    if (allEmails.length === 0) {
       return NextResponse.json({ success: false, message: "No matching subscribers found." }, { status: 404 });
     }
 
-    const emailRecipients = users.map(user => ({ email: user.email }));
+    // Remove duplicates and format for Brevo
+    const uniqueEmails = [...new Set(allEmails)];
+    const emailRecipients = uniqueEmails.map(email => ({ email }));
 
     const emailData = {
       sender: { name: "Adventure Axis", email: "info@adventureaxis.in" },
@@ -115,6 +129,14 @@ export async function POST(req) {
       `
     };
 
+    if (!process.env.BREVO_API_KEY) {
+      console.error('BREVO_API_KEY is not set in environment variables');
+      return NextResponse.json(
+        { success: false, message: 'Email service configuration error. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
     const response = await axios.post("https://api.brevo.com/v3/smtp/email", emailData, {
       headers: {
         "api-key": process.env.BREVO_API_KEY,
@@ -124,7 +146,26 @@ export async function POST(req) {
 
     return NextResponse.json({ success: true, data: response.data }, { status: 200 });
   } catch (error) {
-    console.log("Error sending email:", error.message);
-    return NextResponse.json({ success: false, message: "Error sending email." }, { status: 500 });
+    console.error('Error sending email:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      stack: error.stack
+    });
+    
+    let errorMessage = 'Failed to send email. Please try again later.';
+    if (error.response) {
+      // Handle Brevo API specific errors
+      if (error.response.status === 401) {
+        errorMessage = 'Invalid API key. Please check your Brevo API configuration.';
+      } else if (error.response.data && error.response.data.message) {
+        errorMessage = `Email service error: ${error.response.data.message}`;
+      }
+    }
+    
+    return NextResponse.json(
+      { success: false, message: errorMessage },
+      { status: error.response?.status || 500 }
+    );
   }
 }

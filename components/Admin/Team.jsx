@@ -41,7 +41,7 @@ const Team = () => {
                     setFormData((prev) => ({ ...prev, order: highestOrder + 1 }));
                 }
             } catch (error) {
-                toast.error("Failed to fetch team");
+                toast.error("Failed to fetch Associate");
             }
         };
         fetchBanners();
@@ -97,7 +97,7 @@ const Team = () => {
             const data = await response.json();
 
             if (response.ok) {
-                toast.success(`Team ${editBanner ? "updated" : "added"} successfully`);
+                toast.success(`Associate ${editBanner ? "updated" : "added"} successfully`);
                 setEditBanner(null);
 
                 // Refresh banner list
@@ -142,7 +142,7 @@ const Team = () => {
             const data = await response.json();
 
             if (response.ok) {
-                toast.success("Team deleted successfully");
+                toast.success("Associate deleted successfully");
 
                 setBanners((prev) => prev.filter((banner) => banner._id !== id));
 
@@ -181,10 +181,10 @@ const Team = () => {
 
     return (
         <div className="max-w-5xl mx-auto py-10 w-full">
-            <h2 className="text-2xl font-bold mb-6">{editBanner ? "Edit Team Member" : "Add New Team Member"}</h2>
+            <h2 className="text-2xl font-bold mb-6">{editBanner ? "Edit Associate Member" : "Add New Associate Member"}</h2>
             <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6 space-y-4">
                 <div>
-                    <Label>Team Member Name</Label>
+                    <Label>Associate Member Name</Label>
                     <Input name="title" placeholder="Enter title" value={formData.title} onChange={handleInputChange} />
                 </div>
                 <div>
@@ -193,7 +193,7 @@ const Team = () => {
                 </div>
                 {/* Banner Image Upload */}
                 <div className="mb-4">
-                    <Label className="block mb-2 font-bold">Team Member Image</Label>
+                    <Label className="block mb-2 font-bold">Associate Member Image</Label>
                     <input
                         type="file"
                         accept="image/*"
@@ -208,7 +208,7 @@ const Team = () => {
                         className="mb-2 flex items-center gap-2 bg-blue-500 text-white"
                         onClick={() => fileInputRef.current && fileInputRef.current.click()}
                     >
-                        <span>Select Team Member</span>
+                        <span>Select Associate Member</span>
                         <UploadIcon className="w-4 h-4" />
                     </Button>
                     {uploading && <div className="text-blue-600 font-semibold">Uploading...</div>}
@@ -216,7 +216,7 @@ const Team = () => {
                         <div className="relative w-48 h-28 border rounded overflow-hidden mb-2">
                             <Image
                                 src={formData.image.url}
-                                alt="Team Member Preview"
+                                alt="Associate Member Preview"
                                 fill
                                 className="object-cover"
                             />
@@ -238,7 +238,7 @@ const Team = () => {
 
                 <div className="flex gap-3">
                     <Button type="submit" className="bg-blue-600 hover:bg-blue-500">
-                        {editBanner ? "Update Team Member" : "Add Team Member"}
+                        {editBanner ? "Update Associate Member" : "Add Associate Member"}
                     </Button>
                     {editBanner && (
                         <Button
@@ -261,7 +261,7 @@ const Team = () => {
                 </div>
             </form>
 
-            <h2 className="text-2xl font-bold mt-10 mb-4">Existing Teams </h2>
+            <h2 className="text-2xl font-bold mt-10 mb-4">Existing Associates </h2>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -280,7 +280,7 @@ const Team = () => {
                                 <TableCell>{banner.designation}</TableCell>
                                 <TableCell>{banner.order}</TableCell>
                                 <TableCell>
-                                    <Image src={banner.image.url} alt="Team Member Image" width={100} height={50} className="rounded-xl" />
+                                    <Image src={banner.image.url} alt="Associate Member Image" width={100} height={50} className="rounded-xl" />
                                 </TableCell>
                                 <TableCell>
                                     <Button variant="outline" size="icon" onClick={() => handleEdit(banner)} className="mr-2 "><PencilIcon /></Button>
@@ -290,7 +290,7 @@ const Team = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan="5" className="text-center py-4">No Team found</TableCell>
+                            <TableCell colSpan="5" className="text-center py-4">No Associate found</TableCell>
                         </TableRow>
                     )}
                 </TableBody>
@@ -299,9 +299,9 @@ const Team = () => {
             <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Team Member</DialogTitle>
+                        <DialogTitle>Delete Associate Member</DialogTitle>
                     </DialogHeader>
-                    <p>Are you sure you want to delete this Team Member?</p>
+                    <p>Are you sure you want to delete this Associate Member?</p>
                     <DialogFooter>
                         <Button variant="secondary" onClick={cancelDelete}>Cancel</Button>
                         <Button variant="destructive" onClick={confirmDelete}>Delete</Button>

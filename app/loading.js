@@ -9,7 +9,7 @@ export default function Loading() {
           alt="Loading..."
           width={192}  // 48 * 4 for higher quality
           height={192}
-          className="rounded-full w-48 md:w-48 h-48 md:h-48 object-cover shadow-lg"
+          className="rounded-full w-48 md:w-48 h-48 md:h-48 object-contain shadow-lg"
         />
       </div>
     </div>  

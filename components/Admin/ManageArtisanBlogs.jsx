@@ -137,7 +137,7 @@ const ManageArtisanBlogs = ({ artisanId, artisanDetails = null }) => {
           setTitle('');
         }
       } catch (err) {
-        toast.error('Failed to fetch artisans');
+        toast.error('Failed to fetch management');
         setCreatedBy('');
         setTitle('');
       }
@@ -322,7 +322,7 @@ const ManageArtisanBlogs = ({ artisanId, artisanDetails = null }) => {
               <form onSubmit={handleSubmit}>
                 <div className="mb-4 flex gap-4">
                   <div className="flex-1">
-                    <label className="block font-semibold mb-1">Title Of Artisan Video</label>
+                    <label className="block font-semibold mb-1">Title Of Management Video</label>
                     <input
                       type="text"
                       placeholder="Enter Your Artisan Title:"
@@ -332,7 +332,7 @@ const ManageArtisanBlogs = ({ artisanId, artisanDetails = null }) => {
                     />
                   </div>
                   <div className="w-64">
-                    <label className="block font-semibold mb-1">Select Artisan</label>
+                    <label className="block font-semibold mb-1">Select Management</label>
                     <input
                       type="text"
                       className="w-full border rounded p-2 bg-gray-100"
@@ -376,7 +376,7 @@ const ManageArtisanBlogs = ({ artisanId, artisanDetails = null }) => {
                     </div>
                   ) : (
                     <div>
-                      <label className="block font-semibold mb-1">Artisan Images</label>
+                      <label className="block font-semibold mb-1">Management Images</label>
                       <div className="border rounded p-4 mt-2">
                         <div className="text-center mb-3">
                           {selectedImages.length === 0 ? (

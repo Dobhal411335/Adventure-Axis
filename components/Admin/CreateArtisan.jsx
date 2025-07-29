@@ -154,7 +154,7 @@ const CreateArtisan = () => {
     try {
       setLoading(true);
       const res = await fetch("/api/createArtisan");
-      if (!res.ok) throw new Error("Failed to fetch artisans");
+      if (!res.ok) throw new Error("Failed to fetch management");
       const data = await res.json();
       setUsers(data);
     } catch (err) {
@@ -194,7 +194,7 @@ const CreateArtisan = () => {
         setAllSpecializations(data.map((s) => s.name));
       } else if (Array.isArray(data) && data.length === 0) {
         setAllSpecializations([]);
-        toast.error("No specializations found.");
+        // toast.error("No specializations found.");
       } else {
         setAllSpecializations([]);
         toast.error("Specialization API returned unexpected data.");
@@ -259,11 +259,11 @@ const CreateArtisan = () => {
         if (
           (err.error && err.error.includes("duplicate key")) ||
           err.code === 11000 ||
-          (err.message && err.message.includes("Artisan number already exists"))
+          (err.message && err.message.includes("Management number already exists"))
         ) {
-          toast.error("Artisan number already exists");
+          toast.error("Management number already exists");
         } else {
-          toast.error(err.message || "Failed to create artisan");
+          toast.error(err.message || "Failed to create management");
           toast.error(err.message || "Data not submitted! Please try again.");
         }
       }
@@ -324,7 +324,7 @@ const CreateArtisan = () => {
           a._id === artisan._id ? { ...a, active: !a.active } : a
         )
       );
-      toast.success(`Artisan ${!artisan.active ? 'activated' : 'deactivated'} successfully!`);
+      toast.success(`Management ${!artisan.active ? 'activated' : 'deactivated'} successfully!`);
     } catch (err) {
       toast.error("Failed to update status");
     }
@@ -555,7 +555,7 @@ const CreateArtisan = () => {
         <div className="flex-1 space-y-4">
           {/* Artisan Name & Father/Husband Info */}
           <div>
-            <div className="font-semibold mb-1">Artisan Name</div>
+            <div className="font-semibold mb-1">Management Name</div>
             {/* Name/Title Row */}
             <div className="flex gap-2 mb-3">
               <Select
@@ -639,9 +639,9 @@ const CreateArtisan = () => {
               {renderError("fatherHusbandLastName")}
             </div>
           </div>
-          {/* Artisan Detail */}
+          {/* Management Detail */}
           <div>
-            <div className="font-semibold mb-1">Artisan Detail</div>
+            <div className="font-semibold mb-1">Management Detail</div>
             <div className="flex gap-2 mb-2">
               <Input
                 placeholder="SHG Name"
@@ -649,8 +649,8 @@ const CreateArtisan = () => {
               />
               {renderError("shgName")}
               <Input
-                placeholder="Artisan Number"
-                {...register("artisanNumber", { required: "Artisan Number is required" })}
+                placeholder="Management Number"
+                {...register("artisanNumber", { required: "Management Number is required" })}
               />
               {renderError("artisanNumber")}
             </div>
@@ -967,10 +967,10 @@ const CreateArtisan = () => {
                   Order
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Artisan Name
+                  Management Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Artisan Number
+                  Management Number
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -987,7 +987,7 @@ const CreateArtisan = () => {
                     colSpan={4}
                     className="px-6 py-4 whitespace-nowrap text-center"
                   >
-                    No artisans found.
+                    No management found.
                   </td>
                 </tr>
               ) : (
@@ -1036,8 +1036,8 @@ const CreateArtisan = () => {
           {showDeleteModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
               <div className="bg-white rounded shadow-lg p-8">
-                <h2 className="text-lg font-semibold mb-4">Delete Artisan</h2>
-                <p>Are you sure you want to delete this artisan?</p>
+                <h2 className="text-lg font-semibold mb-4">Delete Management</h2>
+                <p>Are you sure you want to delete this management?</p>
                 <div className="flex justify-end mt-6 gap-3">
                   <button
                     className="px-4 py-2 border rounded"
@@ -1066,7 +1066,7 @@ const CreateArtisan = () => {
             style={{ maxHeight: "90vh" }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Artisan Profile</h2>
+              <h2 className="text-xl font-bold">Management Profile</h2>
               <button
                 onClick={closeUserModal}
                 className="text-gray-500 hover:text-black text-4xl leading-none focus:outline-none transition-transform duration-150 transform hover:scale-110"
@@ -1135,7 +1135,7 @@ const CreateArtisan = () => {
                   />
                   <DetailBox label="SHG Name" value={selectedUser.shgName} />
                   <DetailBox
-                    label="Artisan Number"
+                    label="Management Number"
                     value={selectedUser.artisanNumber}
                   />
                   <DetailBox
@@ -1202,7 +1202,7 @@ const CreateArtisan = () => {
             style={{ maxHeight: "90vh" }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Edit Artisan</h2>
+              <h2 className="text-xl font-bold">Edit Management</h2>
               <button
                 onClick={closeEditModal}
                 className="text-gray-500 hover:text-black"
@@ -1326,7 +1326,7 @@ const CreateArtisan = () => {
                 />
               </div>
               <div>
-                <label className="font-semibold">Artisan Number</label>
+                <label className="font-semibold">Management Number</label>
                 <Input
                   name="artisanNumber"
                   value={editForm.artisanNumber || ""}
