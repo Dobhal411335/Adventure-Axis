@@ -12,7 +12,6 @@ import ProductDetailView from "@/components/ProductDetailView";
 import ProductVideo from "@/components/ProductVideo";
 import ProductInfoTabs from "@/components/ProductInfoTabs";
 import StickyAddToCartBar from "@/components/StickyAddToCartBar";
-import Artisan from '@/models/Artisan';
 import Price from '@/models/Price';
 import Gallery from '@/models/Gallery';
 import Video from '@/models/Video';
@@ -25,8 +24,8 @@ import ProductTax from '@/models/ProductTax';
 import ProductCoupons from '@/models/ProductCoupons';
 import Quantity from '@/models/Quantity';
 import Color from '@/models/Color';
+import PackagePdf from "@/models/PackagePdf"
 import ProductTagLine from '@/models/ProductTagLine';
-import ArtisanStory from '@/models/ArtisanStory';
 const ProductDetailPage = async ({ params }) => {
     await connectDB();
   
@@ -34,7 +33,6 @@ const ProductDetailPage = async ({ params }) => {
 const decodedId = decodeURIComponent(slug);
     const rawProduct = await Product.findOne({ slug: decodedId })
     .populate('size price gallery video description info categoryTag productTagLine reviews quantity coupons taxes pdfs')
-    .populate({ path: 'artisan', populate: { path: 'artisanStories' } })
     .lean();
   
   // ✅ Convert to plain JSON

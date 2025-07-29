@@ -325,16 +325,6 @@ export default function ProductDetailView({ product }) {
             })()} Rating</span>
           <span className="text-gray-700 text-sm">({product.reviews?.length || 0} customer reviews)</span>
         </div>
-        {/* Artisan Bar */}
-        {product.artisan && (
-          <div
-            className="bg-gray-200 gap-2 px-2 py-1 text-black w-fit flex items-center cursor-pointer rounded"
-            onClick={() => setShowArtisanModal(true)}
-          >
-            <span className="font-bold">Artisan Name : {product.artisan?.title + " " + product.artisan?.firstName + " " + product.artisan?.lastName || ""}</span>
-            <span className="text-xl font-bold">▼</span>
-          </div>
-        )}
         {(() => {
 
           if (desc === "No Description") {
@@ -1139,53 +1129,7 @@ export default function ProductDetailView({ product }) {
           >
             {selectedVariant?.qty > 0 ? 'BUY IT NOW' : 'OUT OF STOCK'}
           </button>
-          <Dialog open={showArtisanModal} onOpenChange={setShowArtisanModal}>
-            <DialogContent className="max-w-md h-[80vh] md:h-fit overflow-y-auto w-full p-0 md:overflow-hidden">
-              <VisuallyHidden>
-                <DialogTitle>Artisan Details</DialogTitle>
-              </VisuallyHidden>
-              {/* Custom Close Button */}
-              <button
-                onClick={() => setShowArtisanModal(false)}
-                className="absolute top-4 right-4 z-20 p-2 bg-white text-black rounded-full shadow-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-black"
-                aria-label="Close"
-                type="button"
-              >
-                <X size={20} />
-              </button>
-              <div>
-                {/* Top image */}
-                <img
-                  src={product.artisan?.profileImage?.url || "/placeholder.jpeg"}
-                  alt={product.artisan?.artisanName}
-                  className="w-full h-42 md:h-56 object-cover"
-                />
-                {/* Card body */}
-                <div className="bg-white p-6">
-                  <div className="text-xs text-gray-500 mb-1">( Credit Goes To )</div>
-                  <div className="text-xl font-bold mb-2">Artisan Name : {product.artisan?.title + " " + product.artisan?.firstName + " " + product.artisan?.lastName || ""}</div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Artisan Number:{product.artisan?.artisanNumber || ""}</span> | SHG Group:{product.artisan?.shgName || ""}
-                  </div>
-                  <div className="mb-2">{product.artisan?.yearsOfExperience || "0"} Year’s Of Experience</div>
-                  <div className="text-gray-600 text-sm mb-4">
-                    {product.artisan?.artisanStories?.shortDescription || "No Description"}
-                  </div>
-                  <button
-                    className="w-full bg-black text-white py-2 rounded font-semibold text-lg"
-                    onClick={() => {
-                      setShowArtisanModal(false);
-                      if (product.artisan && product.artisan.slug) {
-                        router.push(`/artisan/${product.artisan.slug}`);
-                      }
-                    }}
-                  >
-                    Explore
-                  </button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+     
         </div>
       </div>
     </div >

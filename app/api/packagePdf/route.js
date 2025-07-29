@@ -7,11 +7,11 @@ import mongoose from "mongoose";
 export async function GET(req) {
   await connectDB();
   const { searchParams } = new URL(req.url);
-  const packageId = searchParams.get("packageId");
+  const productId = searchParams.get("productId");
   try {
     let pdfs;
-    if (packageId) {
-      pdfs = await PackagePdf.find({ packageId: new mongoose.Types.ObjectId(packageId) });
+    if (productId) {
+      pdfs = await PackagePdf.find({ productId: new mongoose.Types.ObjectId(productId) });
     } else {
       pdfs = await PackagePdf.find();
     }
@@ -25,13 +25,13 @@ export async function POST(req) {
   await connectDB();
   try {
     const body = await req.json();
-    const { packageId, name, url, key } = body;
-    if (!packageId || !name || !url || !key) {
+    const { productId, name, url, key } = body;
+    if (!productId || !name || !url || !key) {
       return Response.json({ success: false, error: "All fields required" }, { status: 400 });
     }
-    const pdf = await PackagePdf.create({ packageId, name, url, key });
+    const pdf = await PackagePdf.create({ productId, name, url, key });
     // Optionally add to Per model
-    await Product.findByIdAndUpdate(packageId, { $push: { pdfs: pdf._id } });
+    await Product.findByIdAndUpdate(productId, { $push: { pdfs: pdf._id } });
     return Response.json({ success: true, data: pdf });
   } catch (err) {
     return Response.json({ success: false, error: err.message }, { status: 500 });
@@ -89,7 +89,7 @@ export async function DELETE(req) {
           console.error("Failed to delete PDF from Cloudinary:", e);
         }
       }
-      await Product.findByIdAndUpdate(pdf.packageId, { $pull: { pdfs: pdf._id } });
+      await Product.findByIdAndUpdate(pdf.productId, { $pull: { pdfs: pdf._id } });
     }
     return Response.json({ success: true, data: pdf });
   } catch (err) {

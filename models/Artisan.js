@@ -27,37 +27,6 @@ const artisanSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  fatherHusbandType: {
-    type: String,
-    required: true,
-    enum: ['Father', 'Husband']
-  },
-  fatherHusbandTitle: {
-    type: String,
-    required: true,
-    enum: ['Mr.', 'Late']
-  },
-  fatherHusbandName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  fatherHusbandLastName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  shgName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  artisanNumber: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
-  },
   yearsOfExperience: {
     type: Number,
     required: true
@@ -134,7 +103,6 @@ const artisanSchema = new mongoose.Schema({
     ref: 'ArtisanPlugin',
     default: null
   },
-  products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
 }, {
   timestamps: true
 });

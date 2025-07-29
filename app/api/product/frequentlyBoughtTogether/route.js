@@ -41,7 +41,7 @@ export async function GET(request) {
         'productTagLine',
         'quantity',
         'coupons',
-        'artisan'
+        'pdfs'
       ])
       .limit(8)
       .sort({ createdAt: -1 })

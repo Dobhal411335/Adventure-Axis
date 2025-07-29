@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import toast from "react-hot-toast"
 import { Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-const PackagePdf = ({ productData, packageId }) => {
+const PackagePdf = ({ productData, productId }) => {
   // State for PDF entries
   const [pdfRows, setPdfRows] = useState([]);
   const [saving, setSaving] = useState(false);
@@ -139,7 +139,7 @@ const handleEditSave = async (row) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          packageId,
+          productId,
           name: newPdf.name,
           url: newPdf.url,
           key: newPdf.key
@@ -159,7 +159,7 @@ const handleEditSave = async (row) => {
     setSaving(false);
   };
   const fetchAllPdfs = async () => {
-    const res = await fetch(`/api/packagePdf?packageId=${packageId}`);
+    const res = await fetch(`/api/packagePdf?productId=${productId}`);
     const data = await res.json();
     if (data.success && Array.isArray(data.data)) {
       setPdfRows(data.data);
@@ -168,7 +168,7 @@ const handleEditSave = async (row) => {
 
   React.useEffect(() => {
     fetchAllPdfs();
-  }, [packageId]);
+  }, [productId]);
   // Modal state for PDF delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);

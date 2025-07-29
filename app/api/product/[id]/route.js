@@ -1,7 +1,6 @@
 // API Route for fetching, updating, and deleting a product by ID
 import connectDB from "@/lib/connectDB";
 import Product from '@/models/Product';
-import Artisan from '@/models/Artisan';
 import Price from '@/models/Price';
 import Gallery from '@/models/Gallery';
 import Video from '@/models/Video';
@@ -15,7 +14,7 @@ import ProductCoupons from '@/models/ProductCoupons';
 import Quantity from '@/models/Quantity';
 import Color from '@/models/Color';
 import ProductTagLine from '@/models/ProductTagLine';
-import ArtisanStory from '@/models/ArtisanStory';
+import PackagePdf from '@/models/PackagePdf';
 // import Tax from '@/models/ProductTax';
 
 import { deleteFileFromCloudinary } from '@/utils/cloudinary';
@@ -47,10 +46,7 @@ export async function GET(req, { params }) {
     .populate('quantity')
     .populate('coupons')
     .populate('taxes')
-    .populate({
-      path: 'artisan',
-      populate: { path: 'artisanStories' }
-    })
+    .populate('pdfs')
     if (!product || !product.active) {
       return new Response(JSON.stringify({ error: 'Product not found' }), { status: 404 });
     }
@@ -74,17 +70,11 @@ export async function DELETE(req, { params }) {
     await connectDB();
     const { id } = await params;
     // Find the product to get the artisan reference before deleting
-    const product = await Product.findById(id).populate('artisan');
+    const product = await Product.findById(id);
     if (!product || !product.active) {
       return new Response(JSON.stringify({ error: 'Product not found' }), { status: 404 });
     }
     // Remove the product reference from the artisan's products array
-    if (product.artisan) {
-      await Artisan.findByIdAndUpdate(
-        product.artisan,
-        { $pull: { products: product._id } }
-      );
-    }
     // Delete all color and size docs for this product
     await Color.deleteMany({ product: id });
     await Size.deleteMany({ product: id });

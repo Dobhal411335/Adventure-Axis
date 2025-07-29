@@ -6,15 +6,6 @@ import '@/models/ArtisanCertificate';
 import '@/models/ArtisanPlugin';
 import '@/models/ArtisanBanner';
 import '@/models/ArtisanBlog';
-import '@/models/Product';
-import '@/models/Gallery'; // For product gallery deletion
-import '@/models/Video';
-import '@/models/Description';
-import '@/models/Info';
-import '@/models/CategoryTag';
-import '@/models/Quantity';
-import '@/models/ProductCoupons';
-import '@/models/ProductReview';
 import '@/models/Promotion'
 
 // Ensures all subcomponent models are registered for cascading delete
@@ -27,8 +18,7 @@ export async function POST(req) {
     const data = await req.json();
 
     // Validate required fields
-    if (!data.title || !data.firstName || !data.lastName || !data.fatherHusbandType || !data.fatherHusbandTitle || !data.fatherHusbandName ||
-      !data.fatherHusbandLastName || !data.shgName || !data.artisanNumber || !data.yearsOfExperience ||
+    if (!data.title || !data.firstName || !data.lastName || !data.yearsOfExperience ||
       !data.callNumber || !data.address || !data.city || !data.pincode || !data.state) {
       return new Response(JSON.stringify({ message: 'Missing required fields' }), { status: 400 });
     }
@@ -55,12 +45,6 @@ export async function POST(req) {
       slug: data.slug,
       firstName: data.firstName,
       lastName: data.lastName,
-      fatherHusbandType: data.fatherHusbandType,
-      fatherHusbandTitle: data.fatherHusbandTitle,
-      fatherHusbandName: data.fatherHusbandName,
-      fatherHusbandLastName: data.fatherHusbandLastName,
-      shgName: data.shgName,
-      artisanNumber: data.artisanNumber,
       yearsOfExperience: Number(data.yearsOfExperience),
       specializations: data.specializations,
       contact: {
@@ -87,9 +71,6 @@ export async function POST(req) {
     }
     return new Response(JSON.stringify({ message: 'Artisan profile created successfully', artisan }), { status: 201 });
   } catch (err) {
-    if (err.code === 11000 && err.keyPattern && err.keyPattern.artisanNumber) {
-      return new Response(JSON.stringify({ message: 'Artisan number already exists', code: 11000 }), { status: 400 });
-    }
     console.error('Error creating artisan profile:', err);
     return new Response(JSON.stringify({ message: 'Error creating artisan profile', error: err.message }), { status: 500 });
   }
@@ -203,7 +184,6 @@ export async function DELETE(req) {
       { name: 'ArtisanPlugin', field: 'artisan' },
       { name: 'ArtisanBanner', field: 'artisan', imageField: 'image' },
       { name: 'ArtisanBlog', field: 'artisan', imageField: 'images' },
-      { name: 'Product', field: 'artisan' },
     ];
 
     for (const modelDef of modelsToDelete) {
@@ -228,31 +208,6 @@ export async function DELETE(req) {
             }
           } else if (img?.key) {
             try { await deleteFileFromCloudinary(img.key); } catch (e) { console.error('Cloudinary deletion failed:', e.message); }
-          }
-        }
-        // Special case: Product galleries
-        if (modelDef.name === 'Product' && doc.gallery) {
-          let Gallery;
-          try {
-            Gallery = require('@/models/Gallery').default || require('@/models/Gallery');
-          } catch (e) { Gallery = null; }
-          if (Gallery) {
-            const galleryDoc = await Gallery.findById(doc.gallery);
-            if (galleryDoc) {
-              // Delete main image
-              if (galleryDoc.mainImage?.key) {
-                try { await deleteFileFromCloudinary(galleryDoc.mainImage.key); } catch (e) { console.error('Cloudinary deletion failed:', e.message); }
-              }
-              // Delete sub images
-              if (Array.isArray(galleryDoc.subImages)) {
-                for (const subImg of galleryDoc.subImages) {
-                  if (subImg?.key) {
-                    try { await deleteFileFromCloudinary(subImg.key); } catch (e) { console.error('Cloudinary deletion failed:', e.message); }
-                  }
-                }
-              }
-              await Gallery.findByIdAndDelete(doc.gallery);
-            }
           }
         }
         await Model.findByIdAndDelete(doc._id);

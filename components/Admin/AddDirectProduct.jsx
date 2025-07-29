@@ -50,7 +50,7 @@ const AddDirectProduct = ({ productId }) => {
     { key: 'info', label: 'Product Information', component: (props) => <ProductInfo {...props} productData={productData} productId={productId} /> },
     { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} productData={productData} productId={productId} /> },
     { key: 'tag', label: 'Category Tag', component: (props) => <CategoryTag {...props} productData={productData} productId={productId} /> },
-    { key: 'pdf', label: 'Upload Package PDF', component: (props) => <PackagePdf {...props} productData={productData} packageId={productId} /> },
+    { key: 'pdf', label: 'Upload Package PDF', component: (props) => <PackagePdf {...props} productData={productData} productId={productId} /> },
   ];
   const [activeSection, setActiveSection] = useState(sectionConfig[0].key);
 

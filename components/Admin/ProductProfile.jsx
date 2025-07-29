@@ -14,8 +14,6 @@ import { Label } from "../ui/label";
 const ProductProfile = ({ id }) => {
     const [title, setTitle] = useState("");
     const [code, setCode] = useState(""); // Will be auto-generated
-    const [artisan, setArtisan] = useState("");
-    const [artisans, setArtisans] = useState([]);
     const [loading, setLoading] = useState(false);
     const [refreshTable, setRefreshTable] = useState(false);
     // For inline editing
@@ -47,16 +45,6 @@ const ProductProfile = ({ id }) => {
         setCode(generateCode());
     }, []);
 
-    useEffect(() => {
-        setLoading(true);
-        fetch('/api/createArtisan')
-            .then(res => res.json())
-            .then(data => {
-                setArtisans(Array.isArray(data) ? data : []);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
     // Slugify utility
     function slugify(str) {
         return str
@@ -68,9 +56,8 @@ const ProductProfile = ({ id }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim()) return toast.error('Title cannot be empty');
-        if (!artisan) return toast.error('Select an artisan');
         // Always create direct product
-        let payload = { title, code, slug: slugify(title), artisan, isDirect: true };
+        let payload = { title, code, slug: slugify(title), isDirect: true };
         const res = await fetch('/api/product', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -78,7 +65,7 @@ const ProductProfile = ({ id }) => {
         });
         if (res.ok) {
             const newProduct = await res.json();
-            setTitle(""); setCode(""); setArtisan("");
+            setTitle(""); setCode("");
             setRefreshTable(r => !r);
             toast.success('Direct product saved!');
         } else {
@@ -158,20 +145,20 @@ const ProductProfile = ({ id }) => {
             <form className="flex flex-col items-center justify-center gap-8 my-20 bg-gray-200 w-full max-w-xl md:max-w-3xl mx-auto p-4 rounded-lg" onSubmit={async e => {
                 e.preventDefault();
                 if (!title.trim()) return toast.error('Title cannot be empty');
-                if (!artisan) return toast.error('Select an artisan');
+      
                 if (editingId) {
                     // Update mode
                     const res = await fetch(`/api/product/${encodeURIComponent(title)}`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, artisan })
+                        body: JSON.stringify({ title })
                     });
                     if (res.ok) {
                         const updated = await res.json();
-                        setProducts(ps => ps.map(p => p._id === editingId ? { ...p, title: updated.title, artisan: updated.artisan } : p));
+                        setProducts(ps => ps.map(p => p._id === editingId ? { ...p, title: updated.title } : p));
                         setEditingId(null);
                         setTitle("");
-                        setArtisan("");
+                
                         toast.success('Product updated!');
                     } else {
                         let err;
@@ -199,7 +186,7 @@ const ProductProfile = ({ id }) => {
                     }
                 }
             }}>
-                <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full">
+                <div className="flex md:flex-row flex-col items-center gap-6 w-full">
                     <div className="flex flex-col gap-2 w-full">
                         <label htmlFor="productCode" className="font-semibold">Product Code</label>
                         <Input name="productCode" className="w-full border-2 font-bold border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 bg-gray-100" placeholder="Pre Fix" value={code} readOnly />
@@ -208,30 +195,11 @@ const ProductProfile = ({ id }) => {
                         <label htmlFor="productTitle" className="font-semibold">Product Title</label>
                         <Input name="productTitle" className="w-full border-2 font-bold border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0" placeholder="Type Here:" value={title} onChange={e => setTitle(e.target.value)} />
                     </div>
-                    <div className="flex flex-col gap-2 w-full">
-                        <label htmlFor="artisan" className="font-semibold">Artisan Name</label>
-                        <Select value={artisan} onValueChange={setArtisan} name="artisan" disabled={loading}>
-                            <SelectTrigger className="w-full border-2 bg-transparent border-blue-600 focus:border-blue-500 focus:ring-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0">
-                                <SelectValue placeholder={loading ? 'Loading artisans...' : 'Select Artisan'} />
-                            </SelectTrigger>
-                            <SelectContent className="border-2 border-blue-600 bg-gray-200">
-                                <SelectGroup>
-                                    {artisans.length > 0 ? (
-                                        artisans.map(a => (
-                                            <SelectItem key={a._id} value={a._id} className="focus:bg-blue-300 font-bold">
-                                                {a.title ? `${a.title} ` : ''}{a.firstName} {a.lastName}
-                                            </SelectItem>
-                                        ))
-                                    ) : null}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
                 </div>
                 {editingId ? (
                     <div className="flex gap-4 mt-4">
                         <Button type="submit" className="bg-green-600">Update</Button>
-                        <Button type="button" className="bg-gray-400" onClick={() => { setEditingId(null); setTitle(""); setArtisan(""); }}>Cancel</Button>
+                        <Button type="button" className="bg-gray-400" onClick={() => { setEditingId(null); setTitle("");}}>Cancel</Button>
                     </div>
                 ) : (
                     <Button type="submit" className="bg-red-500">Save Product</Button>
@@ -244,7 +212,7 @@ const ProductProfile = ({ id }) => {
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="py-2 px-4 text-center">Title</th>
-                            <th className="py-2 px-4 text-center">Artisan</th>
+          
                             <th className="py-2 px-4 text-center">URL</th>
                             <th className="py-2 px-4 text-center">QR</th>
                             <th className="py-2 px-4 text-center">Active</th>
@@ -255,11 +223,7 @@ const ProductProfile = ({ id }) => {
                         {products.map((prod, idx) => (
                             <tr key={prod._id} className="border-t">
                                 <td className="py-2 px-4 text-center">{prod.title}</td>
-                                <td className="py-2 px-4 text-center">
-                                    {prod.artisan && typeof prod.artisan === 'object'
-                                        ? `${prod.artisan.firstName || ''} ${prod.artisan.lastName || ''}`.trim()
-                                        : prod.artisan || ''}
-                                </td>
+                               
                                 {/* <td className="py-2 px-4 text-center">{prod.code}</td> */}
                                 {/* <td className="py-2 px-4 text-center">
                                     <div className="flex flex-col items-center">
@@ -357,7 +321,7 @@ const ProductProfile = ({ id }) => {
                                             onClick={() => {
                                                 setEditingId(prod._id);
                                                 setTitle(prod.title);
-                                                setArtisan(prod.artisan || "");
+                                                
                                             }}
                                         >
                                             Edit

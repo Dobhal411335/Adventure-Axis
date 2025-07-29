@@ -1,7 +1,6 @@
 // API Route for ProductProfile (Create Product)
 import connectDB from "@/lib/connectDB";
 import Product from '@/models/Product';
-import Artisan from '@/models/Artisan';
 import Size from '@/models/Size';
 import Color from '@/models/Color';
 import Gallery from '@/models/Gallery';
@@ -14,7 +13,7 @@ import Quantity from '@/models/Quantity';
 import ProductCoupons from '@/models/ProductCoupons';
 import ProductTax from '@/models/ProductTax';
 import ProductTagLine from '@/models/ProductTagLine';
-
+import PackagePdf from '@/models/PackagePdf';
 import { deleteFileFromCloudinary } from '@/utils/cloudinary';
 
 export async function POST(req) {
@@ -22,15 +21,14 @@ export async function POST(req) {
     await connectDB();
     const body = await req.json();
     // Accept all relevant fields
-    const { title, code, artisan, isDirect, categoryTag, ...rest } = body;
-    if (!title || !code || !artisan) {
+    const { title, code, isDirect, categoryTag, ...rest } = body;
+    if (!title || !code) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
     }
     // If explicitly direct, ignore categoryTag
     let productData = {
       title,
       code,
-      artisan,
       isDirect: true,
       ...rest
     };
@@ -45,11 +43,6 @@ export async function POST(req) {
     // Create product with proper linkage
     const product = await Product.create(productData);
     // Add product ref to artisan
-    await Artisan.findByIdAndUpdate(
-      artisan,
-      { $push: { products: product._id } },
-      { new: true, upsert: false }
-    );
     return new Response(JSON.stringify(product), { status: 201 });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
@@ -66,7 +59,7 @@ export async function GET(req) {
     if (id) {
       // Find by MongoDB _id
       const product = await Product.findById(id)
-        .populate('artisan')
+        
         .populate('size')
         // .populate('color')
         .populate('price')
@@ -79,7 +72,8 @@ export async function GET(req) {
         .populate('reviews')
         .populate('quantity')
         .populate('coupons')
-        .populate('taxes');
+        .populate('taxes')
+        .populate('pdfs');
       if (!product || !product.active) {
         return new Response(JSON.stringify({ error: 'Product not found' }), { status: 404 });
       }
@@ -95,7 +89,7 @@ export async function GET(req) {
     } else if (name) {
       // Fallback to slug search
       const product = await Product.findOne({ slug: name })
-        .populate('artisan')
+        
         .populate('size')
         // .populate('color')
         .populate('price')
@@ -108,7 +102,8 @@ export async function GET(req) {
         .populate('reviews')
         .populate('quantity')
         .populate('coupons')
-        .populate('taxes');
+        .populate('taxes')
+        .populate('pdfs');
 
       if (!product) {
         return new Response(JSON.stringify({ error: 'Product not found' }), { status: 404 });
@@ -130,9 +125,7 @@ export async function GET(req) {
       // Always filter for active products
       filter.active = true;
       let products = await Product.find(filter)
-        .populate('artisan')
-        // .populate('size')
-        // .populate('color')
+       
         .populate('price')
         .populate('gallery')
         .populate('video')
@@ -143,7 +136,8 @@ export async function GET(req) {
         .populate('reviews')
         .populate('quantity')
         .populate('coupons')
-        .populate('taxes');
+        .populate('taxes')
+        .populate('pdfs');
 
       // Ensure taxes is populated for all products
       const TaxModel = (await import('@/models/ProductTax')).default;

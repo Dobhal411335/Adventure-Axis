@@ -9,7 +9,6 @@ import { ArrowLeftIcon } from 'lucide-react';
 const sectionTitles = [
   'Profile',
   'Promotions Reviews',
-  'Catalog',
   'Blog',
   'Artisan Story',
   'Social Plugins',
@@ -52,7 +51,6 @@ const ArtisanDashboard = () => {
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ show: false, type: '', id: null });
-  const [catalogLoading, setCatalogLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const router = useRouter();
   // console.log(stories)
@@ -220,44 +218,6 @@ const ArtisanDashboard = () => {
                   <div className="flex gap-2 mt-2 self-end">
                     <Button size="sm" variant="default" onClick={() => { setSelectedPromotion(promotion); setShowPromotionModal(true); }}>View</Button>
                     <Button size="sm" variant="destructive" onClick={() => handleDelete('promotion', promotion._id)}>Delete</Button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-        {/* Catalog Section */}
-        {activeKey === 'Catalog' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {catalogLoading ? (
-              <div className="col-span-3 text-center">Loading products...</div>
-            ) : products.length === 0 ? (
-              <div className="col-span-3 text-center">No products found for this management.</div>
-            ) : (
-              products.map((product, idx) => (
-                <div
-                  key={product._id || idx}
-                  className="flex flex-col overflow-hidden"
-                >
-                  {/* Image Section */}
-                  <div className="w-full h-48 bg-gray-100">
-                    <img
-                      src={product.gallery?.mainImage?.url || '/placeholder.jpeg'}
-                      alt={product.title || 'Product Image'}
-                      className="w-full h-full object-cover rounded-xl"
-                      onError={e => { e.target.onerror = null; e.target.src = '/placeholder.jpeg'; }}
-                    />
-                  </div>
-                  {/* Info Section */}
-                  <div className="flex items-center justify-between gap-1 p-3">
-                    <Link
-                      href={`/product/${product._id}`}
-                    >
-                      <div className="font-semibold text-base text-gray-900 truncate hover:underline cursor-pointer">{product.title || 'Product'}</div>
-                    </Link>
-                    <div className="text-green-700 font-bold text-lg">
-                      {product.quantity?.variants[0] ? `₹${product.quantity.variants[0].price}` : 'No price'}
-                    </div>
                   </div>
                 </div>
               ))

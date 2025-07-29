@@ -39,7 +39,6 @@ const AddProduct = ({ id }) => {
         // Use react-hook-form's reset to fill all fields
         reset({
             title: prod.title || '',
-            artisan: prod.artisan || '',
             order: prod.order || 1,
             active: typeof prod.active === 'boolean' ? prod.active : true,
             // Add other fields as needed
@@ -47,7 +46,6 @@ const AddProduct = ({ id }) => {
         setProductCode(prod.code || '');
         setActive(typeof prod.active === 'boolean' ? prod.active : true);
         setOrder(prod.order || 1);
-        setArtisan(prod.artisan || '');
         setTitle(prod.title || '');
         setIsEditing(true);
         // Optionally scroll to form
@@ -60,7 +58,6 @@ const AddProduct = ({ id }) => {
     const handleCancelEdit = () => {
         reset({
             title: '',
-            artisan: '',
             order: 1,
             active: true,
             // Add other fields as needed
@@ -68,7 +65,6 @@ const AddProduct = ({ id }) => {
         setProductCode(generateCode());
         setActive(true);
         setOrder(1);
-        setArtisan('');
         setTitle('');
         setIsEditing(false);
     };
@@ -122,8 +118,6 @@ const AddProduct = ({ id }) => {
     const [productCode, setProductCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [products, setProducts] = useState([]);
-    const [artisans, setArtisans] = useState([]);
-    const [artisan, setArtisan] = useState("");
     const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState("");
     const [order, setOrder] = useState(1);
@@ -137,18 +131,6 @@ const AddProduct = ({ id }) => {
     const [qrModalDescription, setQrModalDescription] = useState('');
     const [qrModalCoupon, setQrModalCoupon] = useState({ code: '', amount: 0 });
 
-    // console.log(products)
-
-    useEffect(() => {
-        setLoading(true);
-        fetch('/api/createArtisan')
-            .then(res => res.json())
-            .then(data => {
-                setArtisans(Array.isArray(data) ? data : []);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
 
     useEffect(() => {
         setProductCode(generateCode());
@@ -200,7 +182,7 @@ const AddProduct = ({ id }) => {
         }
     };
     const onSubmit = async () => {
-        if (!title || !artisan) {
+        if (!title) {
             toast.error("All fields are required", { style: { borderRadius: "10px", border: "2px solid red" } });
             return;
         }
@@ -211,7 +193,6 @@ const AddProduct = ({ id }) => {
                 title,
                 slug: slugify(title),
                 code: productCode,
-                artisan,
                 order,
                 active: typeof active === 'boolean' ? active : true,
                 isDirect: !subMenuId,
@@ -231,12 +212,12 @@ const AddProduct = ({ id }) => {
                     // Reset form and state
                     reset({
                         title: '',
-                        artisan: '',
+                    
                         order: 1,
                         active: true
                     });
                     setTitle('');
-                    setArtisan('');
+                
                     setOrder(1);
                     setActive(true);
                     setProductCode(generateCode());
@@ -270,7 +251,7 @@ const AddProduct = ({ id }) => {
                     toast.success('Product added successfully!', { style: { borderRadius: "10px", border: "2px solid green" } });
                     reset();
                     setTitle('');
-                    setArtisan('');
+                
                     setProductCode(generateCode());
                     // Refetch products
                     if (subMenuId) {
@@ -299,37 +280,19 @@ const AddProduct = ({ id }) => {
     };
     return (
         <>
-            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-blue-100 w-[50%] max-w-xl md:max-w-7xl mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
+            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-gray-200 w-full md:w-fit mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full">
                     <div className="flex flex-col gap-2">
                         <label htmlFor="productCode" className="font-semibold">Product Code</label>
-                        <Input name="productCode" className="w-32 border-2 border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 font-bold" readOnly value={productCode} />
+                        <Input name="productCode" className="w-full border-2 border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 font-bold" readOnly value={productCode} />
                     </div>
                     <div className="flex flex-col gap-2 ">
                         <label htmlFor="productTitle" className="font-semibold">Product Title</label>
                         <Input name="productTitle" className="w-full border-2 font-bold border-blue-600 " value={title} onChange={e => setTitle(e.target.value)} />
                     </div>
-                    <div className="flex flex-col gap-2 w-1/2">
-                        <label htmlFor="artisan" className="font-semibold">Artisan Name</label>
-                        <Select value={artisan} onValueChange={setArtisan} name="artisan" disabled={loading}>
-                            <SelectTrigger className="w-full border-2 bg-transparent border-blue-600 focus:border-blue-500 focus:ring-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0">
-                                <SelectValue placeholder={loading ? 'Loading artisans...' : 'Select Artisan'} />
-                            </SelectTrigger>
-                            <SelectContent className="border-2 border-blue-600 bg-gray-200">
-                                <SelectGroup>
-                                    {artisans.length > 0 ? (
-                                        artisans.map(a => (
-                                            <SelectItem key={a._id} value={a._id} className="focus:bg-blue-300 font-bold">
-                                                {a.title ? `${a.title} ` : ''}{a.firstName} {a.lastName}
-                                            </SelectItem>
-                                        ))
-                                    ) : null}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                
                 </div>
-                <Button type="submit" className="bg-blue-600 hover:bg-blue-500">Add Product</Button>
+                <Button type="submit" className="bg-red-600 hover:bg-red-500">Add Product</Button>
             </form>
 
             <div className="bg-blue-100 p-4 rounded-lg shadow max-w-5xl mx-auto w-full overflow-x-auto lg:overflow-visible text-center">
