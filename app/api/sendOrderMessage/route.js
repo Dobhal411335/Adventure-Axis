@@ -7,8 +7,6 @@ export async function POST(req) {
     await connectDB();
     const body = await req.json();
     const { sender, adminName, text, userId, orderId, images } = body;
-    console.log("sendOrderMessage POST body:", body);
-    console.log("userId:", userId, typeof userId, "orderId:", orderId, typeof orderId);
 
     if (!userId || !orderId || !sender || !text) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });

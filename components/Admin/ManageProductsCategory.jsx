@@ -35,7 +35,7 @@ const ManageProductsCategory = () => {
     const [editProfileImage, setEditProfileImage] = useState(null);
     const [showProductProfile, setShowProductProfile] = useState(false);
     const [profileProps, setProfileProps] = useState({});
-    console.log(bannerImage)
+    // console.log(bannerImage)
     // Gallery state for product images
     // const [galleryImages, setGalleryImages] = useState([])
     // const [loadedGalleryImages, setLoadedGalleryImages] = useState([])

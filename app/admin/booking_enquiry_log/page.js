@@ -11,7 +11,7 @@ const  CodOrderLogPage = () => {
                 </div>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                <h1 className="text-4xl px-12 font-semibold">COD Order Log</h1>
+                <h1 className="text-4xl px-12 font-semibold">Booking Enquriy Order Log</h1>
                 <CodOrderLog />
             </div>
         </SidebarInset>

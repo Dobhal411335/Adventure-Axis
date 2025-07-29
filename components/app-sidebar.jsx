@@ -184,8 +184,8 @@ const data = {
       icon: ShoppingCart,
     },
     {
-      name: "COD Order Log",
-      url: "/admin/cod_order_log",
+      name: "Booking Enquiry Log",
+      url: "/admin/booking_enquiry_log",
       icon: ShoppingCart,
     },
     {

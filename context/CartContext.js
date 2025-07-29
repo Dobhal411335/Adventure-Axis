@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 const CartContext = createContext();
+
 function getInitial(key, fallback) {
   if (typeof window === "undefined") return fallback;
   try {
@@ -26,9 +27,13 @@ export function CartProvider({ children, session }) {
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
+
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
+
+  // Rest of your component code...
+  // Make sure there are no extra opening braces in the rest of the file
 
   // Cart functions
   const addToCart = (item, qty = 1) => {

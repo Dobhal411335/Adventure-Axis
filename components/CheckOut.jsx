@@ -3,18 +3,6 @@ import React, { useState } from 'react';
 import { useCart } from "../context/CartContext";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from "./ui/dialog";
-const shippingOptions = [
-  { label: 'Free shipping', value: 'free', cost: 0 },
-  { label: 'Flat Rate', value: 'flat', cost: 25.75 },
-];
 // Function to load Razorpay script on client
 const loadRazorpayScript = () => {
   return new Promise((resolve) => {
@@ -42,7 +30,7 @@ function generateOrderId() {
   for (let i = 0; i < 6; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return `ORD-${result}`;
+  return `BOOK-${result}`;
 }
 function generateTransactionId() {
   return `TXN-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -152,12 +140,14 @@ const CheckOut = () => {
   const [appliedPromoDetails, setAppliedPromoDetails] = useState(null);
   const [showOverview, setShowOverview] = useState(false);
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState(null);
+  const [showEnquiryModal, setShowEnquiryModal] = useState(false);
+  const [isSubmittingEnquiry, setIsSubmittingEnquiry] = useState(false);
   // Load cart data from localStorage and handle authentication state
   const [shipping, setShipping] = useState('free');
-  const isBuyNow = typeof window !== "undefined" && 
+  const isBuyNow = typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get('mode') === 'buy-now';
   const sendOrderConfirmationEmail = async (orderData, products, paymentMethod) => {
- 
+
     try {
       const {
         firstName = '',
@@ -229,17 +219,14 @@ const CheckOut = () => {
               <div class="footer">
                 <p>Order Date: ${new Date().toLocaleDateString()}</p>
               </div>
-              
               <div class="shipping-address">
                 <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px; font-weight: 600;">Shipping Address</h3>
                 <p> Name: ${firstName} ${lastName}</p>
                 <p> Address: ${street}</p>
-                <p> City: ${city}, State: ${state} Pincode: ${pincode}</p>
+                <p> City: ${city}, State: ${state} </p>
+                <p>Pincode: ${pincode}</p>
                 <p>Phone: ${phone}${altPhone ? `<br>Alt. Phone: ${altPhone}` : ''}</p>
               </div>
-          
-          
-              
               <h3 style="margin-top:32px; font-size:18px;">Order Summary</h3>
               <table class="summary-table">
                 <thead>
@@ -293,7 +280,7 @@ const CheckOut = () => {
                   <div>
                     <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">Order Status: Pending</h3>
                     <p style="margin: 0; font-size: 14px; color: #4b5563;">
-                      Payment Method: ${paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}
+                      Method: ${paymentMethod === 'online' ? 'Online Payment' : 'Booking Enquiry'}
                     </p>
                   </div>
                 </div>
@@ -448,10 +435,10 @@ const CheckOut = () => {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: Math.round(Number(finalAmount) * 100), // Convert to paise
         currency: "INR",
-        name: "Rishikesh Handmade",
+        name: "Adventure Axis",
         description: "Order Payment",
         order_id: razorpayOrderId,
-        handler: createPaymentHandler(cart, checkoutData, formFields, user, orderId, setError, setShowConfirmationModal, setOrderId, routerInstance, formFields, customerData,isBuyNow), // Pass customer data for email
+        handler: createPaymentHandler(cart, checkoutData, formFields, user, orderId, setError, setShowConfirmationModal, setOrderId, routerInstance, formFields, customerData, isBuyNow), // Pass customer data for email
         prefill: {
           name: customerData.name,
           email: customerData.email,
@@ -543,8 +530,8 @@ const CheckOut = () => {
             cartTotal: checkoutData?.cartTotal || 0,
 
           },
-          (isBuyNow && checkoutData?.cart) 
-          ? checkoutData.cart.map(item => ({
+          (isBuyNow && checkoutData?.cart)
+            ? checkoutData.cart.map(item => ({
               ...item,
               image: typeof item.image === 'string' ? item.image : item.image?.url || '',
               name: item.name || 'Product',
@@ -552,7 +539,7 @@ const CheckOut = () => {
               price: item.price || 0,
               size: item.size || ''
             }))
-          : cart.map(item => ({
+            : cart.map(item => ({
               ...item,
               image: typeof item.image === 'string' ? item.image : item.image?.url || '',
               name: item.name || 'Product',
@@ -560,8 +547,8 @@ const CheckOut = () => {
               price: item.price || 0,
               size: item.size || ''
             })),
-        'online'
-      );
+          'online'
+        );
 
         if (emailSent) {
           toast.success('Order confirmation email sent!');
@@ -813,11 +800,6 @@ const CheckOut = () => {
       .then(data => setStatesList(Array.isArray(data) ? data : []));
   }, []);
 
-  const handleApplyPincode = () => {
-    setPincodeChecked(true);
-    setIsPincodeConfirmModalOpen(false);
-  };
-
   // Promo code apply handler (modeled after CartDetails)
   const handleApplyPromo = async () => {
     if (!Array.isArray(checkoutData.cart)) {
@@ -936,12 +918,9 @@ const CheckOut = () => {
   // const [error, setError] = useState(null);
 
 
-  const paymentOptions = [
-    { value: 'online', label: 'Online Payment' },
-    { value: 'cod', label: 'Cash on Delivery (COD)' }
-  ];
-  const [payment, setPayment] = useState('cod');
-  const [paymentMethod, setPaymentMethod] = useState('cod');
+ 
+  const [payment, setPayment] = useState('booking_enquiry');
+  const [paymentMethod, setPaymentMethod] = useState('booking_enquiry');
   const [agree, setAgree] = useState(false);
   const [saveAddress, setSaveAddress] = useState(false);
   const [formErrors, setFormErrors] = useState({});
@@ -1302,14 +1281,14 @@ const CheckOut = () => {
       const finalAmount = checkoutData.cartTotal;
       await handleOnlinePaymentWithOrder(finalAmount, checkoutData.cart, customer, setLoading, setError, router, checkoutData);
     }
-    else if (payment === "cod") {
+    else if (payment === "booking_enquiry") {
       // Handle Cash on Delivery
       setLoading(true);
       try {
         // Prepare and create COD order
-        setPaymentMethod('cod');
-        const orderData = prepareOrderData('cod');
-        const result = await handleCreateOrder('cod', orderData);
+        setPaymentMethod('booking_enquiry');
+        const orderData = prepareOrderData('booking_enquiry');
+        const result = await handleCreateOrder('booking_enquiry', orderData);
         if (result) {
           // Clear the form
           setFirstName('');
@@ -1325,11 +1304,6 @@ const CheckOut = () => {
           setShowConfirmationModal(true);
           setOrderId(result._id || result.orderId);
 
-          // Force a page reload to ensure all state is reset
-          setTimeout(() => {
-            // Clear everything again before redirecting
-            window.location.href = `/order-confirmation?orderId=${result._id || result.orderId}`;
-          }, 1000);
         }
       }
 
@@ -1341,6 +1315,118 @@ const CheckOut = () => {
       }
     }
   };
+
+  // Add this function near your other handler functions
+  const handleEnquirySubmit = async () => {
+    if (!checkoutData?.cart || checkoutData.cart.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+
+    setIsSubmittingEnquiry(true);
+    try {
+      const orderId = generateOrderId();
+      const transactionId = generateTransactionId();
+
+      // Prepare products data
+      const preparedProducts = checkoutData.cart.map(item => ({
+        ...item,
+        image: typeof item.image === 'string' ? item.image : item.image?.url || '',
+        qty: item.qty || 1,
+        price: item.price || 0,
+        color: item.color || '',
+        size: item.size || ''
+      }));
+
+      // Prepare order data
+      const orderData = {
+        ...buildOrderPayload({
+          cart: preparedProducts,
+          checkoutData: {
+            ...checkoutData,
+            cartTotal: checkoutData.cartTotal || 0,
+            subTotal: checkoutData.subTotal || 0,
+            totalDiscount: checkoutData.totalDiscount || 0,
+            totalTax: checkoutData.totalTax || 0,
+            promoCode: checkoutData.promoCode || null,
+            promoDiscount: checkoutData.promoDiscount || 0,
+            shippingCost: checkoutData.shippingCost || 0,
+          },
+          ...formFields,
+          payment: 'booking_enquiry',
+          paymentMethod: 'booking_enquiry',
+          paymentMethodValue: 'booking_enquiry',
+          transactionId,
+          orderId,
+          agree: true,
+          statusValue: 'Enquiry Received'
+        }),
+        items: preparedProducts,
+        status: 'Enquiry Received',
+        paymentStatus: 'Pending',
+        paymentMethod: 'booking_enquiry',
+        isBuyNow: isBuyNow,
+        datePurchased: new Date().toISOString()
+      };
+
+      // Submit enquiry to your API
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      const data = await res.json();
+
+      if (data.orderId) {
+        // Send confirmation email
+        await sendOrderConfirmationEmail(
+          {
+            ...formFields,
+            orderId: orderId,
+            paymentMethod: 'Booking Enquiry',
+            orderDate: new Date().toISOString(),
+            subTotal: checkoutData.subTotal || 0,
+            totalDiscount: checkoutData.totalDiscount || 0,
+            totalTax: checkoutData.totalTax || 0,
+            shippingCost: checkoutData.shippingCost || 0,
+            cartTotal: checkoutData.cartTotal || 0,
+            email: formFields.email || session?.user?.email,
+            firstName: formFields.firstName || '',
+            lastName: formFields.lastName || '',
+            street: formFields.street || '',
+            city: formFields.city || '',
+            state: formFields.state || '',
+            pincode: formFields.pincode || '',
+            phone: formFields.phone || '',
+            altPhone: formFields.altPhone || ''
+          },
+          checkoutData.cart.map(item => ({
+            ...item,
+            image: typeof item.image === 'string' ? item.image : item.image?.url || '',
+            name: item.name || 'Product',
+            qty: item.qty || 1,
+            price: item.price || 0,
+            size: item.size || ''
+          })),
+          'booking_enquiry'
+        );
+
+        // Clear cart and show success message
+        clearCart();
+        toast.success('Your enquiry has been submitted successfully! Our team will contact you shortly.');
+      } else {
+        throw new Error('Failed to submit enquiry');
+      }
+    } catch (error) {
+      console.error('Error submitting enquiry:', error);
+      toast.error('Failed to submit enquiry. Please try again.');
+    } finally {
+      setIsSubmittingEnquiry(false);
+      setShowEnquiryModal(false);
+    }
+  };
+
 
   // Handler for confirming payment on overview (step 2 → step 3)
   const handleConfirmAndPay = async () => {
@@ -1392,11 +1478,11 @@ const CheckOut = () => {
         productsToProcess = [...contextCart];
       }
 
-      if (confirmedPaymentMethod === 'cod') {
+      if (confirmedPaymentMethod === 'booking_enquiry') {
         // Always generate unique orderId for COD using shared generator
         orderId = generateOrderId();
         transactionId = orderId; // For COD, transactionId is same as orderId
-        setPaymentMethod('cod');
+        setPaymentMethod('booking_enquiry');
         // Prepare products with proper image URL handling
         const preparedProducts = productsToProcess.map(item => ({
           ...item,
@@ -1456,9 +1542,9 @@ const CheckOut = () => {
               })
             },
             ...formFields,
-            payment: 'cod',
-            paymentMethod: 'cod',
-            paymentMethodValue: 'cod',
+            payment: 'booking_enquiry',
+            paymentMethod: 'booking_enquiry',
+            paymentMethodValue: 'booking_enquiry',
             transactionId,
             orderId,
             agree: true,
@@ -1509,7 +1595,7 @@ const CheckOut = () => {
           // Ensure these fields are included
           status: 'Pending',
           paymentStatus: 'Pending',
-          paymentMethod: 'cod',
+          paymentMethod: 'booking_enquiry',
           isBuyNow: isBuyNow,
           datePurchased: new Date().toISOString()
         };
@@ -1525,13 +1611,16 @@ const CheckOut = () => {
           setLoading(false);
           return;
         }
+        
+        // Show enquiry submitted toast first
+        toast.success('Enquiry Submitted Successfully!');
         // Add this email sending logic right here:
         try {
           const emailSent = await sendOrderConfirmationEmail(
             {
               ...formFields,
               orderId: orderId,
-              paymentMethod: 'cod',
+              paymentMethod: 'booking_enquiry',
               orderDate: new Date().toISOString(),
               subTotal: checkoutData?.subTotal || 0,
               totalDiscount: checkoutData?.totalDiscount || 0,
@@ -1551,8 +1640,8 @@ const CheckOut = () => {
               altPhone: formFields.altPhone || ''
             },
             // Pass cart items as second parameter
-            (isBuyNow && checkoutData?.cart) 
-            ? checkoutData.cart.map(item => ({
+            (isBuyNow && checkoutData?.cart)
+              ? checkoutData.cart.map(item => ({
                 ...item,
                 image: typeof item.image === 'string' ? item.image : item.image?.url || '',
                 name: item.name || 'Product',
@@ -1560,7 +1649,7 @@ const CheckOut = () => {
                 price: item.price || 0,
                 size: item.size || ''
               }))
-            : checkoutData?.cart.map(item => ({
+              : checkoutData?.cart.map(item => ({
                 ...item,
                 image: typeof item.image === 'string' ? item.image : item.image?.url || '',
                 name: item.name || 'Product',
@@ -1568,10 +1657,11 @@ const CheckOut = () => {
                 price: item.price || 0,
                 size: item.size || ''
               })),
-          'cod'
-        );
+            'booking_enquiry'
+          );
 
           if (emailSent) {
+            // This toast will show after the enquiry submitted toast
             toast.success('Order confirmation email sent!');
           }
         } catch (emailError) {
@@ -1583,156 +1673,8 @@ const CheckOut = () => {
         if (isBuyNow && typeof window !== 'undefined') {
           localStorage.removeItem('buyNowProduct');
         }
-        // Optionally send confirmation email here
-        // try {
-        //   const emailResponse = await fetch('/api/brevo', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({
-        //       to: email,
-        //       subject: 'Order Confirmation',
-        //       htmlContent: `<!DOCTYPE html>
-        // <html lang="en">
-        // <head>
-        //     <meta charset="UTF-8">
-        //     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        //     <title>Order Confirmation</title>
-        //     <style type="text/css">
-        //       body { font-family: Arial, sans-serif; background: #f8f9fa; }
-        //       .container { background: #fff; border-radius: 8px; margin: 32px auto; max-width: 600px; padding: 32px 24px; }
-        //       .header { text-align: center; }
-        //       .summary-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
-        //       .summary-table th, .summary-table td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; font-size: 14px; }
-        //       .summary-table th { background: #f3f4f6; }
-        //       .product-img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; }
-        //       .dashboard-btn { 
-        //         display: block; 
-        //         width: 100%; 
-        //         margin: 32px 0 0 0; 
-        //         text-align: center; 
-        //         background: #f97316; 
-        //         color: #fff; 
-        //         padding: 12px 0; 
-        //         border-radius: 6px; 
-        //         text-decoration: none; 
-        //         font-weight: bold; 
-        //         font-size: 16px; 
-        //       }
-        //       .shipping-address {
-        //         margin: 24px 0;
-        //         padding: 16px;
-        //         background: #f9f9f9;
-        //         border-radius: 6px;
-        //       }
-        //     </style>
-        // </head>
-        // <body>
-        //   <div class="container">
-        //     <div class="header">
-        //       <h2>Thank you for your order!</h2>
-        //       <p>Hello, ${firstName} ${lastName}</p>
-        //     </div>
-
-        //     <div class="shipping-address">
-        //       <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px; font-weight: 600;">Shipping Address</h3>
-        //       <p>${firstName} ${lastName}</p>
-        //       <p>${street}</p>
-        //       <p>${city}, ${state} ${pincode}</p>
-        //       <p>Phone: ${phone}${altPhone ? `<br>Alt. Phone: ${altPhone}` : ''}</p>
-        //     </div>
-
-        //     <div class="footer">
-        //       <p>Order ID: ${data.orderId || orderId}</p>
-        //       <p>Order Date: ${new Date().toLocaleDateString()}</p>
-        //     </div>
-
-        //     <h3 style="margin-top:32px; font-size:18px;">Order Summary</h3>
-        //     <table class="summary-table">
-        //       <thead>
-        //         <tr>
-        //           <th>Image</th>
-        //           <th>Name</th>
-        //           <th>Qty</th>
-        //           <th>Size</th>
-        //           <th>Price</th>
-        //         </tr>
-        //       </thead>
-        //       <tbody>
-        //         ${Array.isArray(productsToProcess) ? productsToProcess.map(item => `
-        //           <tr>
-        //             <td><img src="${item.image?.url || item.image || ''}" class="product-img" alt="${item.name || ''}" /></td>
-        //             <td>${item.name || 'Product'}</td>
-        //             <td>${item.qty || 1}</td>
-        //             <td>${item.size || '-'}</td>
-        //             <td>₹${Number(item.price || 0).toFixed(2)}</td>
-        //           </tr>
-        //         `).join('') : ''}
-        //       </tbody>
-        //     </table>
-
-        //     <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border-radius: 6px;">
-        //       <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px; font-weight: 600;">Order Summary</h3>
-        //       <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        //         <span>Subtotal:</span>
-        //         <span>₹${checkoutData?.subTotal ? Number(checkoutData.subTotal).toFixed(2) : '0.00'}</span>
-        //       </div>
-        //       ${checkoutData?.totalDiscount > 0 ? `
-        //         <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #10b981;">
-        //           <span>Discount (${checkoutData.promoCode}):</span>
-        //           <span>-₹${Number(checkoutData.totalDiscount).toFixed(2)}</span>
-        //         </div>
-        //       ` : ''}
-        //       <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        //         <span>Tax (GST):</span>
-        //         <span>₹${checkoutData?.totalTax ? Number(checkoutData.totalTax).toFixed(2) : '0.00'}</span>
-        //       </div>
-        //       <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
-        //         <span>Shipping:</span>
-        //         <span>${checkoutData?.shippingCost ? `₹${Number(checkoutData.shippingCost).toFixed(2)}` : '-'}</span>
-        //       </div>
-        //       <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 600; margin-top: 12px;">
-        //         <span>Total Amount:</span>
-        //         <span>₹${checkoutData?.cartTotal ? Number(checkoutData.cartTotal).toFixed(2) : '0.00'}</span>
-        //       </div>
-        //     </div>
-
-        //     <div style="margin: 24px 0; padding: 16px; background: #fff7ed; border-radius: 6px; border-left: 4px solid #f97316;">
-        //       <div style="display: flex; justify-content: space-between; align-items: center;">
-        //         <div>
-        //           <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">Order Status: Pending</h3>
-        //           <p style="margin: 0; font-size: 14px; color: #4b5563;">
-        //             Payment Method: ${confirmedPaymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}
-        //           </p>
-        //         </div>
-        //       </div>
-        //     </div>
-
-        //     <p style="margin: 24px 0; font-size: 14px; color: #6b7280; text-align: center;">
-        //       Thank you for shopping with us! You can check your order status anytime in your dashboard.
-        //     </p>
-
-        //     <a href="https://info@adventureaxis.in/dashboard?section=orders" class="dashboard-btn">View Order in Dashboard</a>
-        //   </div>
-        // </body>
-        // </html>`
-        //     })
-        //   });
-
-        //   if (!emailResponse.ok) {
-        //     const error = await emailResponse.json().catch(() => ({}));
-        //     console.error('Failed to send order confirmation email:', error);
-        //   } else {
-        //     console.log('Order confirmation email sent to:', email);
-        //   }
-        // } catch (error) {
-        //   console.error('Error sending confirmation email:', error);
-        //   // Don't fail the order if email sending fails
-        // }
         setOrderId(orderId); // orderId should be the Razorpay/order DB ID you get back
         setShowConfirmationModal(true);
-        // toast.success('Order placed successfully!');
-        toast.success('Invoice Sent to Email');
-        // router.push(`/dashboard?orderId=${data.orderId}`);
         await clearCart();
         if (buyNowMode) {
           localStorage.removeItem('buyNowProduct');
@@ -1842,7 +1784,7 @@ const CheckOut = () => {
       <div className="flex-1 bg-white rounded-lg shadow p-4 md:p-8">
         <div className="border-b border-gray-200 pb-4 mb-6">
           <h2 className="text-xl py-5 md:text-2xl font-bold">Thanks for being a loyal customer,</h2>
-          <p className="text-md md:text-xl font-semibold"> Your cart is ready. Rishkish Handmade is a trusted growth partner to millions of everyday entrepreneurs.</p>
+          <p className="text-md md:text-xl font-semibold"> Your cart is ready. Adventure Axis is a trusted growth partner to millions of everyday entrepreneurs.</p>
           <br />
           <p className="text-sm md:text-lg font-semibold">Dear Customer,To proceed with your order and ensure smooth delivery, we kindly request you to provide the following basic information:</p>
         </div>
@@ -2207,47 +2149,132 @@ const CheckOut = () => {
 
             <div className="mb-6">
               <h3 className="font-medium mb-3">Payment Method</h3>
-              <div className="space-y-3 mb-4">
-                {paymentOptions.map((option) => (
+              {checkoutData?.cartTotal > 499999 ? (
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-yellow-700">
+                        For orders exceeding ₹4,99,999, the cart will not support direct checkout due to high-value transaction protocols.
+                        Please contact us for a personalized quote and assistance.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3 mb-4">
                   <label
-                    key={option.value}
-                    className={`flex items-center p-3 border rounded-md cursor-pointer ${payment === option.value ? 'border-black' : 'border-gray-200'}`}
+                    className="flex items-center p-3 border rounded-md cursor-pointer border-black"
                   >
                     <input
                       type="radio"
                       name="payment"
-                      value={option.value}
-                      checked={payment === option.value}
+                      value="online"
+                      checked={payment === 'online'}
                       onChange={(e) => {
-                        const method = e.target.value;
-                        setPayment(method);
-                        setPaymentMethod(method);
+                        setPayment('online');
+                        setPaymentMethod('online');
                       }}
                       className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 mr-3"
                     />
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{option.label}</div>
-                      {option.value === 'cod' && (
-                        <p className="text-sm text-gray-500 mt-1">Pay when you receive your order</p>
-                      )}
+                      <div className="font-medium text-gray-900">Online Payment</div>
+                      <p className="text-sm text-gray-500 mt-1">Pay securely with cards, UPI, or net banking</p>
                     </div>
                   </label>
-                ))}
-              </div>
 
-              <div className="flex items-center gap-2 mt-4">
-                {/* <img src="/images/razorpay.svg" alt="Razorpay" className="h-6" /> */}
-                <span className="text-sm text-gray-600">100% Secure Payment</span>
-              </div>
+                  <div className="flex items-center gap-2 mt-4">
+                    <span className="text-sm text-gray-600">100% Secure Payment</span>
+                  </div>
 
-              <div className="flex items-center gap-2 mt-2">
-                <img src="/visa-img.png" alt="Visa" className="h-4" />
-                <img src="/master-card.png" alt="Mastercard" className="h-4" />
-                <img src="/rupay.png" alt="Rupay" className="h-4" />
-                <img src="/upi.png" alt="UPI" className="h-4" />
-              </div>
-              <p className="text-xs text-gray-500 mt-2">We accept all major credit/debit cards, UPI, and Netbanking.</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <img src="/visa-img.png" alt="Visa" className="h-4" />
+                    <img src="/master-card.png" alt="Mastercard" className="h-4" />
+                    <img src="/rupay.png" alt="Rupay" className="h-4" />
+                    <img src="/upi.png" alt="UPI" className="h-4" />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">We accept all major credit/debit cards, UPI, and Netbanking.</p>
+                </div>
+              )}
             </div>
+
+            {showEnquiryModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg max-w-md w-full p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium">Enquiry Form</h3>
+                    <button
+                      onClick={() => setShowEnquiryModal(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                      disabled={isSubmittingEnquiry}
+                    >
+                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    Thank you for your interest in our premium products. Our team will contact you shortly to discuss your requirements and provide a personalized quote.
+                  </p>
+                  <div className="mt-4 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowEnquiryModal(false)}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                      disabled={isSubmittingEnquiry}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleEnquirySubmit}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                      disabled={isSubmittingEnquiry}
+                    >
+                      {isSubmittingEnquiry ? 'Submitting...' : 'Submit Enquiry'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* Add this modal component at the bottom of your JSX, just before the final closing tag */}
+            {showEnquiryModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg max-w-md w-full p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium">Enquiry Form</h3>
+                    <button
+                      onClick={() => setShowEnquiryModal(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    Thank you for your interest in our premium products. Our team will contact you shortly to discuss your requirements and provide a personalized quote.
+                  </p>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Add your form submission logic here
+                        setShowEnquiryModal(false);
+                        // You can add additional logic like form submission or redirection
+                      }}
+                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      Submit Enquiry
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <div className="text-red-600">No checkout data found.</div>
@@ -2280,36 +2307,6 @@ const CheckOut = () => {
           </div>
         )}
         <div className="mt-4 mb-4">
-          {/* <pre className="bg-gray-100 p-4 rounded overflow-auto">
-           {JSON.stringify({
-              firstName,
-              lastName,
-              email,
-              phone,
-              altPhone,
-              street,
-              city,
-              district,
-              state,
-              pincode,
-              payment,
-              paymentMethod,
-              checkoutData: {
-                cart: checkoutData?.cart?.map(item => ({
-                  id: item.id,  
-                  name: item.name,
-                  price: item.price,
-                  qty: item.qty,
-                  cgst: item.cgst,
-                  sgst: item.sgst
-                })) || [],
-                subTotal: checkoutData?.subTotal,
-                totalTax: checkoutData?.totalTax,
-                cartTotal: checkoutData?.cartTotal,
-                shippingCost: checkoutData?.shippingCost
-              }
-            }, null, 2)} 
-          </pre> */}
         </div>
         <button
           className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded font-semibold text-sm transition-colors"
@@ -2346,7 +2343,7 @@ const CheckOut = () => {
             <>
               <span className="animate-spin inline-block mr-2">🔄</span> Processing...
             </>
-          ) : payment === 'cod' ? (
+          ) : payment === 'booking_enquiry' ? (
             `Place Order (₹${checkoutData?.cartTotal?.toFixed(2) || '0.00'})`
           ) : (
             `Pay ₹${checkoutData?.cartTotal?.toFixed(2) || '0.00'}`

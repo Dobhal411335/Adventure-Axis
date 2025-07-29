@@ -5,14 +5,14 @@ export async function POST(req) {
   await connectDB();
   try {
     const { code, cart } = await req.json();
-    console.log('Coupon apply request:', { code, cart });
+    // console.log('Coupon apply request:', { code, cart });
     if (!code) {
       console.error('No coupon code provided');
       return Response.json({ success: false, message: 'No coupon code provided.' }, { status: 400 });
     }
     // Find coupon by code and check validity
     const coupon = await Discount.findOne({ couponCode: code.trim(), status: 'active' });
-    console.log('Coupon lookup result:', coupon);
+    // console.log('Coupon lookup result:', coupon);
     if (!coupon) {
       console.error('Coupon not found or inactive for code:', code);
       return Response.json({ success: false, message: 'Coupon not found or inactive.' }, { status: 404 });

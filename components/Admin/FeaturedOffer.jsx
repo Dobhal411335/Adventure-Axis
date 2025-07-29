@@ -151,7 +151,7 @@ const FeaturedOffer = () => {
 
     const handleEdit = (banner) => {
         setEditBanner(banner._id);
-        console.log(banner)
+        // console.log(banner)
         setFormData({
             title: banner.title,
             coupon: banner.coupon,

@@ -6,7 +6,7 @@ export async function deletePdfFromCloudinary(publicId) {
     resource_type: 'raw',
     type: 'upload',
   });
-  console.log('Cloudinary PDF delete result:', result);
+  // console.log('Cloudinary PDF delete result:', result);
   if (result.result !== 'ok') {
     throw new Error('Failed to delete PDF from Cloudinary');
   }

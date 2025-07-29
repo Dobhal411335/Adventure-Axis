@@ -118,7 +118,7 @@ const EnquiryOrder = () => {
                   onChange={e => setStatusFilter(e.target.value)}
                 >
                   <option value="">All</option>
-                  {orderStatusOptions.map(status => (
+                  {orderStatusOptions.slice(1).map(status => (
                     <option key={status} value={status}>{status}</option>
                   ))}
                 </select>
@@ -144,7 +144,7 @@ const EnquiryOrder = () => {
               </div>
               <div className="flex gap-2 mt-2 md:mt-0">
                 <button
-                  className="px-4 py-2 rounded bg-red-500 text-white hover:bg-gray-300 font-medium"
+                  className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-400 font-medium"
                   onClick={() => {
                     setStatusFilter('');
                     setSearch('');
@@ -397,9 +397,6 @@ const EnquiryOrder = () => {
                         trackingUrl: trackingUrl || ''
                       })
                     };
-
-                    console.log('Sending update data:', updateData);
-
                     const res = await fetch(`/api/orders/${statusUpdateOrder._id}`, {
                       method: 'PUT',
                       headers: { 'Content-Type': 'application/json' },
@@ -486,9 +483,9 @@ const EnquiryOrder = () => {
                   </div>
                 </div>
                 <div className="text-right px-10">
-                  <div className="text-sm text-gray-600">Payment Method</div>
+                  <div className="text-sm text-gray-600">{viewOrder.paymentMethod === 'online' ? 'Payment Method' : 'Enquiry Type'}</div>
                   <div className="font-medium">
-                    {viewOrder.paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}
+                    {viewOrder.paymentMethod === 'online' ? 'Online Payment' : 'Booking Enquiry'}
                   </div>
                 </div>
               </div>

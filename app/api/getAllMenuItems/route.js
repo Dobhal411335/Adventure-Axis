@@ -14,13 +14,13 @@ import ProductReview from '@/models/ProductReview';
 import Quantity from '@/models/Quantity';
 import ProductCoupons from '@/models/ProductCoupons';
 import ProductTax from '@/models/ProductTax';
+import PackagePdf from '@/models/PackagePdf';
 export async function GET(req) {
     await connectDB();
     const menu = await MenuBar.find({})
         .populate({
             path: 'subMenu.products',
             populate: [
-                { path: 'artisan' },
                 { path: 'price' },
                 { path: 'gallery' },
                 { path: 'video' },
@@ -30,7 +30,9 @@ export async function GET(req) {
                 { path: 'reviews' },
                 { path: 'quantity' },
                 { path: 'coupons' },
-                { path: 'taxes' }
+                { path: 'taxes' },
+                { path: 'pdfs' },
+
             ]
         })
         .sort({ order: 1 });

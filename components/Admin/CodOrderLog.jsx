@@ -64,9 +64,9 @@ const CodOrderLog = () => {
                 </div>
               </div>
               <div className="text-right px-10">
-                <div className="text-sm text-gray-600">Payment Method</div>
+                <div className="text-sm text-gray-600">Booking Method</div>
                 <div className="font-medium">
-                  {order.paymentMethod === 'online' ? 'Online Payment' : 'Cash on Delivery'}
+                  {order.paymentMethod === 'booking_enquiry' ? 'Booking Enquiry' : ''}
                 </div>
               </div>
             </div>
@@ -231,7 +231,7 @@ const CodOrderLog = () => {
     startDate: '',
     endDate: ''
   });
-
+// console.log(orders)
   // Apply filters
   useEffect(() => {
     let result = [...orders];
@@ -275,7 +275,7 @@ const CodOrderLog = () => {
   const fetchOrders = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/orders/admin?type=cod&page=${page}&limit=${pagination.limit}`);
+      const response = await fetch(`/api/orders/admin?type=booking_enquiry&page=${page}&limit=${pagination.limit}`);
       const data = await response.json();
 
       if (data.success) {
@@ -293,8 +293,8 @@ const CodOrderLog = () => {
         throw new Error(data.error || 'Failed to fetch orders');
       }
     } catch (error) {
-      console.error('Error fetching COD orders:', error);
-      toast.error('Failed to load COD orders');
+      console.error('Error fetching Booking orders:', error);
+      toast.error('Failed to load Booking orders');
     } finally {
       setLoading(false);
     }
@@ -314,7 +314,7 @@ const CodOrderLog = () => {
     return (
       <div className="min-h-screen bg-[#f8f6f1] p-6 flex items-start justify-center">
         <div className="text-lg flex items-center gap-2"><Loader className="animate-spin text-gray-600" /><span>
-          Loading COD orders...
+          Loading Booking Enquiry orders...
         </span>
         </div>
       </div>
@@ -325,7 +325,7 @@ const CodOrderLog = () => {
     <div className="min-h-screen bg-[#f8f6f1] p-6">
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <h1 className="text-2xl font-bold">COD Orders</h1>
+          <h1 className="text-2xl font-bold">Booking Enquriy Orders</h1>
 
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <div className="flex-1">
@@ -424,7 +424,7 @@ const CodOrderLog = () => {
               ) : (
                 <tr>
                   <td colSpan={columns.length} className="px-4 py-6 text-center text-gray-500">
-                    {orders.length === 0 ? 'No COD orders found' : 'No orders match your filters'}
+                    {orders.length === 0 ? 'No Booking Enquiry orders found' : 'No orders match your filters'}
                   </td>
                 </tr>
               )}
