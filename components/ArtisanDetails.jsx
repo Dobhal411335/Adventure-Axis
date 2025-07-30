@@ -70,47 +70,6 @@ const CertificateSectionCarousel = ({ certificates, onImageClick }) => {
 const ArtisanDetails = ({ artisan }) => {
   // console.log(artisan)
   const { addToCart, addToWishlist, removeFromWishlist, wishlist } = useCart();
-  // --- Helper for Add to Cart with discount/coupon logic ---
-  const handleAddToCart = (item) => {
-    const price = item?.quantity?.variants[0]?.price;
-    const coupon = item.coupon || item.coupons?.coupon;
-    let discountedPrice = price;
-    let couponApplied = false;
-    let couponCode = "";
-    if (coupon && typeof coupon.percent === 'number' && coupon.percent > 0) {
-      discountedPrice = price - (price * coupon.percent) / 100;
-      couponApplied = true;
-      couponCode = coupon.couponCode;
-    } else if (coupon && typeof coupon.amount === 'number' && coupon.amount > 0) {
-      discountedPrice = price - coupon.amount;
-      couponApplied = true;
-      couponCode = coupon.couponCode;
-    }
-    addToCart({
-      id: item._id,
-      name: item.title,
-      image: item?.gallery?.mainImage || "/placeholder.jpeg",
-      price: Math.round(discountedPrice),
-      size: item?.quantity?.variants[0].size,
-      weight: item?.quantity?.variants[0].weight,
-      color: item?.quantity?.variants[0].color,
-      originalPrice: price,
-      qty: 1,
-      couponApplied,
-      couponCode: couponApplied ? couponCode : undefined,
-      productCode: item.code || item.productCode || '',
-      discountPercent: coupon && typeof coupon.percent === 'number' ? coupon.percent : undefined,
-      discountAmount: coupon && typeof coupon.amount === 'number' ? coupon.amount : undefined,
-      cgst: (item.taxes && item.taxes.cgst) || item.cgst || (item.tax && item.tax.cgst) || 0,
-      sgst: (item.taxes && item.taxes.sgst) || item.sgst || (item.tax && item.tax.sgst) || 0,
-      totalQuantity: item?.quantity?.variants[0]?.qty || 0,
-    });
-    toast.success("Added to cart!");
-  };
-  const formatNumeric = (num) => {
-    if (typeof num !== 'number') return num;
-    return num.toLocaleString('en-IN');
-  }
 
   // ...existing state
   const [otherArtisans, setOtherArtisans] = useState([]);

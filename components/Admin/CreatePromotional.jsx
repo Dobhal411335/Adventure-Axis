@@ -289,7 +289,7 @@ const CreatePromotional = ({ artisanId, artisanDetails = null }) => {
             <Input type="text" value={title} placeholder="Review Title" onChange={e => setTitle(e.target.value)} required />
           </div>
           <div>
-            <label className="block font-semibold mb-1">Artisan User</label>
+            <label className="block font-semibold mb-1">Management User</label>
             <Input
               type="text"
               className="w-full border rounded p-2 bg-gray-100"

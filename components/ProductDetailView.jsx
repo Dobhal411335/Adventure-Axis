@@ -194,7 +194,7 @@ export default function ProductDetailView({ product }) {
   // Gather all images, filter out empty/undefined/null, and fallback to placeholder if empty
   const allImagesRaw = [product.gallery?.mainImage?.url, ...(product.gallery?.subImages?.map(img => img.url) || [])];
   const allImages = allImagesRaw.filter(img => typeof img === 'string' && img.trim().length > 0);
-  if (allImages.length === 0) allImages.push('/placeholder.png');
+  if (allImages.length === 0) allImages.push('/placeholder.jpeg');
   // Debug main image array and index
   // Embla carousel API and active image index for main image gallery
   const [carouselApi, setCarouselApi] = React.useState(null);
@@ -886,7 +886,7 @@ export default function ProductDetailView({ product }) {
                       addToCart({
                         id: product._id,
                         name: product.title,
-                        image: typeof selectedImage === "string" ? selectedImage : selectedImage?.url || product.gallery?.mainImage?.url || '/placeholder.png',
+                        image: typeof selectedImage === "string" ? selectedImage : selectedImage?.url || product.gallery?.mainImage?.url || '/placeholder.jpeg',
                         price: hasDiscount ? Math.round(discountedPrice) : selectedVariant.price,
                         originalPrice: selectedVariant.price,
                         couponApplied: hasDiscount,

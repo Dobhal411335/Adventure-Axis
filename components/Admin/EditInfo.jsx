@@ -19,7 +19,7 @@ const sectionConfig = [
   },
   {
     key: 'artisanBlogs',
-    label: 'Management Blogs / Experience',
+    label: 'Management Blogs',
     component: ManageArtisanBlogs,
   },
   {

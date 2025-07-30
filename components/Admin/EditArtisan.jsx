@@ -126,7 +126,6 @@ export default function EditArtisan({ artisan }) {
             <TableRow className="bg-gray-100">
               <TableHead className="px-4 py-3">S.No.</TableHead>
               <TableHead className="px-4 py-3">Management Name</TableHead>
-              <TableHead className="px-4 py-3">Management Number</TableHead>
               <TableHead className="px-4 py-3">Edit Info</TableHead>
               <TableHead className="px-4 py-3">Actions</TableHead>
             </TableRow>
@@ -145,7 +144,6 @@ export default function EditArtisan({ artisan }) {
                 <TableRow key={artisan._id} className="hover:bg-gray-200 transition">
                   <TableCell className="px-4 py-3 font-medium">{idx + 1}</TableCell>
                   <TableCell className="px-4 py-3">{artisan.firstName} {artisan.lastName}</TableCell>
-                  <TableCell className="px-4 py-3">{artisan.artisanNumber}</TableCell>
                   <TableCell className="px-4 py-3">
 
                     <Link
