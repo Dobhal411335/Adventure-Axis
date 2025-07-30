@@ -21,12 +21,10 @@ const FeaturedOffer = () => {
     const [banners, setBanners] = useState([]);
     const [editBanner, setEditBanner] = useState(null);
     const [formData, setFormData] = useState({
-        title: "",
         buttonLink: "",
         image: { url: "", key: "" },
         order: 1,
     });
-
     // Fetch banners and determine the next order number
     useEffect(() => {
         const fetchBanners = async () => {
@@ -84,7 +82,10 @@ const FeaturedOffer = () => {
         try {
             const method = editBanner ? "PATCH" : "POST";
             // Find the selected coupon object
-        
+            let couponObj = null;
+            if (formData.coupon) {
+                couponObj = coupons.find(c => c.couponCode === formData.coupon);
+            }
             // Compose payload with coupon details
             const payload = {
                 ...formData,
@@ -108,7 +109,7 @@ const FeaturedOffer = () => {
 
                 // Reset form
                 setFormData({
-                    title: "",
+                   
                     buttonLink: "",
                     order: updatedBanners.length + 1,
                     image: { url: "", key: "" },
@@ -125,7 +126,7 @@ const FeaturedOffer = () => {
         setEditBanner(banner._id);
         console.log(banner)
         setFormData({
-            title: banner.title,
+           
             buttonLink: banner.buttonLink,
             order: banner.order,
             image: banner.image,
@@ -224,17 +225,12 @@ const FeaturedOffer = () => {
                         </div>
                     )}
                 </div>
-                <div>
-                    <Label>Title</Label>
-                    <Input name="title" placeholder="Enter title" value={formData.title} onChange={handleInputChange} />
-                </div>
-                <div>
+                 <div>
                     <Label>Button Link</Label>
                     <Input name="buttonLink" placeholder="Enter button link" type="url" value={formData.buttonLink} onChange={handleInputChange} />
                 </div>
                 <div>
-                    <Label>Order</Label>              
-                    <Input name="order" placeholder="Enter order" type="number" value={formData.order} readOnly className="bg-gray-100 cursor-not-allowed" />
+                    <Label>Order</Label>                    <Input name="order" placeholder="Enter order" type="number" value={formData.order} readOnly className="bg-gray-100 cursor-not-allowed" />
                 </div>
 
                 <div className="flex gap-2 mt-4">
@@ -249,7 +245,7 @@ const FeaturedOffer = () => {
                             onClick={() => {
                                 setEditBanner(null);
                                 setFormData({
-                                    title: "",
+                                   
                                     buttonLink: "",
                                     order: banners.length > 0 ? Math.max(...banners.map(b => b.order)) + 1 : 1,
                                     image: { url: "", key: "" },
@@ -266,7 +262,7 @@ const FeaturedOffer = () => {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Title</TableHead>
+                       
                         <TableHead>Button Link</TableHead>
                         <TableHead>Order</TableHead>
                         <TableHead>Image</TableHead>
@@ -277,7 +273,7 @@ const FeaturedOffer = () => {
                     {banners.length > 0 ? (
                         banners.map((banner) => (
                             <TableRow key={banner._id}>
-                                <TableCell>{banner.title}</TableCell>
+                              
                                 <TableCell>
                                     <TooltipProvider>
                                         <Tooltip>
