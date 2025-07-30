@@ -325,7 +325,7 @@ const CodOrderLog = () => {
     <div className="min-h-screen bg-[#f8f6f1] p-6">
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <h1 className="text-2xl font-bold">Booking Enquriy Orders</h1>
+          <h1 className="text-2xl font-bold">Booking Enquiry Orders</h1>
 
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <div className="flex-1">

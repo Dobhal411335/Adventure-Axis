@@ -1,41 +1,101 @@
+import { NextResponse } from 'next/server';
 import connectDB from "@/lib/connectDB";
 import FeaturedPackageCard from "@/models/FeaturedPackageCard";
+import cloudinary from 'cloudinary';
 
-export const GET = async (req) => {
+// Cloudinary configuration
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export const GET = async () => {
     try {
         await connectDB();
-        const packages = await FeaturedPackageCard.find({});
-        return new Response(JSON.stringify(packages), { status: 200 });
+        const packages = await FeaturedPackageCard.find().sort({ createdAt: -1 });
+        return NextResponse.json({
+            success: true,
+            data: packages
+        });
     } catch (error) {
-        return new Response("Failed to fetch featured packages", { status: 500 });
+        console.error('Error fetching packages:', error);
+        return NextResponse.json(
+            { success: false, message: 'Failed to fetch packages' },
+            { status: 500 }
+        );
     }
 };
 
 export const POST = async (req) => {
     try {
         await connectDB();
-
         const body = await req.json();
-
         const { title, image, link } = body;
 
-        if (!title || !image?.url || !image?.key || !link) {
-            return new Response(JSON.stringify({ message: "Missing required fields" }), { status: 400 });
+        if (!title || !image) {
+            return NextResponse.json(
+                { success: false, message: 'Title and image are required' },
+                { status: 400 }
+            );
         }
 
+        let imageUrl = '';
+        let imagePublicId = '';
+
+        // Handle image upload
+        if (typeof image === 'string' && image.startsWith('data:')) {
+            // New image upload
+            try {
+                const uploadResponse = await cloudinary.v2.uploader.upload(image, {
+                    folder: 'featured-packages',
+                });
+                imageUrl = uploadResponse.secure_url;
+                imagePublicId = uploadResponse.public_id;
+            } catch (uploadError) {
+                console.error('Error uploading image to Cloudinary:', uploadError);
+                throw new Error('Failed to upload image');
+            }
+        } else if (image && typeof image === 'object' && image.url) {
+            // Existing image (shouldn't normally happen in create, but just in case)
+            imageUrl = image.url;
+            imagePublicId = image.public_id || '';
+        } else {
+            return NextResponse.json(
+                { success: false, message: 'Invalid image format' },
+                { status: 400 }
+            );
+        }
+
+        // Create new package
         const newPackage = new FeaturedPackageCard({
             title,
-            image,
-            link,
+            link: link || '',
+            image: {
+                url: imageUrl,
+                public_id: imagePublicId
+            }
         });
+
         await newPackage.save();
 
-        return new Response(JSON.stringify(newPackage), { status: 201, headers: { "Content-Type": "application/json" } });
+        return NextResponse.json(
+            { 
+                success: true, 
+                data: newPackage 
+            },
+            { status: 201 }
+        );
+
     } catch (error) {
-        console.error("POST Error:", error);
-        return new Response(JSON.stringify({ message: "Failed to create featured package", error: error.message }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-        });
+        console.error('Error creating package:', error);
+        return NextResponse.json(
+            { 
+                success: false, 
+                message: 'Failed to create package',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            },
+            { status: 500 }
+        );
     }
 };

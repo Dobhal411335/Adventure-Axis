@@ -61,6 +61,7 @@ const Footer = () => {
             <div className="hidden md:flex flex-wrap lg:justify-between px-10 justify-start md:gap-20 lg:gap-0 gap-12 max-w-[22rem] md:maxw-[45rem] lg:max-w-[60rem] xl:max-w-6xl mx-auto">
                 <div className="flex flex-col gap-2 px-5">
                     <h1 className="font-semibold text-xl my-4">Main Menu</h1>
+                    <Link href={'/'} className="block text-white font-barlow ">Home</Link>
                     {pages.filter(page => !page?.link?.includes('policy')).map(page => (
                         <Link key={page._id} href={page.url} className="block text-white font-barlow ">
                             {page.title}
@@ -118,6 +119,7 @@ const Footer = () => {
             <div className="md:hidden flex items-center gap-2 justify-start px-5">
                 <div className="flex flex-col gap-2 px-2">
                     <h1 className="font-semibold text-xl my-4">Main Menu</h1>
+                    <Link href={'/'} className="block text-white font-barlow ">Home</Link>
                     {pages.filter(page => !page?.link?.includes('policy')).map(page => (
                         <Link key={page._id} href={page.url} className="text-sm block text-white font-barlow ">
                             {page.title}

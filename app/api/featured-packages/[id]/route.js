@@ -1,8 +1,9 @@
+import { NextResponse } from 'next/server';
 import connectDB from "@/lib/connectDB";
 import FeaturedPackageCard from "@/models/FeaturedPackageCard";
 import cloudinary from 'cloudinary';
 
-// Cloudinary configuration (ensure these env vars are set)
+// Cloudinary configuration
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -12,62 +13,111 @@ cloudinary.v2.config({
 export const PUT = async (req, { params }) => {
     try {
         await connectDB();
-        const { id } = params;
-        const { title, image, link } = await req.json();
+        const { id } = await params; // Await the params
+        
+        const body = await req.json();
+        const { title, image, link } = body;
 
         let imageUrl = null;
         let imagePublicId = null;
 
-        // If image is a base64 string, upload to Cloudinary
-        if (image && image.startsWith('data:')) {
-            const uploadResponse = await cloudinary.v2.uploader.upload(image, {
-                folder: 'featured-packages',
-            });
-            imageUrl = uploadResponse.secure_url;
-            imagePublicId = uploadResponse.public_id;
-        } else if (image && typeof image === 'object' && image.url && image.public_id) {
-            // If frontend already sent Cloudinary info
-            imageUrl = image.url;
-            imagePublicId = image.public_id;
+        // Handle image update if provided
+        if (image) {
+            // If image is a base64 string (new upload)
+            if (typeof image === 'string' && image.startsWith('data:')) {
+                const uploadResponse = await cloudinary.v2.uploader.upload(image, {
+                    folder: 'featured-packages',
+                });
+                imageUrl = uploadResponse.secure_url;
+                imagePublicId = uploadResponse.public_id;
+            } 
+            // If image is an object with url and public_id (existing image)
+            else if (typeof image === 'object' && image.url && image.public_id) {
+                imageUrl = image.url;
+                imagePublicId = image.public_id;
+            }
         }
+
+        const updateData = { 
+            ...(title && { title }),
+            ...(link && { link }),
+            ...(imageUrl && { 
+                image: { 
+                    url: imageUrl, 
+                    public_id: imagePublicId 
+                } 
+            })
+        };
 
         const updatedPackage = await FeaturedPackageCard.findByIdAndUpdate(
             id,
-            { title, image: imageUrl ? { url: imageUrl, public_id: imagePublicId } : undefined, link },
-            { new: true }
+            updateData,
+            { new: true, runValidators: true }
         );
 
         if (!updatedPackage) {
-            return new Response("Featured package not found", { status: 404 });
+            return NextResponse.json(
+                { success: false, message: 'Package not found' },
+                { status: 404 }
+            );
         }
 
-        return new Response(JSON.stringify(updatedPackage), { status: 200 });
+        return NextResponse.json({
+            success: true,
+            data: updatedPackage
+        });
+
     } catch (error) {
-        return new Response("Failed to update featured package", { status: 500 });
+        console.error('Error updating featured package:', error);
+        return NextResponse.json(
+            { 
+                success: false, 
+                message: 'Failed to update package',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            },
+            { status: 500 }
+        );
     }
 };
 
 export const DELETE = async (req, { params }) => {
     try {
         await connectDB();
-        const { id } = params;
+        const { id } = await params; // Await the params
 
-        // First get the package to access the image public_id
-        const packageToDelete = await FeaturedPackageCard.findById(id);
-        if (!packageToDelete) {
-            return new Response("Featured package not found", { status: 404 });
+        const deletedPackage = await FeaturedPackageCard.findByIdAndDelete(id);
+        
+        if (!deletedPackage) {
+            return NextResponse.json(
+                { success: false, message: 'Package not found' },
+                { status: 404 }
+            );
         }
 
-        // Delete the image from Cloudinary if it exists
-        if (packageToDelete.image?.public_id) {
-            await cloudinary.v2.uploader.destroy(packageToDelete.image.public_id);
+        // Delete image from Cloudinary if exists
+        if (deletedPackage.image?.public_id) {
+            try {
+                await cloudinary.v2.uploader.destroy(deletedPackage.image.public_id);
+            } catch (cloudinaryError) {
+                console.error('Error deleting image from Cloudinary:', cloudinaryError);
+                // Don't fail the request if image deletion fails
+            }
         }
 
-        // Delete the package from database
-        await FeaturedPackageCard.findByIdAndDelete(id);
+        return NextResponse.json({
+            success: true,
+            message: 'Package deleted successfully'
+        });
 
-        return new Response("Featured package deleted successfully", { status: 200 });
     } catch (error) {
-        return new Response("Failed to delete featured package", { status: 500 });
+        console.error('Error deleting featured package:', error);
+        return NextResponse.json(
+            { 
+                success: false, 
+                message: 'Failed to delete package',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            },
+            { status: 500 }
+        );
     }
 };
