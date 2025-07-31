@@ -10,13 +10,24 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Function to shuffle array (Fisher-Yates algorithm)
+const shuffleArray = (array) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+};
+
 export const GET = async () => {
     try {
         await connectDB();
-        const packages = await FeaturedPackageCard.find().sort({ createdAt: -1 });
+        const packages = await FeaturedPackageCard.find();
+        const shuffledPackages = shuffleArray(packages);
         return NextResponse.json({
             success: true,
-            data: packages
+            data: shuffledPackages
         });
     } catch (error) {
         console.error('Error fetching packages:', error);
