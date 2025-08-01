@@ -73,6 +73,11 @@ const data = {
       url: "/admin/add_brand_name",
       icon: Plus,
     },
+    {
+      name: "Link Product To Brand Category",
+      url: "/admin/link_product_to_brand",
+      icon: Plus,
+    },
     { divider: true },
     {
       name: "Create Discount",

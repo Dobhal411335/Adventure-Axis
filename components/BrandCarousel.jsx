@@ -54,7 +54,7 @@ const BrandCarousel = () => {
             >
               {brand.buttonLink ? (
                   <Link 
-                  href={brand.buttonLink} 
+                  href={`/brands/${brand.slug}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="block h-12 w-28 md:h-14 md:w-28 relative"

@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(req) {
         await connectDB();
     try {
-        const { buttonLink, frontImg, order } = await req.json();
+        const { buttonLink,slug, frontImg, order } = await req.json();
 
         // Find the highest order number
         const lastBanner = await Brand.findOne().sort({ order: -1 });
@@ -26,6 +26,7 @@ export async function POST(req) {
         const newBanner = new Brand({
             buttonLink,
             order: nextOrder,
+            slug,
             frontImg,
         
         });
@@ -39,11 +40,12 @@ export async function POST(req) {
 export async function PATCH(req) {
         await connectDB();
     try {
-        const { id, buttonLink, frontImg,order } = await req.json();
+        const { id, buttonLink,slug, frontImg,order } = await req.json();
         const updatedBanner = await Brand.findByIdAndUpdate(
             id,
             {
                 buttonLink,
+                slug,
                 order,
                 frontImg,
             },

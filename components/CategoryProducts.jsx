@@ -9,6 +9,7 @@ export default function CategoryProductsGrid({ visibleProducts }) {
   const startIdx = (page - 1) * productsPerPage;
   const endIdx = Math.min(page * productsPerPage, visibleProducts.length);
   const paginatedProducts = visibleProducts.slice(startIdx, endIdx);
+  // console.log(paginatedProducts)
 
   return (
     <>

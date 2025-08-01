@@ -71,8 +71,6 @@ const RandomTourPackageSection = () => {
     toast.success("Added to cart!");
   };
 
-  // ...existing state
-
   const { addToCart, addToWishlist, removeFromWishlist, wishlist } = useCart();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

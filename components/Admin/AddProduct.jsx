@@ -58,6 +58,7 @@ const AddProduct = ({ id }) => {
     const handleCancelEdit = () => {
         reset({
             title: '',
+
             order: 1,
             active: true,
             // Add other fields as needed
@@ -65,6 +66,7 @@ const AddProduct = ({ id }) => {
         setProductCode(generateCode());
         setActive(true);
         setOrder(1);
+ 
         setTitle('');
         setIsEditing(false);
     };
@@ -118,7 +120,9 @@ const AddProduct = ({ id }) => {
     const [productCode, setProductCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [products, setProducts] = useState([]);
+ 
     const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState([]);
     const [title, setTitle] = useState("");
     const [order, setOrder] = useState(1);
     const [active, setActive] = useState(true);
@@ -131,6 +135,32 @@ const AddProduct = ({ id }) => {
     const [qrModalDescription, setQrModalDescription] = useState('');
     const [qrModalCoupon, setQrModalCoupon] = useState({ code: '', amount: 0 });
 
+    // console.log(products)
+
+    useEffect(() => {
+        // Fetch categories
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('/api/getAllMenuItems');
+                const data = await res.json();
+                const categoriesList = [];
+                (Array.isArray(data) ? data : []).forEach(menuItem => {
+                    if (menuItem.subMenu && Array.isArray(menuItem.subMenu)) {
+                        menuItem.subMenu.forEach(sub => {
+                            if (sub.title && sub._id) categoriesList.push({ id: sub._id, title: sub.title });
+                        });
+                    }
+                });
+                setCategories(categoriesList);
+            } catch (e) {
+                console.error('Error fetching categories:', e);
+                setCategories([]);
+            }
+        };
+
+        fetchCategories();
+   
+    }, []);
 
     useEffect(() => {
         setProductCode(generateCode());
@@ -193,6 +223,7 @@ const AddProduct = ({ id }) => {
                 title,
                 slug: slugify(title),
                 code: productCode,
+               
                 order,
                 active: typeof active === 'boolean' ? active : true,
                 isDirect: !subMenuId,
@@ -212,7 +243,7 @@ const AddProduct = ({ id }) => {
                     // Reset form and state
                     reset({
                         title: '',
-                    
+                     
                         order: 1,
                         active: true
                     });
@@ -251,7 +282,7 @@ const AddProduct = ({ id }) => {
                     toast.success('Product added successfully!', { style: { borderRadius: "10px", border: "2px solid green" } });
                     reset();
                     setTitle('');
-                
+                   
                     setProductCode(generateCode());
                     // Refetch products
                     if (subMenuId) {
@@ -280,19 +311,19 @@ const AddProduct = ({ id }) => {
     };
     return (
         <>
-            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-gray-200 w-full md:w-fit mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
+            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-blue-100 w-fit max-w-xl md:max-w-7xl mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full">
                     <div className="flex flex-col gap-2">
                         <label htmlFor="productCode" className="font-semibold">Product Code</label>
-                        <Input name="productCode" className="w-full border-2 border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 font-bold" readOnly value={productCode} />
+                        <Input name="productCode" className="w-32 border-2 border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 font-bold" readOnly value={productCode} />
                     </div>
                     <div className="flex flex-col gap-2 ">
                         <label htmlFor="productTitle" className="font-semibold">Product Title</label>
                         <Input name="productTitle" className="w-full border-2 font-bold border-blue-600 " value={title} onChange={e => setTitle(e.target.value)} />
                     </div>
-                
+              
                 </div>
-                <Button type="submit" className="bg-red-600 hover:bg-red-500">Add Product</Button>
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-500">Add Product</Button>
             </form>
 
             <div className="bg-blue-100 p-4 rounded-lg shadow max-w-5xl mx-auto w-full overflow-x-auto lg:overflow-visible text-center">
@@ -405,7 +436,7 @@ const AddProduct = ({ id }) => {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan="6" className="text-center border font-semibold border-blue-600">
-                                    No packages available.
+                                    No products available.
                                 </TableCell>
                             </TableRow>
                         )}

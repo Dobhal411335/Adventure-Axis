@@ -20,7 +20,7 @@ const PackageCard = ({ pkg, wishlist = [], addToWishlist, removeFromWishlist, se
   return (
     <div className="flex flex-col w-58 md:w-[250px] rounded-3xl mb-2 group cursor-pointer">
       {/* Image Section */}
-      <div className="relative w-full  md:h-80 rounded-3xl overflow-hidden flex items-center justify-center group/image">
+      <div className="relative w-full md:h-80 rounded-3xl overflow-hidden flex items-center justify-center group/image">
         {/* GET 10% OFF Tag */}
         <div className="absolute top-6 left-4 z-10">
           {(() => {
@@ -39,14 +39,14 @@ const PackageCard = ({ pkg, wishlist = [], addToWishlist, removeFromWishlist, se
             }
 
             return (
-              <div className="bg-white rounded-full px-4 py-1 text-xs md:text-sm font-bold shadow text-black tracking-tight" style={{ letterSpacing: 0 }}>
+              <div className="rounded-full px-4 py-1 text-xs md:text-sm font-bold shadow text-black tracking-tight" style={{ letterSpacing: 0 }}>
                 {offerText}
               </div>
             );
           })()}
         </div>
         {/* Heart/Wishlist & Cart Buttons - Top Right */}
-        <div className="absolute top-6 right-6 z-10 flex flex-col gap-4 items-end">
+        {/* <div className="absolute top-6 right-6 z-10 flex flex-col gap-4 items-end">
           <Button
             variant="ghost"
             size="icon"
@@ -112,11 +112,21 @@ const PackageCard = ({ pkg, wishlist = [], addToWishlist, removeFromWishlist, se
               addToCartFn({
                 id: pkg._id,
                 name: pkg.title,
-                image: pkg?.gallery?.mainImage || "/RandomTourPackageImages/u1.jpg",
+                image: pkg?.gallery?.mainImage || "/placeholder.jpeg",
                 price: Math.round(discountedPrice),
+                size: pkg?.quantity?.variants[0].size,
+                weight: pkg?.quantity?.variants[0].weight,
+                color: pkg?.quantity?.variants[0].color,
                 originalPrice: price,
+                qty: 1,
                 couponApplied,
-                couponCode: couponApplied ? couponCode : undefined
+                couponCode: couponApplied ? couponCode : undefined,
+                productCode: pkg.code || pkg.productCode || '',
+                discountPercent: coupon && typeof coupon.percent === 'number' ? coupon.percent : undefined,
+                discountAmount: coupon && typeof coupon.amount === 'number' ? coupon.amount : undefined,
+                cgst: (pkg.taxes && pkg.taxes.cgst) || pkg.cgst || (pkg.tax && pkg.tax.cgst) || 0,
+                sgst: (pkg.taxes && pkg.taxes.sgst) || pkg.sgst || (pkg.tax && pkg.tax.sgst) || 0,
+                totalQuantity: pkg?.quantity?.variants[0]?.qty || 0,
               }, 1)
               toast.success("Added to cart!")
             }}
@@ -138,7 +148,7 @@ const PackageCard = ({ pkg, wishlist = [], addToWishlist, removeFromWishlist, se
               <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
             </svg>
           </Button>
-        </div>
+        </div> */}
         <Image
           src={pkg?.gallery?.mainImage?.url || "/placeholder.jpeg"}
           alt={pkg?.title || "Product Image"}

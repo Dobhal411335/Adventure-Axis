@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button"
 import { Star, Upload, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 // import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 // import { Input } from '../ui/input';
 // import { Textarea } from '../ui/textarea';
@@ -68,17 +69,30 @@ export default function ProductInfoTabs({ product }) {
     };
     const handleSubmitReview = async (e) => {
         e.preventDefault();
+        
+        // Clear any previous errors
+        setFormError('');
+        
+        // Validate form fields
         if (!rating || !title || !name || !date || !description) {
             setFormError('Please fill all required fields and rating.');
             return;
         }
-        // Validate date is a valid date string
+        
+        // Validate date
         if (isNaN(new Date(date).getTime())) {
             setFormError('Please enter a valid date.');
             return;
         }
+        
+        // Validate image is uploaded
+        if (!imageObj?.url) {
+            setFormError('Please upload an image for your review.');
+            return;
+        }
+        
         try {
-            // Validate and log payload before sending
+            // Prepare payload
             const dateValue = date ? new Date(date).getTime() : undefined;
             const payload = {
                 name,
@@ -92,49 +106,51 @@ export default function ProductInfoTabs({ product }) {
                 description,
                 type: "product",
                 product: product._id,
-                approved: false, // Explicitly set to false by default
-                active: true,    // Set active to true for new reviews
-                deleted: false   // Explicitly set to false for new reviews
+                approved: false,
+                active: true,
+                deleted: false
             };
-            // console.log('Submitting review:', payload);
-            if (!name || !date || !title || !description || !rating) {
-                toast.error('All fields are required.');
-                return;
-            }
+
+            // Submit review
             const response = await fetch('/api/saveReviews', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+            
             const data = await response.json();
+            
             if (!response.ok) {
-                toast.error(data.error || 'Failed to submit review');
-                // console.error('API Response:', data);
-                return;
+                throw new Error(data.error || 'Failed to submit review');
             }
-
-            toast.success('Review submitted successfully!');
+            
+            // Show success message
+            toast.success('Review submitted successfully! It will be visible after approval.');
+            
+            // Reset form
             setShowReviewForm(false);
-            // Clear form state
             setName("");
             setTitle("");
             setRating(0);
             setDescription("");
             setDate("");
-            // Clear image state
             setImageFile(null);
             setImagePreview(null);
             setImageObj({ url: '', key: '' });
+            
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
+            
             // Refresh reviews
-            await fetchReviews();
+            await fetchCustomReviews();
+            
         } catch (error) {
-            // console.error('Error:', error);
-            toast.error('Error submitting review');
-        } finally {
-            setFormError('');
+            console.error('Review submission error:', error);
+            // Only show error toast if we haven't already shown a validation error
+            if (!formError) {
+                toast.error(error.message || 'Error submitting review');
+            }
         }
     };
 
@@ -207,7 +223,7 @@ export default function ProductInfoTabs({ product }) {
 
         try {
             setIsLoading(true);
-            const response = await fetch(`/api/saveReviews?productId=${product._id}&type=product&approved=true&active=true`);
+            const response = await fetch(`/api/saveReviews?productId=${product._id}&type=product&approved=true`);
             const data = await response.json();
 
             if (response.ok) {

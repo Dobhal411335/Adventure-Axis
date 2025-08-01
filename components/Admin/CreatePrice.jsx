@@ -9,7 +9,7 @@ const CreatePrice = () => {
     { label: '0-1kg', amount: '' },
     { label: '1-5kg', amount: '' },
     { label: '5-15kg', amount: '' },
-    { label: '15-50kg', amount: '' }
+    { label: '15-100kg', amount: '' }
   ];
   const [charges, setCharges] = useState(defaultSlabs);
   const [loading, setLoading] = useState(false);

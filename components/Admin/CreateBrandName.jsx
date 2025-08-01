@@ -18,14 +18,23 @@ const CreateBrandName = () => {
     const fileInputRef = useRef(null);
     const [banners, setBanners] = useState([]);
     const [editBanner, setEditBanner] = useState(null);
-    const [coupons, setCoupons] = useState([]);
-    const [loadingCoupons, setLoadingCoupons] = useState(false);
     // const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         buttonLink: "",
         frontImg: { url: "", key: "" },
         order: 1,
     });
+    const slugify = (text) => {
+        return text
+          .toString()
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w\-]+/g, '')
+          .replace(/\-\-+/g, '-')
+          .replace(/^-+/, '')
+          .replace(/-+$/, '');
+      };
     // Fetch banners and determine the next order number
     useEffect(() => {
         const fetchBanners = async () => {
@@ -84,13 +93,11 @@ const CreateBrandName = () => {
         try {
             const method = editBanner ? "PATCH" : "POST";
             // Find the selected coupon object
-            let couponObj = null;
-            if (formData.coupon) {
-                couponObj = coupons.find(c => c.couponCode === formData.coupon);
-            }
+     
             // Compose payload with coupon details
             const payload = {
                 ...formData,
+                slug: slugify(formData.buttonLink),
                 id: editBanner,
             };
             const response = await fetch("/api/addBrand", {
@@ -111,10 +118,7 @@ const CreateBrandName = () => {
 
                 // Reset form
                 setFormData({
-
-
                     buttonLink: "",
-
                     order: updatedBanners.length + 1,
                     frontImg: { url: "", key: "" },
 
@@ -221,8 +225,8 @@ const CreateBrandName = () => {
                     )}
                 </div>
                 <div>
-                    <Label>Brand URL Link</Label>
-                    <Input name="buttonLink" placeholder="Enter brand url link" type="url" value={formData.buttonLink} onChange={handleInputChange} />
+                    <Label>Brand Name</Label>
+                    <Input name="buttonLink" placeholder="Enter brand name" type="text" value={formData.buttonLink} onChange={handleInputChange} />
                 </div>
                 <div>
                     <Label>Order</Label>
@@ -254,12 +258,12 @@ const CreateBrandName = () => {
                 </div>
             </form>
 
-            <h2 className="text-2xl font-bold mt-10 mb-4">Existing Brand</h2>
+            <h2 className="text-2xl font-bold mt-10 mb-4">Existing Brands</h2>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Button Link</TableHead>
                         <TableHead>Order</TableHead>
+                        <TableHead>Brand Name</TableHead>
                         <TableHead>Image</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
@@ -268,8 +272,8 @@ const CreateBrandName = () => {
                     {banners.length > 0 ? (
                         banners.map((banner) => (
                             <TableRow key={banner._id}>
-                                <TableCell>{banner.buttonLink}</TableCell>
                                 <TableCell>{banner.order}</TableCell>
+                                <TableCell>{banner.buttonLink}</TableCell>
                                 <TableCell className="flex flex-row gap-4 items-center justify-start">
                                     {banner.frontImg?.url ? (
                                         <Image src={banner.frontImg.url} alt="Front" width={100} height={50} className="rounded-lg mb-1" />

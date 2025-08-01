@@ -37,23 +37,23 @@ export const CategoryCarousel = ({ categories = [] }) => {
 const CategoryCard = ({ category }) => {
   // console.log(category)
   return (
-    
-      <div className="group w-44 max-h-72 transition-transform mx-2 my-2 flex flex-col">
-        <div className="relative w-full h-60 overflow-hidden rounded-xl mb-2">
-          <Image
-            src={category.profileImage?.url || "/placeholder.jpeg"}
-            alt={category.title}
-            fill
-            className="object-cover object-top h-full w-full rounded-xl group-hover:-translate-y-3 transition-transform duration-200"
-            sizes="176px"
-          />
-        </div>
-        <Link href={category.url || `/category/${category.url || category._id}` }>
-        <span className="font-semibold text-start text-gray-800 text-base hover:underline truncate w-full mt-5 px-2">
-          {category.title}
-        </span>
-        </Link>
+
+    <div className="group w-44 max-h-72 transition-transform mx-2 my-2 flex flex-col">
+      <div className="relative w-full h-60 overflow-hidden rounded-xl mb-2">
+        <Image
+          src={category?.profileImage?.url || "/placeholder.jpeg"}
+          alt={category?.title}
+          fill
+          className="object-cover object-top h-full w-full rounded-xl group-hover:-translate-y-3 transition-transform duration-200"
+          sizes="176px"
+        />
       </div>
+      <Link href={category?.url || `/category/${category?.url || category?._id}`}>
+        <span className="font-semibold text-start text-gray-800 cursor-pointer hover:underline mt-5 whitespace-normal break-words">
+          {category?.title}
+        </span>
+      </Link>
+    </div >
   );
 };
 
