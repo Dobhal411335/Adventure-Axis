@@ -23,8 +23,6 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-    
-    console.log('Finding order with ID:', data.orderId);
     const order = await Order.findById(data.orderId)
       .populate('products.productId')
       .lean();

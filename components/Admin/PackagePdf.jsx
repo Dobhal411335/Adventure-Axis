@@ -14,7 +14,7 @@ const PackagePdf = ({ productData, productId }) => {
   const [newPdf, setNewPdf] = useState({ name: "", file: null });
   const [uploading, setUploading] = useState(false);
   const productName = productData?.title || "";
-  console.log(pdfRows)
+  // console.log(pdfRows)
   // Cloudinary PDF upload handler
   const handlePdfUpload = async (file) => {
     if (!file) return;

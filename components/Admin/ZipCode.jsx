@@ -48,7 +48,7 @@ const ZipCode = () => {
     const handleDistrictToggle = async (districtName) => {
         const newActive = !(districtStatus[districtName] !== false);
         // Debug log for PATCH payload
-        console.log('PATCH district payload:', { state: selectedState, district: districtName, active: newActive });
+        // console.log('PATCH district payload:', { state: selectedState, district: districtName, active: newActive });
         try {
             const response = await fetch('/api/zipcode', {
                 method: 'PATCH',

@@ -99,7 +99,7 @@ export async function GET() {
         // console.log('Brand Categories with populated data:', JSON.stringify(brandCategories, null, 2));
         return NextResponse.json(brandCategories);
     } catch (error) {
-        console.error('Error fetching brand categories:', error);
+        // console.error('Error fetching brand categories:', error);
         return NextResponse.json(
             { error: 'Failed to fetch brand categories' },
             { status: 500 }

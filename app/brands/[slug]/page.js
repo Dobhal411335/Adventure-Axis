@@ -37,7 +37,7 @@ export async function generateMetadata({ params }) {
             .populate('brand', 'title buttonLink')
             .populate({
                 path: 'products.product',
-                populate: 'gallery video description info categoryTag productTagLine reviews quantity coupons taxes pdfs',
+                populate: 'gallery quantity coupons taxes',
             });
 
 
@@ -84,7 +84,7 @@ const BrandPage = async ({ params }) => {
         .populate('brand', 'title buttonLink')
         .populate({
             path: 'products.product',
-            populate: 'gallery video description info categoryTag productTagLine reviews quantity coupons taxes pdfs',
+            populate: 'gallery quantity coupons taxes',
         })
         .lean();
 
@@ -185,23 +185,18 @@ const BrandPage = async ({ params }) => {
     };
 
     // Extract products from the products array which contains product objects
-    const products = brandCategory.products?.length 
+    const products = brandCategory?.products?.length 
         ? brandCategory.products.map(item => ({
             ...item.product,  // Spread the populated product data
             _id: item.product?._id,  // Ensure we have the product ID
             active: item.product?.active !== false  // Ensure active status is checked
         }))
         : [];
-
-    console.log('Brand Category Products:', JSON.stringify(products, null, 2));
-
     const visibleProducts = products
         .filter(prod => prod && prod.active !== false)
         .map(getCleanProduct)
         .filter(Boolean);
     
-    console.log('Visible Products:', visibleProducts);
-
     if (!brandCategory) {
         return (
             <div className="min-h-screen bg-[#fcf7f1] flex items-center justify-center">

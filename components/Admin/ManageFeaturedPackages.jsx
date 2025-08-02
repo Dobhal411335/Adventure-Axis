@@ -27,7 +27,7 @@ const ManageFeaturedPackages = () => {
         try {
             const response = await fetch("/api/featured-packages");
             const data = await response.json();
-            console.log('API Response:', data);
+            // console.log('API Response:', data);
 
             if (data.success && Array.isArray(data.data)) {
                 setPackages(data.data);

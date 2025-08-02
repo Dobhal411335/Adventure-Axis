@@ -160,7 +160,7 @@ const LinkProductToBrand = () => {
         try {
             const response = await fetch('/api/addBrand');
             const data = await response.json();
-            console.log('Fetched Brands:', data); // Debug log
+          
             if (response.ok) {
                 setBrands(data);
             } else {
@@ -388,7 +388,7 @@ const LinkProductToBrand = () => {
     };
     // components/Admin/LinkProductToBrand.jsx
     const handleDeleteClick = (id) => {
-        console.log('[handleDeleteClick] Setting up delete for ID:', id);
+       
         setCategoryToDelete(id);
         setDeleteDialogOpen(true);
     };
@@ -462,7 +462,7 @@ const LinkProductToBrand = () => {
                                                 {formData.brandId ? (
                                                     (() => {
                                                         const brand = brands.find(b => b._id === formData.brandId);
-                                                        console.log('Current brand:', brand);
+                                                       
                                                         return brand?.buttonLink || 'Brand not found';
                                                     })()
                                                 ) : (

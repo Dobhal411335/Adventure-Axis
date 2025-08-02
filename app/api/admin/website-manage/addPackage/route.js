@@ -75,10 +75,10 @@ export async function PUT(req) {
         if (!existingProduct) {
             return NextResponse.json({ message: 'Product not found' }, { status: 404 });
         }
-        // Prepare update fields (do not allow code overwrite)
+        // Prepare update fields
         const updateFields = { ...body };
         delete updateFields._id;
-        delete updateFields.code;
+        // Allow code updates by not deleting it from updateFields
         // Update product
         const updatedProduct = await Product.findOneAndUpdate(identifier, updateFields, { new: true });
         return NextResponse.json({ message: 'Product updated successfully!', product: updatedProduct }, { status: 200 });

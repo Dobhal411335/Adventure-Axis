@@ -32,18 +32,6 @@ const ProductProfile = ({ id }) => {
     const [qrModalCoupon, setQrModalCoupon] = useState({ code: '', amount: 0 });
 
 
-    // Generate product code on mount
-    useEffect(() => {
-        const generateCode = () => {
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let code = "";
-            for (let i = 0; i < 6; i++) {
-                code += chars[Math.floor(Math.random() * chars.length)];
-            }
-            return code;
-        };
-        setCode(generateCode());
-    }, []);
     // Slugify utility
     function slugify(str) {
         return str
@@ -144,20 +132,21 @@ const ProductProfile = ({ id }) => {
             <form className="flex flex-col items-center justify-center gap-8 my-20 bg-gray-200 w-full max-w-xl md:max-w-3xl mx-auto p-4 rounded-lg" onSubmit={async e => {
                 e.preventDefault();
                 if (!title.trim()) return toast.error('Title cannot be empty');
-        
+      
                 if (editingId) {
                     // Update mode
-                    const res = await fetch(`/api/product/${encodeURIComponent(title)}`, {
+                    const res = await fetch(`/api/product/${editingId}`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title })
+                        body: JSON.stringify({ title, code })
                     });
                     if (res.ok) {
                         const updated = await res.json();
-                        setProducts(ps => ps.map(p => p._id === editingId ? { ...p, title: updated.title} : p));
+                        setProducts(ps => ps.map(p => p._id === editingId ? { ...p, title: updated.title, code: updated.code } : p));
                         setEditingId(null);
                         setTitle("");
-                  
+                        setCode("");
+                
                         toast.success('Product updated!');
                     } else {
                         let err;
@@ -185,10 +174,10 @@ const ProductProfile = ({ id }) => {
                     }
                 }
             }}>
-                <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full">
+                <div className="flex md:flex-row flex-col items-center gap-6 w-full">
                     <div className="flex flex-col gap-2 w-full">
                         <label htmlFor="productCode" className="font-semibold">Product Code</label>
-                        <Input name="productCode" className="w-full border-2 font-bold border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 bg-gray-100" placeholder="Pre Fix" value={code} readOnly />
+                        <Input name="productCode" className="w-full border-2 font-bold border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 bg-gray-100" placeholder="Type Here:" value={code} onChange={e => setCode(e.target.value)} />
                     </div>
                     <div className="flex flex-col gap-2 w-full">
                         <label htmlFor="productTitle" className="font-semibold">Product Title</label>
@@ -198,7 +187,7 @@ const ProductProfile = ({ id }) => {
                 {editingId ? (
                     <div className="flex gap-4 mt-4">
                         <Button type="submit" className="bg-green-600">Update</Button>
-                        <Button type="button" className="bg-gray-400" onClick={() => { setEditingId(null); setTitle(""); }}>Cancel</Button>
+                        <Button type="button" className="bg-gray-400" onClick={() => { setEditingId(null); setTitle(""); setCode(""); }}>Cancel</Button>
                     </div>
                 ) : (
                     <Button type="submit" className="bg-red-500">Save Product</Button>
@@ -211,6 +200,7 @@ const ProductProfile = ({ id }) => {
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="py-2 px-4 text-center">Title</th>
+          
                             <th className="py-2 px-4 text-center">URL</th>
                             <th className="py-2 px-4 text-center">QR</th>
                             <th className="py-2 px-4 text-center">Active</th>
@@ -221,6 +211,7 @@ const ProductProfile = ({ id }) => {
                         {products.map((prod, idx) => (
                             <tr key={prod._id} className="border-t">
                                 <td className="py-2 px-4 text-center">{prod.title}</td>
+                               
                                 {/* <td className="py-2 px-4 text-center">{prod.code}</td> */}
                                 {/* <td className="py-2 px-4 text-center">
                                     <div className="flex flex-col items-center">
@@ -318,6 +309,8 @@ const ProductProfile = ({ id }) => {
                                             onClick={() => {
                                                 setEditingId(prod._id);
                                                 setTitle(prod.title);
+                                                setCode(prod.code);
+                                                
                                             }}
                                         >
                                             Edit
