@@ -9,15 +9,28 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
-import { Loader2, Pencil, Trash2, QrCode, Copy } from "lucide-react"
+import { Loader2, Pencil, Trash2, QrCode, Copy, AlertCircle } from "lucide-react"
 import { Switch } from "../ui/switch"
 import { Label } from "../ui/label"
 import ProductQrModal from "./ProductQrModal";
 import { useRef } from "react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "../ui/alert-dialog"
 
 const AddProduct = ({ id }) => {
     // ...existing state
     const [allCategories, setAllCategories] = useState([]);
+    const [brands, setBrands] = useState([]);
+    const [selectedBrand, setSelectedBrand] = useState('');
+    const [isLoadingBrands, setIsLoadingBrands] = useState(false);
 
     // Editing state
     const [isEditing, setIsEditing] = useState(false);
@@ -29,12 +42,14 @@ const AddProduct = ({ id }) => {
             title: prod.title || '',
             order: prod.order || 1,
             active: typeof prod.active === 'boolean' ? prod.active : true,
-            code: prod.code || ''
+            code: prod.code || '',
+            setSelectedBrand:prod.brand || ''   
         });
         setActive(typeof prod.active === 'boolean' ? prod.active : true);
         setOrder(prod.order || 1);
         setTitle(prod.title || '');
         setCode(prod.code || '');
+        setSelectedBrand(prod.brand || ''); // Set the selected brand if it exists
         setEditingId(prod._id); // Set the editing ID
         setIsEditing(true);
         if (formRef.current) {
@@ -48,12 +63,13 @@ const AddProduct = ({ id }) => {
             title: '',
             order: 1,
             active: true,
-            // Add other fields as needed
+            code: ''
         });
         setCode('');
         setActive(true);
         setOrder(1);
         setTitle('');
+        setSelectedBrand(''); // Reset the selected brand
         setIsEditing(false);
         setEditingId(null);
     };
@@ -120,8 +136,29 @@ const AddProduct = ({ id }) => {
     const [qrModalDescription, setQrModalDescription] = useState('');
     const [editingId, setEditingId] = useState(null);
     const [qrModalCoupon, setQrModalCoupon] = useState({ code: '', amount: 0 });
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
+    useEffect(() => {
+        // Fetch brands on component mount
+        const fetchBrands = async () => {
+            setIsLoadingBrands(true);
+            try {
+                const response = await fetch('/api/addBrand');
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    setBrands(data);
+                }
+            } catch (error) {
+                toast.error('Failed to load brands');
+            } finally {
+                setIsLoadingBrands(false);
+            }
+        };
 
+        fetchBrands();
+    }, []);
 
     useEffect(() => {
         // Fetch products for this submenu/category or all direct products
@@ -133,7 +170,6 @@ const AddProduct = ({ id }) => {
                 }
                 const response = await fetch(url);
                 const data = await response.json();
-                // console.log(data)
                 if (subMenuId && Array.isArray(data.products)) {
                     setProducts(data.products);
                 } else if (!subMenuId && Array.isArray(data)) {
@@ -147,135 +183,241 @@ const AddProduct = ({ id }) => {
         };
         fetchProducts();
     }, [subMenuId]);
+
     const deletePackage = async (id) => {
-        setIsLoading(true);
+        setIsDeleting(true);
         try {
+            // First, remove the product from all brand categories
+            try {
+                const brandResponse = await fetch('/api/brand-categories/remove-product', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: id }),
+                });
+
+                if (!brandResponse.ok) {
+                    const errorData = await brandResponse.json().catch(() => ({}));
+                    console.error('Error removing from brand categories:', errorData);
+                    // Continue with deletion even if brand removal fails
+                }
+            } catch (brandError) {
+                console.error('Error during brand category removal:', brandError);
+                // Continue with deletion even if brand removal fails
+            }
+
+            // Then delete the product itself
             const response = await fetch('/api/admin/website-manage/addPackage', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id }),
             });
+
             const result = await response.json();
             if (response.ok) {
                 setProducts((prev) => prev.filter((prod) => prod._id !== id));
                 toast.success('Product deleted successfully!');
             } else {
-                toast.error(result.message || 'Failed to delete product.');
+                throw new Error(result.message || 'Failed to delete product');
             }
         } catch (error) {
             toast.error('Failed to delete product.');
         } finally {
-            setIsLoading(false);
+            setIsDeleting(false);
+            setDeleteDialogOpen(false);
+            setProductToDelete(null);
         }
     };
+
+    const confirmDelete = (productId) => {
+        setProductToDelete(productId);
+        setDeleteDialogOpen(true);
+    };
+
     const onSubmit = async () => {
         if (!title) {
-            toast.error("All fields are required", { style: { borderRadius: "10px", border: "2px solid red" } });
+            toast.error("Title is required");
             return;
         }
-
+        if (!code) {
+            toast.error("Code is required");
+            return;
+        }
         setIsLoading(true);
+
         try {
             const payload = {
                 title,
                 slug: slugify(title),
-                code, // Use productCode consistently
+                code,
                 order,
                 active: typeof active === 'boolean' ? active : true,
                 isDirect: !subMenuId,
+                ...(selectedBrand && { brand: selectedBrand }),
                 ...(subMenuId ? { subMenuId, category: subMenuId } : {})
             };
 
-            let response, result;
+            let response;
             if (isEditing) {
-                // For update, we need to include the _id in the payload
                 response = await fetch('/api/admin/website-manage/addPackage', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        _id: editingId,
-                        ...payload,
-
-                    })
+                    body: JSON.stringify({ _id: editingId, ...payload })
                 });
-                result = await response.json();
-                if (response.ok) {
-                    toast.success('Product updated successfully!', { style: { borderRadius: "10px", border: "2px solid green" } });
-                    // Reset form and state
-                    reset({
-                        title: '',
-                        order: 1,
-                        active: true,
-                        code: ''
-                    });
-                    setTitle('');
-                    setOrder(1);
-                    setActive(true);
-                    setCode('');
-                    setIsEditing(false);
-                    setEditingId(null);
-                    // Refetch products
-                    if (subMenuId) {
-                        const res = await fetch(`/api/getSubMenuById/${subMenuId}`);
-                        const data = await res.json();
-                        if (Array.isArray(data.products)) {
-                            setProducts(data.products);
-                        }
-                    } else {
-                        const res = await fetch('/api/product?isDirect=true');
-                        const data = await res.json();
-                        if (Array.isArray(data)) {
-                            setProducts(data);
-                        }
-                    }
-                } else {
-                    toast.error(result.message || 'Failed to update product', { style: { borderRadius: "10px", border: "2px solid red" } });
-                }
             } else {
                 response = await fetch('/api/admin/website-manage/addPackage', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                result = await response.json();
-                if (response.ok) {
-                    toast.success('Product added successfully!', { style: { borderRadius: "10px", border: "2px solid green" } });
-                    // Reset all form fields
-                    reset({
-                        title: '',
-                        order: 1,
-                        active: true,
-                        code: ''
-                    });
-                    setTitle('');
-                    setCode('');
-                    setOrder(1);
-                    setActive(true);
-                                        // Refetch products
-                    if (subMenuId) {
-                        const res = await fetch(`/api/getSubMenuById/${subMenuId}`);
-                        const data = await res.json();
-                        if (Array.isArray(data.products)) {
-                            setProducts(data.products);
+            }
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Get the current product being edited (if in edit mode) to get the previous brand
+                let previousBrandId = null;
+                if (isEditing) {
+                    const currentProduct = products.find(p => p._id === editingId);
+                    previousBrandId = currentProduct?.brand?._id || currentProduct?.brand;
+                    // console.log('Previous brand ID:', previousBrandId, 'New brand ID:', selectedBrand);
+                }
+
+                // Get the product ID from the correct location in the response
+                const productId = result.product?._id || result._id || editingId;
+
+                if (!productId) {
+                    throw new Error('Failed to get product ID from response');
+                }
+
+                // Handle brand category updates if brand was changed or this is a new product
+                const isBrandChanged = isEditing && previousBrandId !== selectedBrand;
+                // console.log('Is brand changed:', isBrandChanged, 'Previous:', previousBrandId, 'New:', selectedBrand);
+
+                if (isBrandChanged || !isEditing) {
+                    try {
+                        // If this is an edit and the brand was changed, remove from old brand first
+                        if (isBrandChanged && previousBrandId) {
+                            // console.log('Removing product from old brand category:', previousBrandId);
+                            const removeResponse = await fetch('/api/brand-categories/remove-product', {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ productId })
+                            });
+                            
+                            if (!removeResponse.ok) {
+                                const error = await removeResponse.json().catch(() => ({}));
+                                console.error('Failed to remove from old brand:', error);
+                                throw new Error('Failed to remove product from old brand category');
+                            }
+                            // console.log('Successfully removed from old brand category');
                         }
-                    } else {
-                        const res = await fetch('/api/product?isDirect=true');
-                        const data = await res.json();
-                        if (Array.isArray(data)) {
-                            setProducts(data);
+
+                        // Only proceed if we have a selected brand to add to
+                        if (selectedBrand) {
+                            const productData = {
+                                product: productId,
+                                productName: title
+                            };
+
+                            // Fetch all brands and find the selected one
+                            const brandsResponse = await fetch('/api/addBrand');
+                            if (!brandsResponse.ok) {
+                                throw new Error('Failed to fetch brands');
+                            }
+                            const allBrands = await brandsResponse.json();
+                            const selectedBrandData = allBrands.find(brand => brand._id === selectedBrand);
+
+                            if (!selectedBrandData) {
+                                throw new Error('Selected brand not found');
+                            }
+
+                            // First, check if the brand category exists for this brand
+                            let brandCategory = null;
+                            try {
+                                const brandCategoryResponse = await fetch(`/api/brand-categories/${selectedBrand}`);
+                                if (brandCategoryResponse.ok) {
+                                    brandCategory = await brandCategoryResponse.json();
+                                }
+                            } catch (error) {
+                                // Brand category doesn't exist yet, will create a new one
+                            }
+
+                            // Check if product already exists in this brand category
+                            const productExists = brandCategory?.products?.some(p => p.product === productId);
+                            
+                            if (!productExists) {
+                                // Prepare the update data
+                                const updateData = brandCategory
+                                    ? {
+                                        ...brandCategory,
+                                        $push: {
+                                            products: productData
+                                        }
+                                    }
+                                    : {
+                                        _id: selectedBrand,
+                                        title: selectedBrandData.buttonLink || 'New Brand Category',
+                                        slug: (selectedBrandData.buttonLink || 'new-brand-category').toLowerCase().replace(/\s+/g, '-'),
+                                        products: [productData]
+                                    };
+
+                                // Create or update the brand category with the product
+                                const brandResponse = await fetch(`/api/brand-categories/${selectedBrand}`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(updateData)
+                                });
+
+                                if (!brandResponse.ok) {
+                                    const brandResult = await brandResponse.json();
+                                    throw new Error(brandResult.message || 'Failed to update brand category');
+                                }
+                            }
                         }
+                    } catch (error) {
+                        console.error('Error updating brand categories:', error);
+                        // Don't fail the operation, just log the error
+                    }
+                }
+                toast.success(isEditing ? 'Product updated successfully!' : 'Product added successfully!');
+                reset({
+                    title: '',
+                    order: 1,
+                    active: true,
+                    code: '',
+                    setSelectedBrand: '' // Reset the selected brand
+
+                });
+                setTitle('');
+                setCode('');
+                setOrder(1);
+                setActive(true);
+                setSelectedBrand(''); // Reset the selected brand
+                setIsEditing(false);
+                setEditingId(null);
+
+                // Refetch products
+                if (subMenuId) {
+                    const res = await fetch(`/api/getSubMenuById/${subMenuId}`);
+                    const data = await res.json();
+                    if (data.products) {
+                        setProducts(data.products);
                     }
                 } else {
-                    toast.error(result.message || 'Failed to add product', { style: { borderRadius: "10px", border: "2px solid red" } });
+                    const res = await fetch('/api/admin/website-manage/getPackages');
+                    const data = await res.json();
+                    setProducts(data);
                 }
+            } else {
+                toast.error(result.message || 'Failed to save product');
             }
         } catch (error) {
-            console.error('Error:', error);
-            toast.error('Something went wrong', { style: { borderRadius: "10px", border: "2px solid red" } });
+            toast.error('Failed to save product');
         } finally {
             setIsLoading(false);
         }
     };
+
     return (
         <>
             <form className="flex flex-col items-center justify-center gap-8 my-20 bg-gray-200 w-full md:w-fit mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
@@ -284,15 +426,42 @@ const AddProduct = ({ id }) => {
                         <label htmlFor="code" className="font-semibold">Product Code</label>
                         <Input name="code" placeholder="Enter Product Code Here" className="w-full border-2 border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 font-bold" value={code} onChange={e => setCode(e.target.value)} />
                     </div>
-                    <div className="flex flex-col gap-2 ">
+                    <div className="flex flex-col gap-2">
                         <label htmlFor="productTitle" className="font-semibold">Product Title</label>
-                        <Input name="productTitle" placeholder="Enter Product Title Here" className="w-full border-2 font-bold border-blue-600 " value={title} onChange={e => setTitle(e.target.value)} />
+                        <Input name="productTitle" placeholder="Enter Product Title Here" className="w-full border-2 font-bold border-blue-600" value={title} onChange={e => setTitle(e.target.value)} />
                     </div>
-
+                    <div className="flex flex-col gap-2 w-64">
+                        <label htmlFor="brand" className="font-semibold">Brand</label>
+                        <Select
+                            value={selectedBrand}
+                            onValueChange={setSelectedBrand}
+                            disabled={isLoadingBrands}
+                        >
+                            <SelectTrigger className="w-full border-2 border-blue-600">
+                                <SelectValue placeholder="Select a brand" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {brands.map((brand) => (
+                                    <SelectItem key={brand._id} value={brand._id}>
+                                        {brand.buttonLink || `Brand ${brand.order}`}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
                 <div className="flex gap-4">
-                    <Button type="submit" className="bg-red-600 hover:bg-red-500">
-                        {isEditing ? 'Update Product' : 'Add Product'}
+                    <Button
+                        type="submit"
+                        className="bg-red-600 hover:bg-red-500"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                {isEditing ? 'Updating...' : 'Adding...'}
+                            </>
+                        ) : isEditing ? 'Update Product' : 'Add Product'}
                     </Button>
                     {isEditing && (
                         <Button
@@ -305,7 +474,7 @@ const AddProduct = ({ id }) => {
                         </Button>
                     )}
                 </div>
-             </form>
+            </form>
 
             <div className="bg-blue-100 p-4 rounded-lg shadow max-w-5xl mx-auto w-full overflow-x-auto lg:overflow-visible text-center">
                 <Table className="w-full min-w-max lg:min-w-0">
@@ -394,8 +563,17 @@ const AddProduct = ({ id }) => {
                                                 >
                                                     <Pencil className="w-4 h-4" />
                                                 </Button>
-                                                <Button size="icon" disabled={isLoading} onClick={() => deletePackage(prod._id)} variant="destructive">
-                                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                                <Button
+                                                    size="icon"
+                                                    variant="destructive"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        confirmDelete(prod._id);
+                                                    }}
+                                                    disabled={isLoading}
+                                                    title="Delete Product"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
                                                 </Button>
                                                 <div className="flex items-center gap-2">
                                                     <Switch
@@ -439,6 +617,35 @@ const AddProduct = ({ id }) => {
                 logoUrl="/logo.png"
                 coupon={qrModalCoupon}
             />
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <div className="flex items-center gap-2">
+                            <AlertCircle className="h-5 w-5 text-destructive" />
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        </div>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the product and remove all its data.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => productToDelete && deletePackage(productToDelete)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Deleting...
+                                </>
+                            ) : 'Delete'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     )
 

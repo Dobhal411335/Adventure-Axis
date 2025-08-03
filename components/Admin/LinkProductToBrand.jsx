@@ -485,7 +485,7 @@ const LinkProductToBrand = () => {
                                 </div>
 
                                 {/* Multi-select for products */}
-                                <div className="space-y-2">
+                                {/* <div className="space-y-2">
                                     <Label>Select Products *</Label>
                                     <div className="border rounded-md p-4 max-h-60 overflow-y-auto">
                                         {isLoading ? (
@@ -524,7 +524,7 @@ const LinkProductToBrand = () => {
                                             <div className="p-2 text-center">No products found</div>
                                         )}
                                     </div>
-                                </div>
+                                </div> */}
 
                                 {/* Profile Image Upload */}
                                 <div className="space-y-2">

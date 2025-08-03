@@ -3,42 +3,79 @@ import { NextResponse } from 'next/server';
 import connectDB from "@/lib/connectDB";
 import BrandCategory from '@/models/BrandCategory';
 import { deleteFileFromCloudinary } from '@/utils/cloudinary';
+
+export async function GET(req, { params }) {
+    await connectDB();
+    try {
+        const { id } =await params;
+        const category = await BrandCategory.findById(id);
+        
+        if (!category) {
+            return NextResponse.json(
+                { error: 'Brand category not found' },
+                { status: 404 }
+            );
+        }
+        
+        return NextResponse.json(category);
+    } catch (error) {
+        console.error('Error fetching brand category:', error);
+        return NextResponse.json(
+            { error: 'Failed to fetch brand category' },
+            { status: 500 }
+        );
+    }
+}
 export async function PATCH(req, { params }) {
     await connectDB();
     try {
         const { id } = await params;
         const updateData = await req.json();
-        // Check if the document exists
-        let existingCategory = await BrandCategory.findById(id).lean();
+        
+        // Always get the full document first
+        let category = await BrandCategory.findById(id);
 
-        if (!existingCategory) {
-            // Create a new brand category
-            const newBrandCategory = new BrandCategory({
+        if (!category) {
+            // Create a new brand category if it doesn't exist
+            const newCategory = new BrandCategory({
                 _id: id,
                 ...updateData
             });
-
-            const savedCategory = await newBrandCategory.save();
+            const savedCategory = await newCategory.save();
             return NextResponse.json(savedCategory, { status: 201 });
         }
 
-        // Prepare update operation
-        const updateOperation = {
-            ...updateData,
-            updatedAt: new Date()
-        };
-
-        if (updateData.products) {
-            updateOperation.products = updateData.products.map(p => ({
-                product: p.product,
-                productName: p.productName
-            }));
+        // If this is a product update
+        if (updateData.$push?.products) {
+            const { product, productName } = updateData.$push.products;
+            
+            // Check if product already exists
+            const exists = category.products.some(p => 
+                p.product.toString() === product
+            );
+            
+            if (!exists) {
+                category.products.push({
+                    product,
+                    productName
+                });
+                category.updatedAt = new Date();
+                await category.save();
+            }
+            
+            return NextResponse.json(category);
         }
 
-        // Perform the update
+        // For regular updates, ensure required fields are preserved
+        const { title, slug, ...otherFields } = updateData;
         const updatedCategory = await BrandCategory.findByIdAndUpdate(
             id,
-            { $set: updateOperation },
+            {
+                title: title || category.title,
+                slug: slug || category.slug,
+                ...otherFields,
+                updatedAt: new Date()
+            },
             { new: true, runValidators: true }
         );
 
@@ -48,7 +85,7 @@ export async function PATCH(req, { params }) {
 
         return NextResponse.json(updatedCategory);
     } catch (error) {
-        // console.error('Update error:', error);
+        console.error('Update error:', error);
         return NextResponse.json(
             { error: `Failed to update brand category: ${error.message}` },
             { status: 500 }

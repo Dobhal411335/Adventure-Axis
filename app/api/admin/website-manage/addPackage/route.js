@@ -121,11 +121,15 @@ export async function DELETE(req) {
         if (!packageToDelete) {
             return NextResponse.json({ message: "Product not found!" }, { status: 404 });
         }
+        
         // Remove package references from MenuBar
         await MenuBar.updateMany(
             { "subMenu.products": id },
-            { $pull: { "subMenu.$[].products": id } }
+            { $pull: { "subMenu.$.products": id } }
         );
+
+        // Delete the product document
+        await Product.findByIdAndDelete(id);
 
         return NextResponse.json({ message: "Product deleted successfully!" }, { status: 200 });
     } catch (error) {

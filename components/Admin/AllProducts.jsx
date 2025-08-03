@@ -43,7 +43,7 @@ const AllProducts = () => {
   // Fetch categories (with subMenu.products) and build submenuObjs
   const [categoryObjs, setCategoryObjs] = useState([]);
   const [submenuObjs, setSubmenuObjs] = useState([]);
-  // console.log(submenuObjs)
+  // console.log(categoryObjs)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -106,21 +106,21 @@ const AllProducts = () => {
   const filteredProducts = Array.isArray(products) ? products.filter((p) => {
     let match = true;
     if (search) {
+      const searchTerm = search.toLowerCase();
       match =
-        (p.name && p.name.toLowerCase().includes(search.toLowerCase())) ||
-        (p.code && p.code.toLowerCase().includes(search.toLowerCase()));
+        (p.title && p.title.toLowerCase().includes(searchTerm)) ||
+        (p.name && p.name.toLowerCase().includes(searchTerm)) ||
+        (p.code && p.code.toLowerCase().includes(searchTerm)) ||
+        (p.sku && p.sku.toLowerCase().includes(searchTerm))
     }
     if (category && match) match = p.categoryTag && p.categoryTag._id === category;
     if (productType && match) match = (p.isDirect ? "Direct" : "Category") === productType;
-    if (artisan && match) match = p.artisan?._id === artisan;
-    if (stockStatus && match) match = (p.stock > 0 ? "Out of  Stock" : "In Stock") === stockStatus;
-    if (minPrice && match) match = p.price >= Number(minPrice);
-    if (maxPrice && match) match = p.price <= Number(maxPrice);
-    // Date, Day, Month, Year filtering (if products have date field, implement here)
-    // Example: if (date && match) match = p.createdAt === date;
-    // if (day && match) match = new Date(p.createdAt).getDate() === Number(day);
-    // if (month && match) match = new Date(p.createdAt).getMonth() + 1 === Number(month);
-    // if (year && match) match = new Date(p.createdAt).getFullYear() === Number(year);
+    if (stockStatus && match) {
+      const inStock = Array.isArray(p?.quantity?.variants) && p.quantity.variants.length > 0 && p.quantity.variants[0].qty > 0;
+      match = (inStock ? "In Stock" : "Out of Stock") === stockStatus;
+    }
+    if (minPrice && match && p.price) match = p.price >= Number(minPrice);
+    if (maxPrice && match && p.price) match = p.price <= Number(maxPrice);
     return match;
   }) : [];
 
@@ -131,6 +131,7 @@ const AllProducts = () => {
     if (sort === "priceHigh") return b.price - a.price;
     return 0;
   });
+  console.log(sortedProducts)
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -169,18 +170,6 @@ const AllProducts = () => {
             <option value="Category">Category Product</option>
           </select>
           {/* Artisan Name Filter */}
-          <select
-            className="px-5 py-2 border rounded bg-gray-100 focus:outline-none min-w-[140px]"
-            value={artisan}
-            onChange={(e) => setArtisan(e.target.value)}
-          >
-            <option value="">All Artisans</option>
-            {artisanObjs.map((a) => (
-              <option key={a?._id || a?.title || a?.name || a} value={a?._id || a?.title || a?.name || a}>
-                {a?.name || ((a?.firstName || "") + (a?.lastName ? " " + a.lastName : "")) || a?.name || a?._id || a}
-              </option>
-            ))}
-          </select>
           <select
             className="px-3 py-2 border rounded bg-gray-100 focus:outline-none min-w-[120px]"
             value={stockStatus}
@@ -222,9 +211,7 @@ const AllProducts = () => {
               <th className="p-3 text-left">ID</th>
               <th className="p-3 text-center">Price</th>
               <th className="p-3 text-center">Stock</th>
-              <th className="p-3 text-center">Category</th>
               <th className="p-3 text-center">Type</th>
-              <th className="p-3 text-center">Artisan</th>
               <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>
@@ -247,7 +234,7 @@ const AllProducts = () => {
                         ? product.gallery.mainImage.url
                         : (Array.isArray(product.gallery?.subImages) && product.gallery.subImages.length > 0 && product.gallery.subImages[0] && product.gallery.subImages[0].url)
                           ? product.gallery.subImages[0].url
-                          : "/placeholder.png"
+                          : "/placeholder.jpeg"
                     }
                     alt={product.title || product.code || "Product"}
                     className="w-14 h-14 rounded border object-cover shadow-sm bg-white"
@@ -271,21 +258,8 @@ const AllProducts = () => {
                     {Array.isArray(product?.quantity?.variants) && product.quantity.variants.length > 0 && product.quantity.variants[0].qty > 0 ? "In Stock" : "Out of Stock"}
                   </span>
                 </td>
-                <td className="p-3 text-center">{product.categoryTag?.title || 'No Category'}</td>
                 <td className="p-3 text-center">{product.isDirect ? "Direct" : "Category"}</td>
-                <td className="p-3 text-center">{
-                  product.artisan?.name ||
-                  ((product.artisan?.firstName || "") + (product.artisan?.lastName ? " " + product.artisan.lastName : "")) ||
-                  product.artisan?.name ||
-                  '-'
-                }</td>
                 <td className="p-3 text-center flex gap-2 justify-center">
-                  {/* <button
-                    className="p-2 rounded hover:bg-green-100"
-                    title="Edit"
-                  >
-                    <Edit className="text-green-600" size={18} />
-                  </button> */}
                   <button
                     className="p-2 rounded hover:bg-red-100"
                     title="Delete"
