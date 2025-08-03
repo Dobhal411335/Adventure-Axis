@@ -67,15 +67,25 @@ export async function PATCH(req, { params }) {
         }
 
         // For regular updates, ensure required fields are preserved
-        const { title, slug, ...otherFields } = updateData;
+        const { title, slug, products, ...otherFields } = updateData;
+        const updatePayload = {
+            title: title || category.title,
+            slug: slug || category.slug,
+            ...otherFields,
+            updatedAt: new Date()
+        };
+
+        // Only update products if they are provided
+        if (products) {
+            updatePayload.products = products.map(p => ({
+                product: p.product,
+                productName: p.productName || ''
+            }));
+        }
+
         const updatedCategory = await BrandCategory.findByIdAndUpdate(
             id,
-            {
-                title: title || category.title,
-                slug: slug || category.slug,
-                ...otherFields,
-                updatedAt: new Date()
-            },
+            updatePayload,
             { new: true, runValidators: true }
         );
 

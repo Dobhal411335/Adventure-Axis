@@ -334,11 +334,14 @@ const AddProduct = ({ id }) => {
                             // First, check if the brand category exists for this brand
                             let brandCategory = null;
                             try {
-                                const brandCategoryResponse = await fetch(`/api/brand-categories/${selectedBrand}`);
+                                // First try to find by brand ID
+                                const brandCategoryResponse = await fetch(`/api/brand-categories?brand=${selectedBrand}`);
                                 if (brandCategoryResponse.ok) {
-                                    brandCategory = await brandCategoryResponse.json();
+                                    const categories = await brandCategoryResponse.json();
+                                    brandCategory = categories[0] || null; // Take the first one if found
                                 }
                             } catch (error) {
+                                console.error('Error fetching brand category:', error);
                                 // Brand category doesn't exist yet, will create a new one
                             }
 
@@ -347,26 +350,48 @@ const AddProduct = ({ id }) => {
                             
                             if (!productExists) {
                                 // Prepare the update data
-                                const updateData = brandCategory
-                                    ? {
-                                        ...brandCategory,
+                                let updateData;
+                                const productUpdate = {
+                                    product: productId,
+                                    productName: title // Use the title from state
+                                };
+
+                                let brandResponse;
+                                
+                                if (brandCategory) {
+                                    // Add the product to the existing brand category
+                                    updateData = {
                                         $push: {
-                                            products: productData
+                                            products: productUpdate
                                         }
-                                    }
-                                    : {
-                                        _id: selectedBrand,
+                                    };
+                                    
+                                    // Update existing brand category
+                                    brandResponse = await fetch(`/api/brand-categories/${brandCategory._id}`, {
+                                        method: 'PATCH',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify(updateData)
+                                    });
+                                } else {
+                                    // Create a new brand category with this product
+                                    const newCategoryData = {
                                         title: selectedBrandData.buttonLink || 'New Brand Category',
                                         slug: (selectedBrandData.buttonLink || 'new-brand-category').toLowerCase().replace(/\s+/g, '-'),
-                                        products: [productData]
+                                        buttonLink: selectedBrandData.buttonLink || '',
+                                        brand: selectedBrand,
+                                        brandCategory: selectedBrandData.buttonLink || '',
+                                        products: [productUpdate],
+                                        active: true,
+                                        order: 0
                                     };
-
-                                // Create or update the brand category with the product
-                                const brandResponse = await fetch(`/api/brand-categories/${selectedBrand}`, {
-                                    method: 'PATCH',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(updateData)
-                                });
+                                    
+                                    // Create new brand category
+                                    brandResponse = await fetch('/api/brand-categories', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify(newCategoryData)
+                                    });
+                                }
 
                                 if (!brandResponse.ok) {
                                     const brandResult = await brandResponse.json();

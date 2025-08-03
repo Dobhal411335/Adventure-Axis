@@ -57,12 +57,11 @@ export async function POST(req) {
             order,
             active,
             brand: brandId,
-            products: products.map(p => ({
+            products: products ? products.map(p => ({
                 product: p.product,
                 productName: p.productName
-            })),
-            brandCategory,
-            productCategory
+            })) : [],
+            brandCategory
         });
 
         await newBrandCategory.save();
@@ -81,10 +80,18 @@ export async function POST(req) {
     }
 }
 
-export async function GET() {
+export async function GET(request) {
     await connectDB();
     try {
-        const brandCategories = await BrandCategory.find({})
+        const { searchParams } = new URL(request.url);
+        const brandId = searchParams.get('brand');
+        
+        const query = {};
+        if (brandId) {
+            query.brand = brandId;
+        }
+
+        const brandCategories = await BrandCategory.find(query)
             .populate({
                 path: 'brand',
                 select: 'title buttonLink'
@@ -96,7 +103,6 @@ export async function GET() {
             })
             .lean();
 
-        // console.log('Brand Categories with populated data:', JSON.stringify(brandCategories, null, 2));
         return NextResponse.json(brandCategories);
     } catch (error) {
         // console.error('Error fetching brand categories:', error);

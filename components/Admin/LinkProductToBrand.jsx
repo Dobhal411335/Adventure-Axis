@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import toast from "react-hot-toast";
 import { Trash2, Loader2 as Loader2Icon } from "lucide-react";
 import Image from "next/image";
-import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 const LinkProductToBrand = () => {
     const fileInputRef = useRef(null);
@@ -16,17 +15,11 @@ const LinkProductToBrand = () => {
     // Add these state variables at the top of your component
     const [brands, setBrands] = useState([]);
     const [brandCategories, setBrandCategories] = useState([]);
-    const [products, setProducts] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState("");
-    const [selectedProducts, setSelectedProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingBrands, setIsLoadingBrands] = useState(false);
-    const [isLoadingProducts, setIsLoadingProducts] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
     const [uploadingProfile, setUploadingProfile] = useState(false);
-    const [viewModalOpen, setViewModalOpen] = useState(false);
-    const [selectedCategoryProducts, setSelectedCategoryProducts] = useState([]);
-    const [selectedCategoryName, setSelectedCategoryName] = useState('');
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -38,30 +31,18 @@ const LinkProductToBrand = () => {
         profileImage: { url: "", key: "" },
         order: 1,
         brandId: "",
-        selectedProducts: [],
         active: true
     });
-    const handleViewProducts = (brandCategory, e) => {
-        e.stopPropagation();
-        if (!brandCategory.products || brandCategory.products.length === 0) {
-            toast.info('No products found in this category');
-            return;
-        }
-        setSelectedCategoryProducts(brandCategory.products);
-        setSelectedCategoryName(brandCategory.buttonLink || brandCategory.title || 'Untitled Brand');
-        setViewModalOpen(true);
-    };
-    // Fetch brands and products on component mount
+
+    // Fetch brands and categories on component mount
     useEffect(() => {
         fetchBrands();
         fetchBrandCategories();
-        fetchProducts();
     }, []);
     const fetchBrandCategories = async () => {
-
         try {
             setIsLoading(true);
-            const response = await fetch('/api/brand-categories?populate=brand,products.product', {
+            const response = await fetch('/api/brand-categories?populate=brand', {
                 cache: 'no-store' // Ensure we're not getting cached data
             });
 
@@ -154,7 +135,6 @@ const LinkProductToBrand = () => {
             brandCategory: ''
         });
         setSelectedBrand(null);
-        setSelectedProducts([]);
     };
     const fetchBrands = async () => {
         try {
@@ -171,20 +151,7 @@ const LinkProductToBrand = () => {
             toast.error(error.message || 'Failed to fetch brands');
         }
     };
-    const fetchProducts = async () => {
-        try {
-            setIsLoadingProducts(true);
-            const res = await fetch('/api/product');
-            const data = await res.json();
-            setProducts(Array.isArray(data) ? data : []);
-        } catch (error) {
-            console.error('Error fetching products:', error);
-            toast.error('Failed to load products');
-            setProducts([]);
-        } finally {
-            setIsLoadingProducts(false);
-        }
-    };
+
     const handleBrandChange = async (brandCategoryId) => {
         try {
             setIsLoading(true);
@@ -216,18 +183,6 @@ const LinkProductToBrand = () => {
 
                 setFormData(formDataUpdate);
 
-                // Set the selected products
-                if (selectedCategory.products?.length > 0) {
-                    const productIds = selectedCategory.products
-                        .filter(p => p?.product?._id)
-                        .map(p =>
-                            p.product?._id || p.product
-                        );
-                    setSelectedProducts(productIds);
-                } else {
-                    setSelectedProducts([]);
-                }
-
                 // Scroll to the form
                 document.getElementById('brand-form')?.scrollIntoView({ behavior: 'smooth' });
             }
@@ -245,13 +200,6 @@ const LinkProductToBrand = () => {
         if (!formData.profileImage?.url) {
             return toast.error("Please upload a profile image");
         }
-
-        const safeSelectedProducts = Array.isArray(selectedProducts) ? selectedProducts : [];
-
-        if (safeSelectedProducts.length === 0) {
-            return toast.error("Please select at least one product");
-        }
-
 
         if (!formData.brandId) {
             return toast.error("Please select a brand");
@@ -285,12 +233,7 @@ const LinkProductToBrand = () => {
                 order: formData.order || 0,
                 active: formData.active !== false, // Default to true if not set
                 brandId: formData.brandId,
-                products: safeSelectedProducts.map(id => ({
-                    product: id,
-                    productName: products.find(p => p._id === id)?.title || ''
-                })),
                 brandCategory: selectedBrandData.buttonLink,
-                // Remove productCategory as it's not needed in the schema
                 _id: formData._id // Include the _id for updates
             };
 
@@ -332,11 +275,9 @@ const LinkProductToBrand = () => {
                     order: 0,
                     active: true,
                     brandId: '',
-                    brandCategory: '',
-
+                    brandCategory: ''
                 });
                 setSelectedBrand(null);
-                setSelectedProducts([]);
             }
 
         } catch (error) {
@@ -484,47 +425,7 @@ const LinkProductToBrand = () => {
                                     </Select>
                                 </div>
 
-                                {/* Multi-select for products */}
-                                {/* <div className="space-y-2">
-                                    <Label>Select Products *</Label>
-                                    <div className="border rounded-md p-4 max-h-60 overflow-y-auto">
-                                        {isLoading ? (
-                                            <div className="p-2 text-center">Loading products...</div>
-                                        ) : products.length > 0 ? (
-                                            <div className="space-y-2">
-                                                {products.map((product) => (
-                                                    <div key={product._id} className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id={`product-${product._id}`}
-                                                            checked={selectedProducts.some(pId =>
-                                                                (typeof pId === 'string' ? pId : pId._id) === product._id
-                                                            )}
-                                                            onCheckedChange={(checked) => {
-                                                                if (checked) {
-                                                                    setSelectedProducts(prev => [...prev, product._id]);
-                                                                } else {
-                                                                    setSelectedProducts(prev =>
-                                                                        prev.filter(id =>
-                                                                            (typeof id === 'string' ? id : id._id) !== product._id
-                                                                        )
-                                                                    );
-                                                                }
-                                                            }}
-                                                        />
-                                                        <label
-                                                            htmlFor={`product-${product._id}`}
-                                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                        >
-                                                            {product.title}
-                                                        </label>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="p-2 text-center">No products found</div>
-                                        )}
-                                    </div>
-                                </div> */}
+
 
                                 {/* Profile Image Upload */}
                                 <div className="space-y-2">
@@ -640,9 +541,10 @@ const LinkProductToBrand = () => {
                                                 banner: { url: '', key: '' },
                                                 profileImage: { url: '', key: '' },
                                                 order: 1,
-                                                active: true
+                                                active: true,
+                                                brandId: '',
+                                                brandCategory: ''
                                             });
-                                            setSelectedProducts([]);
                                         }}
                                     >
                                         Cancel
@@ -672,9 +574,6 @@ const LinkProductToBrand = () => {
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Brand
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Products
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
@@ -724,11 +623,7 @@ const LinkProductToBrand = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-900">
-                                                    {brandCategory.products?.length || 0} {brandCategory.products?.length === 1 ? 'product' : 'products'}
-                                                </div>
-                                            </td>
+
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                     ${brandCategory.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
@@ -736,14 +631,7 @@ const LinkProductToBrand = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                                <button
-                                                    onClick={(e) => handleViewProducts(brandCategory, e)}
-                                                    className="inline-flex items-center px-3 py-2 text-xs font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-md shadow-sm transition"
-                                                >
-                                                    View
-                                                </button>
-
-                                                <button
+<button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         handleBrandChange(brandCategory._id);
@@ -778,52 +666,7 @@ const LinkProductToBrand = () => {
                     </div>
                 </div>
             </div>
-            {/* Products View Modal */}
-            {viewModalOpen && selectedCategoryProducts.length > 0 && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-xl w-full p-6 relative">
-                        <h4 className="font-bold text-xl mb-4">Products in {selectedCategoryName}</h4>
-                        <div className="max-h-[60vh] overflow-y-auto">
-                            <div className="bg-white rounded border border-gray-200">
-                                <ul className="divide-y divide-gray-200">
-                                    {selectedCategoryProducts.map((item, idx) => (
-                                        <li key={item.product._id} className="px-4 py-3 hover:bg-gray-50">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-gray-900">
-                                                    {item.product?.title || 'Untitled Product'}
-                                                </span>
-                                                {item.product?.price && (
-                                                    <span className="text-gray-600 font-medium">
-                                                        ${parseFloat(item.product.price).toFixed(2)}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
 
-                        <button
-                            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-600"
-                            onClick={() => setViewModalOpen(false)}
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-
-                        <div className="flex justify-end mt-4">
-                            <button
-                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                                onClick={() => setViewModalOpen(false)}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* Delete Confirmation Dialog */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
