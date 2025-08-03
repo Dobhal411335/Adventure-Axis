@@ -22,7 +22,7 @@ export async function GET(req, { params }) {
   // console.log(params.id)
   try {
     await connectDB();
-    // let { id } = params;
+    // let { id } =await params.id;
     // try { id = decodeURIComponent(id); } catch (e) { }
     // console.log("Product API called with id:", id);
     // if (!id || id.length !== 24) {

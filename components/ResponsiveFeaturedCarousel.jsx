@@ -176,7 +176,7 @@ const ResponsiveFeaturedCarousel = ({ products }) => {
                     addToCart({
                       id: prod._id || prod.id,
                       name: prod.title || prod.name,
-                      image: (prod.gallery?.mainImage) || (prod.image?.url) || prod.image || "/product.jpeg",
+                      image: (prod.gallery?.mainImage) || (prod.image?.url) || prod.image || "/placeholder.jpeg",
                       price,
                       color: selectedColor,
                       size: selectedSize,
@@ -206,7 +206,7 @@ const ResponsiveFeaturedCarousel = ({ products }) => {
                         <div>
                           <div className="w-full h-56 relative mb-3 rounded-xl overflow-hidden flex items-center justify-center bg-gray-50">
                             <Image
-                              src={product.gallery?.mainImage?.url || (product.image && product.image.url) || product.image || "/product.jpeg"}
+                              src={product.gallery?.mainImage?.url || (product.image && product.image.url) || product.image || "/placeholder.jpeg"}
                               alt={product.title || product.packageName || "Product image"}
                               width={180}
                               height={180}
@@ -290,7 +290,7 @@ const ResponsiveFeaturedCarousel = ({ products }) => {
                         <div>
                           <div className="w-full h-52 relative mb-3 rounded-xl overflow-hidden flex items-center justify-center bg-gray-50 hover:scale-105 transition-all duration-300">
                             <Image
-                              src={product.gallery?.mainImage?.url || (product.image && product.image.url) || product.image || "/product.jpeg"}
+                              src={product.gallery?.mainImage?.url || (product.image && product.image.url) || product.image || "/placeholder.jpeg"}
                               alt={product.title || product.packageName || "Product image"}
                               width={120}
                               height={120}
@@ -427,7 +427,7 @@ const ResponsiveFeaturedCarousel = ({ products }) => {
                   addToCart({
                     id: p._id || p.id,
                     name: p.title || p.name,
-                    image: (p.gallery?.mainImage) || (p.image?.url) || p.image || "/product.jpeg",
+                    image: (p.gallery?.mainImage) || (p.image?.url) || p.image || "/placeholder.jpeg",
                     price: Math.round(discountedPrice),
                     originalPrice: price,
                     couponApplied,

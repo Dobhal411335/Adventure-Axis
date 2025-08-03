@@ -153,12 +153,12 @@ const OrderDetailsModal = ({ order, onClose }) => {
             {order.products?.map((product, index) => (
               <div key={index} className="flex items-start p-3 border rounded-lg hover:bg-gray-50">
                 <img 
-                  src={typeof product.image === 'string' ? product.image : product.image?.url || '/placeholder-product.jpg'} 
+                  src={typeof product.image === 'string' ? product.image : product.image?.url || '/placeholder.jpeg'} 
                   alt={product.name} 
                   className="w-20 h-20 object-cover rounded border mr-4"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/placeholder-product.jpg';
+                    e.target.src = '/placeholder.jpeg';
                   }}
                 />
                 <div className="flex-1">

@@ -106,7 +106,9 @@ export default function ProductDetailView({ product }) {
   const [selectedImage, setSelectedImage] = React.useState(product?.gallery?.mainImage?.url || []);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
-  const [quantity, setQuantity] = React.useState(1);
+  const [quantity, setQuantity] = useState(1);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [basePrice, setBasePrice] = useState(0);
   const [showSizeChart, setShowSizeChart] = React.useState(false);
   const [selectedSize, setSelectedSize] = React.useState(null);
   const [selectedWeight, setSelectedWeight] = React.useState(null);
@@ -169,23 +171,38 @@ export default function ProductDetailView({ product }) {
     }
   }, [selectedVariant, quantity]);
 
-  // Calculate total price
+  // Initialize discount related variables
+  const coupon = product.coupon || product.coupons?.coupon;
+  let hasDiscount = false;
+  let discountedPrice = selectedVariant ? selectedVariant.price : 0;
+  let couponText = '';
+
+  // Calculate discount if applicable
+  if (selectedVariant) {
+    if (coupon && typeof coupon.percent === 'number' && coupon.percent > 0) {
+      discountedPrice = selectedVariant.price - (selectedVariant.price * coupon.percent) / 100;
+      hasDiscount = true;
+      couponText = `${coupon.couponCode || ''} (${coupon.percent}% OFF)`;
+    } else if (coupon && typeof coupon.amount === 'number' && coupon.amount > 0) {
+      discountedPrice = selectedVariant.price - coupon.amount;
+      hasDiscount = true;
+      couponText = `${coupon.couponCode || ''} (₹${coupon.amount} OFF)`;
+    } else {
+      discountedPrice = selectedVariant.price;
+    }
+  }
+  // Update prices when variant, quantity, or discount changes
+  useEffect(() => {
+    if (selectedVariant) {
+      const currentPrice = hasDiscount ? Math.round(discountedPrice) : selectedVariant.price;
+      setBasePrice(currentPrice);
+      setTotalPrice(currentPrice * quantity);
+    }
+  }, [selectedVariant, quantity, hasDiscount, discountedPrice]);
+  
   const formatNumeric = (num) => {
     return new Intl.NumberFormat("en-IN").format(num);
   };
-  const coupon = product.coupon || product.coupons?.coupon;
-  let discountedPrice = selectedVariant ? selectedVariant.price : 0;
-  let hasDiscount = false;
-  let couponText = '';
-  if (coupon && typeof coupon.percent === 'number' && coupon.percent > 0) {
-    discountedPrice = selectedVariant.price - (selectedVariant.price * coupon.percent) / 100;
-    hasDiscount = true;
-    couponText = `${coupon.couponCode || ''} (${coupon.percent}% OFF)`;
-  } else if (coupon && typeof coupon.amount === 'number' && coupon.amount > 0) {
-    discountedPrice = selectedVariant?.price - coupon.amount;
-    hasDiscount = true;
-    couponText = `${coupon.couponCode || ''} (₹${coupon.amount} OFF)`;
-  }
   const price = selectedVariant ? formatNumeric(selectedVariant.price) : 0;
   const total = hasDiscount ? (discountedPrice * quantity).toFixed(2) : (selectedVariant ? (selectedVariant.price * quantity).toFixed(2) : 0);
 
@@ -231,21 +248,21 @@ export default function ProductDetailView({ product }) {
   return (
     <div className="flex flex-col md:flex-row gap-4">
       {/* LEFT: Product Images */}
-      <div className="w-full md:w-1/3 flex flex-col items-center">
+      <div className="w-full md:w-2/3 flex flex-col items-center">
 
         {/* Main Image Carousel (QuickView style, embla-controlled) */}
         <div className="w-full flex justify-center mb-4">
-          <div className="relative w-full max-w-[500px] h-[420px] md:h-[500px] flex items-center justify-center rounded-xl overflow-hidden">
+          <div className="relative w-full max-w-[800px] h-[420px] md:h-[600px] flex items-center justify-center rounded-xl overflow-hidden">
             <Carousel
               className="w-full h-full pr-4"
-              opts={{ loop: true }} // <--- This is the correct place to enable looping
+              opts={{ loop: true }} 
               plugins={[Autoplay({ delay: 4000 })]}
               setApi={setCarouselApi}
             >
-              <CarouselContent className="h-[420px] md:h-[500px]">
+              <CarouselContent className="h-[420px] md:h-[600px]">
                 {allImages.map((img, idx) => (
                   <CarouselItem key={idx} className="flex items-center justify-center h-full">
-                    <div className="relative w-full h-[420px] md:h-[500px] flex items-center justify-center"
+                    <div className="relative w-full h-[420px] md:h-[600px] flex items-center justify-center"
                     >
                       <Image
                         src={img}
@@ -273,7 +290,7 @@ export default function ProductDetailView({ product }) {
         </div>
         {/* Sub-Images Carousel (5 per row) */}
         {allImages.length > 1 && (
-          <div className="w-full max-w-[400px] mx-auto px-2">
+          <div className="w-full max-w-[300px] md:max-w-[400px] mx-auto px-2">
             <Carousel opts={{ align: 'start', loop: allImages.length > 5 }} className="w-full">
               <CarouselContent>
                 {allImages.map((img, idx) => (
@@ -352,16 +369,26 @@ export default function ProductDetailView({ product }) {
         {/* Selectors */}
         {/* Price and Coupon Section */}
         <div className="mb-2 flex items-center gap-2">
-          {hasDiscount && (
+          {hasDiscount ? (
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-bold text-xl text-black">₹{formatNumeric(Math.round(discountedPrice))}</span>
-              <del className="text-gray-600 font-semibold text-sm mr-2">₹{formatNumeric(selectedVariant?.price)}</del>
-              <span className="border border-green-500 text-green-700 px-2 py-0.5 rounded text-xs font-semibold bg-green-50">Coupon Applied: {couponText}</span>
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <span className="font-bold text-xl text-black">₹{formatNumeric(Math.round(discountedPrice * quantity))}</span>
+                  
+                </div>
+                <div className="flex items-center text-sm">
+                  <del className="text-gray-600 font-semibold">₹{formatNumeric(selectedVariant?.price * quantity)}</del>
+                  <span className="border border-green-500 text-green-700 px-2 py-0.5 rounded text-xs font-semibold bg-green-50 ml-2">
+                    Coupon Applied: {couponText}
+                  </span>
+                </div>
+              </div>
             </div>
-
-          )}
-          {!hasDiscount && (
-            <span className="font-bold text-xl text-black">₹{price}</span>
+          ) : (
+            <div className="flex items-center">
+              <span className="font-bold text-xl text-black">₹{formatNumeric(selectedVariant ? selectedVariant.price * quantity : 0)}</span>
+              
+            </div>
           )}
         </div>
         {/* Stock Status */}
@@ -406,23 +433,30 @@ export default function ProductDetailView({ product }) {
 
             <div className="flex items-center gap-2">
               <span className="font-bold text-md">Quantity:</span>
-              <button
-                className="w-8 h-8 border rounded flex items-center justify-center font-bold text-lg hover:bg-gray-100"
-                onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                aria-label="Decrease quantity"
-                disabled={quantity <= 1}
-              >
-                -
-              </button>
-              <span className="w-8 text-center font-semibold">{quantity}</span>
-              <button
-                className="w-8 h-8 border rounded flex items-center justify-center font-bold text-lg hover:bg-gray-100"
-                onClick={() => setQuantity(q => selectedVariant ? Math.min(selectedVariant.qty, q + 1) : q + 1)}
-                aria-label="Increase quantity"
-                disabled={!selectedVariant || quantity >= (selectedVariant?.qty || 0)}
-              >
-                +
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  className="w-8 h-8 border rounded flex items-center justify-center font-bold text-lg hover:bg-gray-100"
+                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                  aria-label="Decrease quantity"
+                  disabled={quantity <= 1}
+                >
+                  -
+                </button>
+                <span className="w-8 text-center font-semibold">{quantity}</span>
+                <button
+                  className="w-8 h-8 border rounded flex items-center justify-center font-bold text-lg hover:bg-gray-100"
+                  onClick={() => setQuantity(q => selectedVariant ? Math.min(selectedVariant.qty, q + 1) : q + 1)}
+                  aria-label="Increase quantity"
+                  disabled={!selectedVariant || quantity >= (selectedVariant?.qty || 0)}
+                >
+                  +
+                </button>
+                {selectedVariant && (
+                  <span className="ml-4 font-semibold">
+                    Total: ₹{totalPrice.toLocaleString('en-IN')}
+                  </span>
+                )}
+              </div>
             </div>
           )}
           {/* Size */}
@@ -456,7 +490,9 @@ export default function ProductDetailView({ product }) {
                   <div className="flex justify-between items-center w-full gap-2">
                     <span>{size}</span>
                     <div className="h-4 w-px bg-gray-300" />
-                    <span className="text-gray-600 text-md">{weight}g</span>
+                    <span className="text-gray-600 text-md">
+                      {weight ? (Number(weight) / 1000).toFixed(2) : '0.00'}kg
+                    </span>
                   </div>
                 </button>
               );
@@ -773,43 +809,14 @@ export default function ProductDetailView({ product }) {
             </div>
           )}
         </div>
-      </div>
-      {/* RIGHT: Price/Offers/Add to Cart Box */}
-      <div className="w-full lg:w-1/3 flex flex-col">
-        <div className="border rounded-xl p-6">
-          {/* Total Price */}
-          <div className="flex items-center justify-between gap-4 mb-3">
-            <span className="font-bold text-xl">Total</span>
-            <span className="font-bold text-2xl">₹ {total}</span>
-          </div>
-          {/* Offers/Info Boxes */}
-          <div className="flex flex-col gap-3 mb-6">
-            <div className="border rounded-lg p-3 flex items-center justify-between">
-              <span className="font-semibold">Fast Delivery</span>
-              <span className="text-gray-500 text-xs w-52">The specific delivery time will vary depending on the shipping address and the selected delivery options.</span>
-            </div>
-            <div className="border rounded-lg p-3 flex items-center justify-between">
-              <span className="font-semibold">Easy Returns</span>
-              <span className="text-gray-500">Within 30 days of purchase</span>
-            </div>
-            <div className="border rounded-lg p-3 flex items-center justify-between">
-              <span className="font-semibold">24/7 support</span>
-              <span className="text-gray-500 text-xs w-52">Service support is availble 24 hours a day. 7 days a week. You can reach them by phone,email, or chat</span>
-            </div>
-            <div className="border rounded-lg p-3 flex items-center justify-between gap-2">
-              <span className="font-semibold">Payment & Security</span>
-              <span className="text-gray-500 text-xs w-52">Your payment information is processed securly. We do not store credit card details nor have access to your credit card infomation</span>
-            </div>
-            <h2 className="font-bold mx-auto">"Shop with Confidence - 100% Money-Back Guarantee!"</h2>
-          </div>
-          <div className="py-2">
+        <div className="py-2">
           <button
               className="bg-black text-white py-3 px-8 font-semibold hover:bg-gray-800 w-full"
               onClick={() => setShowPdfModal(true)}
             >
               Get Package PDF
             </button>
-            {/* PDF Modal */}
+    
             <Dialog open={showPdfModal} onOpenChange={setShowPdfModal}>
               <DialogContent className="max-w-lg">
                 <DialogTitle>Package PDFs</DialogTitle>
@@ -829,7 +836,6 @@ export default function ProductDetailView({ product }) {
                       </div>
                     ))}
 
-                    {/* PDF Preview Modal */}
                     <Dialog open={!!pdfPreviewUrl} onOpenChange={() => setPdfPreviewUrl(null)}>
                       <DialogContent className="md:max-w-2xl">
                         <DialogTitle>PDF Preview</DialogTitle>
@@ -861,9 +867,9 @@ export default function ProductDetailView({ product }) {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-          </div>
-          {/* Action Buttons */}
-          <div className="flex gap-4 mb-6 items-center">
+          
+
+          <div className="flex gap-4 mb-6 items-center py-2">
             {(() => {
               const hasAnyVariantInStock = product?.quantity?.variants?.some(v => v.qty > 0) ||
                 product?.quantity?.varients?.some(v => v.qty > 0);
@@ -887,14 +893,14 @@ export default function ProductDetailView({ product }) {
                         id: product._id,
                         name: product.title,
                         image: typeof selectedImage === "string" ? selectedImage : selectedImage?.url || product.gallery?.mainImage?.url || '/placeholder.jpeg',
-                        price: hasDiscount ? Math.round(discountedPrice) : selectedVariant.price,
+                        price: basePrice, // Use the base price (price per unit)
                         originalPrice: selectedVariant.price,
                         couponApplied: hasDiscount,
                         couponCode: coupon ? coupon.couponCode : '',
                         size: selectedSize,
-                        weight: selectedWeight,
+                        weight: selectedWeight / 1000, // Convert grams to kg for cart
                         color: selectedColor,
-                        qty: quantity,
+                        qty: quantity, // This will be used to calculate the total in the cart
                         productCode: product.code || product.productCode || '',
                         discountPercent: coupon && typeof coupon.percent === 'number' ? coupon.percent : undefined,
                         discountAmount: coupon && typeof coupon.amount === 'number' ? coupon.amount : undefined,
@@ -918,7 +924,6 @@ export default function ProductDetailView({ product }) {
               }
             })()}
 
-            {/* Keep the wishlist button outside the condition so it's always visible */}
             <button
               className={`p-2 rounded-full border hover:bg-gray-50 ${wishlist && wishlist.some(i => i.id === product._id) ? "bg-pink-600 border-pink-600" : ""}`}
               onClick={() => {
@@ -936,7 +941,7 @@ export default function ProductDetailView({ product }) {
                     couponApplied: hasDiscount,
                     couponCode: coupon ? coupon.couponCode : '',
                     size: selectedSize,
-                    weight: selectedWeight,
+                    weight: selectedWeight / 1000, // Convert grams to kg for cart
                     color: selectedColor,
                     qty: 1,
                     productCode: product.code || product.productCode || '',
@@ -954,7 +959,6 @@ export default function ProductDetailView({ product }) {
               <Heart className={wishlist && wishlist.some(i => i.id === product._id) ? "text-white" : "text-pink-600"} />
             </button>
 
-            {/* Share Button with Popover */}
             <div className="relative">
               <button
                 className="p-2 rounded-full border hover:bg-gray-50"
@@ -1017,7 +1021,7 @@ export default function ProductDetailView({ product }) {
               )}
             </div>
           </div>
-          {/* Buy Now Button */}
+
           <button
             className={`border border-black py-3 font-semibold w-full ${selectedVariant?.qty > 0
               ? 'hover:bg-gray-100'
@@ -1046,7 +1050,7 @@ export default function ProductDetailView({ product }) {
                   couponApplied = true;
                   couponCode = couponObj.couponCode;
                 }
-                const totalWeight = (selectedVariant?.weight || 0) * quantity;
+                const totalWeight = ((selectedVariant?.weight || 0) / 1000) * quantity; // Convert grams to kg for shipping calculation
                 // console.log(totalWeight);
                 // Fetch shipping charge from API before proceeding
                 let shippingCharge = 0;
@@ -1095,7 +1099,7 @@ export default function ProductDetailView({ product }) {
                   image: selectedImage || product.gallery?.mainImage?.url || '/placeholder.jpeg',
                   price: Math.round(discountedPrice),
                   size: selectedSize,
-                  weight: selectedWeight,
+                  weight: selectedWeight / 1000, // Convert grams to kg for cart
                   color: selectedColor,
                   originalPrice: price,
                   qty: quantity,
@@ -1129,10 +1133,8 @@ export default function ProductDetailView({ product }) {
           >
             {selectedVariant?.qty > 0 ? 'BUY IT NOW' : 'OUT OF STOCK'}
           </button>
-     
         </div>
       </div>
     </div >
-
   );
 }

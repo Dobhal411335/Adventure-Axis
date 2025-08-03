@@ -31,7 +31,7 @@ function RelatedProductsCarousel({ products }) {
     addToCart({
       id: p._id,
       name: p.title,
-      image: p?.gallery?.mainImage || "/product.jpeg",
+      image: p?.gallery?.mainImage || "/placeholder.jpeg",
       price: Math.round(discountedPrice),
       originalPrice: price,
       qty: 1,
@@ -111,7 +111,7 @@ function RelatedProductsCarousel({ products }) {
                           addToWishlist({
                             id: p._id,
                             name: p.title,
-                            image: p?.gallery?.mainImage || "/product.jpeg",
+                            image: p?.gallery?.mainImage || "/placeholder.jpeg",
                             price: Math.round(discountedPrice),
                             originalPrice: price,
                             qty: 1,

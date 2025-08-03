@@ -128,6 +128,10 @@ const QuantityManagement = ({ productData, productId }) => {
         const found = sizes.find(s => (typeof s === 'object' ? (s.label === v.size || s.name === v.size) : s === v.size));
         if (found && found._id) sizeValue = found._id;
       }
+      
+      // Format weight to show decimal places properly
+      
+      
       return {
         size: sizeValue || '',
         price: v.price || '',
@@ -199,7 +203,7 @@ const QuantityManagement = ({ productData, productId }) => {
             <tbody>
               {rows.map((row, idx) => (
                 <tr key={idx}>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
+                  <td className="border px-1 py-1"><div className="flex justify-center">
                     <Select value={row.size ?? ''} onValueChange={val => handleRowChange(idx, 'size', val)}>
                       <SelectTrigger className="bg-gray-50 rounded border w-32">
                         <SelectValue placeholder="Select Size" />

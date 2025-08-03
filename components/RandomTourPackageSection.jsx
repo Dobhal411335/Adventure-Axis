@@ -54,8 +54,8 @@ const RandomTourPackageSection = () => {
       name: item.title,
       image: item?.gallery?.mainImage || "/placeholder.jpeg",
       price: Math.round(discountedPrice),
-      size: item?.quantity?.variants[0].size,
-      weight: item?.quantity?.variants[0].weight,
+      size: item?.quantity?.variants[0]?.size,
+      weight: item?.quantity?.variants[0]?.weight ? item.quantity.variants[0].weight / 1000 : 0, // Convert grams to kg
       color:item?.quantity?.variants[0].color,
       originalPrice: price,
       qty: 1,

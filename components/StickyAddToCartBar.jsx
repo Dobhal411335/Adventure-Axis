@@ -156,7 +156,25 @@ function StickyAddToCartBar({ product }) {
                 return;
               }
               const coupon = product.coupon || product.coupons?.coupon;
-              addToCart(selectedVariant, quantity, coupon);
+              const cartItem = {
+                id: product._id,
+                name: product.title,
+                image: product?.gallery?.mainImage?.url || "/placeholder.jpeg",
+                price: selectedVariant.price,
+                originalPrice: selectedVariant.price,
+                size: selectedVariant.size,
+                weight: selectedVariant.weight ? selectedVariant.weight / 1000 : 0, // Convert grams to kg
+                color: selectedVariant.color,
+                qty: quantity,
+                productCode: product.code || product.productCode || '',
+                discountPercent: coupon && typeof coupon.percent === 'number' ? coupon.percent : undefined,
+                discountAmount: coupon && typeof coupon.amount === 'number' ? coupon.amount : undefined,
+                cgst: (product.taxes && product.taxes.cgst) || product.cgst || (product.tax && product.tax.cgst) || 0,
+                sgst: (product.taxes && product.taxes.sgst) || product.sgst || (product.tax && product.tax.sgst) || 0,
+                igst: (product.taxes && product.taxes.igst) || product.igst || (product.tax && product.tax.igst) || 0,
+                totalQuantity: selectedVariant.qty || 0,
+              };
+              addToCart(cartItem, quantity);
             }}
             disabled={!selectedVariant || selectedVariant.qty <= 0}
           >
