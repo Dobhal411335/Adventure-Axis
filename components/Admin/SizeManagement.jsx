@@ -179,29 +179,33 @@ const SizeManagement = ({ productData, productId }) => {
 
     setSubmitting(true);
     try {
-      // Check if a Size document already exists for this product
-      const getRes = await fetch(`/api/productSize`);
-      const existing = getRes.ok ? await getRes.json() : null;
-      // Prepare size data
+      // Prepare size data with the edit ID if available
       const sizeData = {
         product: productId,
         sizes: sizesToSend,
-        sizeChartUrl: sizeChartObj
+        sizeChartUrl: sizeChartObj,
+        ...(editId && { id: editId }) // Include id (not _id) to match API expectation
       };
+
       let res, data;
-      if (!editId && existing && existing._id) {
-        toast.error('Sizes for this product already exist');
-        setSubmitting(false);
-        return;
-      }
       if (editId) {
-        // PATCH update
+        // PATCH update - ensure we have the required ID
         res = await fetch('/api/productSize', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...sizeData, _id: editId }),
+          body: JSON.stringify(sizeData),
         });
       } else {
+        // Check if a Size document already exists for this product
+        const getRes = await fetch(`/api/productSize?product=${productId}`);
+        const existing = getRes.ok ? await getRes.json() : null;
+        
+        if (existing && existing._id) {
+          toast.error('Sizes for this product already exist');
+          setSubmitting(false);
+          return;
+        }
+        
         // POST new
         res = await fetch('/api/productSize', {
           method: 'POST',

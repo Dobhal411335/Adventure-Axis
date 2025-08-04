@@ -19,20 +19,18 @@ import PackagePdf from '@/models/PackagePdf';
 
 import { deleteFileFromCloudinary } from '@/utils/cloudinary';
 export async function GET(req, { params }) {
-  // console.log(params.id)
   try {
     await connectDB();
-    // let { id } =await params.id;
-    // try { id = decodeURIComponent(id); } catch (e) { }
-    // console.log("Product API called with id:", id);
-    // if (!id || id.length !== 24) {
-    //   console.error("Invalid product id:", id);
-    //   return new Response(JSON.stringify({ error: 'Invalid product id' }), { status: 400 });
-    // }
-    const id = decodeURIComponent(params.id);
+    // Ensure params is properly awaited and decoded
+    const { id } = await params;
+    if (!id) {
+      return new Response(JSON.stringify({ error: 'Product ID is required' }), { status: 400 });
+    }
+    
+    const decodedId = decodeURIComponent(id);
 
     // Strictly fetch by MongoDB _id
-    let product = await Product.findById(id)
+    let product = await Product.findById(decodedId)
     .populate('size')
     // .populate('color') 
     .populate('price')

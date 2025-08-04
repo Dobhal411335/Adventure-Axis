@@ -22,8 +22,31 @@ export default function QuickViewProductCard({ product, onClose }) {
 
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [variantImages, setVariantImages] = useState(['/placeholder.jpeg']);
 
-  // Prepare images array for gallery, using mainImage and subImages
+  // Get images from the selected variant or first available variant
+  const getVariantImages = (variant) => {
+    if (!variant) return ['/placeholder.jpeg'];
+    
+    const images = [];
+    
+    // Add profile image if exists
+    if (variant.profileImage?.url) {
+      images.push(variant.profileImage.url);
+    }
+    
+    // Add all valid sub-images 
+    if (Array.isArray(variant.subImages)) {
+      variant.subImages.forEach(img => {
+        if (img?.url && typeof img.url === 'string' && img.url.trim() !== '') {
+          images.push(img.url);
+        }
+      });
+    }
+    
+    return images.length > 0 ? images : ['/placeholder.jpeg'];
+  };
+  
   // Sync carousel index with activeImageIdx and thumbnail highlight
   React.useEffect(() => {
     if (!carouselApi) return;
@@ -32,22 +55,27 @@ export default function QuickViewProductCard({ product, onClose }) {
       setActiveImageIdx(idx);
     };
     carouselApi.on('select', onSelect);
-    // Set initial
     setActiveImageIdx(carouselApi.selectedScrollSnap());
     return () => carouselApi.off('select', onSelect);
   }, [carouselApi]);
-  const images = [
-    product?.gallery?.mainImage?.url || "/placeholder.png",
-    ...(Array.isArray(product?.gallery?.subImages) ? product.gallery.subImages.map(img => img.url) : [])
-  ];
+  
+  const images = variantImages;
   // Extract variants
   const variants = Array.isArray(product?.quantity?.variants) ? product.quantity.variants : [];
   // console.log(product?.quantity?.variants);
-
+  
+  // Set initial variant images when variants are loaded
+  React.useEffect(() => {
+    if (variants.length > 0 && !selectedVariant) {
+      const images = getVariantImages(variants[0]);
+      setVariantImages(images);
+    }
+  }, [variants]);
+  
   // Get all unique sizes and colors from variants
   const availableSizes = [...new Set(variants.map(v => v.size))];
   const allColors = [...new Set(variants.map(v => v.color))];
-
+  
   // Find the selected variant
   const selectedVariant = variants.find(v => {
     return (
@@ -56,6 +84,19 @@ export default function QuickViewProductCard({ product, onClose }) {
       (selectedColor ? v.color === selectedColor : true)
     );
   });
+  
+    // Update variant images when selected variant changes
+    React.useEffect(() => {
+      if (selectedVariant) {
+        const images = getVariantImages(selectedVariant);
+        setVariantImages(images);
+        
+        // Reset carousel to first image when variant changes
+        if (carouselApi) {
+          carouselApi.scrollTo(0);
+        }
+      }
+    }, [selectedVariant, carouselApi]);
   // Handle coupon and price calculation
   const coupon = product.coupon || product.coupons?.coupon;
   const basePrice = selectedVariant ? selectedVariant.price : 0;

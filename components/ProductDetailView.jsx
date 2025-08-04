@@ -161,6 +161,8 @@ export default function ProductDetailView({ product }) {
       setSelectedSize(variants[0].size);
       setSelectedWeight(variants[0].weight);
       setSelectedColor(variants[0].color);
+      // Set initial variant images
+      setVariantImages(getVariantImages(variants[0]));
     }
   }, [variants]);
 
@@ -207,15 +209,51 @@ export default function ProductDetailView({ product }) {
   const total = hasDiscount ? (discountedPrice * quantity).toFixed(2) : (selectedVariant ? (selectedVariant.price * quantity).toFixed(2) : 0);
 
   const { cart, addToCart, setCart, addToWishlist, removeFromWishlist, wishlist } = useCart();
-  // Gather all images (main + sub) at the top-level
-  // Gather all images, filter out empty/undefined/null, and fallback to placeholder if empty
-  const allImagesRaw = [product.gallery?.mainImage?.url, ...(product.gallery?.subImages?.map(img => img.url) || [])];
-  const allImages = allImagesRaw.filter(img => typeof img === 'string' && img.trim().length > 0);
-  if (allImages.length === 0) allImages.push('/placeholder.jpeg');
+  // Get images from the selected variant or first available variant
+  const getVariantImages = (variant) => {
+    if (!variant) return ['/placeholder.jpeg'];
+    
+    const images = [];
+    
+    // Add profile image if exists
+    if (variant.profileImage?.url) {
+      images.push(variant.profileImage.url);
+    }
+    
+    // Add all valid sub-images 
+    if (Array.isArray(variant.subImages)) {
+      variant.subImages.forEach(img => {
+        if (img?.url && typeof img.url === 'string' && img.url.trim() !== '') {
+          images.push(img.url);
+        }
+      });
+    }
+        return images.length > 0 ? images : ['/placeholder.jpeg'];
+  };
+
+  // Get images for the selected variant or first variant if none selected
+  const [variantImages, setVariantImages] = useState(
+    variants.length > 0 ? getVariantImages(variants[0]) : ['/placeholder.jpeg']
+  );
+
   // Debug main image array and index
   // Embla carousel API and active image index for main image gallery
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [activeImageIdx, setActiveImageIdx] = React.useState(0);
+  // Update variant images when selected variant changes
+  useEffect(() => {
+    if (selectedVariant) {
+      const images = getVariantImages(selectedVariant);
+      setVariantImages(images);
+      
+      // Reset carousel to first image when variant changes
+      if (carouselApi) {
+        carouselApi.scrollTo(0);
+      }
+    }
+  }, [selectedVariant, carouselApi]);
+
+  const allImages = variantImages;
   React.useEffect(() => {
     if (!carouselApi) return;
     const onSelect = () => {
