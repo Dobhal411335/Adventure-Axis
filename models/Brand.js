@@ -1,7 +1,6 @@
 import { Schema, models, model } from "mongoose";
 
 const BrandSchema = new Schema({
-    title: { type: String, required: true },
     slug: { type: String, unique: true },
     buttonLink: { type: String },
     frontImg: { url: { type: String }, key: { type: String } },

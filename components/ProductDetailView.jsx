@@ -176,7 +176,7 @@ export default function ProductDetailView({ product }) {
   // Initialize discount related variables
   const coupon = product.coupon || product.coupons?.coupon;
   let hasDiscount = false;
-  let discountedPrice = selectedVariant ? selectedVariant.price : 0;
+  let discountedPrice = selectedVariant ? selectedVariant.price : "No Price";
   let couponText = '';
 
   // Calculate discount if applicable
@@ -201,7 +201,7 @@ export default function ProductDetailView({ product }) {
       setTotalPrice(currentPrice * quantity);
     }
   }, [selectedVariant, quantity, hasDiscount, discountedPrice]);
-  
+
   const formatNumeric = (num) => {
     return new Intl.NumberFormat("en-IN").format(num);
   };
@@ -212,14 +212,14 @@ export default function ProductDetailView({ product }) {
   // Get images from the selected variant or first available variant
   const getVariantImages = (variant) => {
     if (!variant) return ['/placeholder.jpeg'];
-    
+
     const images = [];
-    
+
     // Add profile image if exists
     if (variant.profileImage?.url) {
       images.push(variant.profileImage.url);
     }
-    
+
     // Add all valid sub-images 
     if (Array.isArray(variant.subImages)) {
       variant.subImages.forEach(img => {
@@ -228,7 +228,7 @@ export default function ProductDetailView({ product }) {
         }
       });
     }
-        return images.length > 0 ? images : ['/placeholder.jpeg'];
+    return images.length > 0 ? images : ['/placeholder.jpeg'];
   };
 
   // Get images for the selected variant or first variant if none selected
@@ -245,7 +245,7 @@ export default function ProductDetailView({ product }) {
     if (selectedVariant) {
       const images = getVariantImages(selectedVariant);
       setVariantImages(images);
-      
+
       // Reset carousel to first image when variant changes
       if (carouselApi) {
         carouselApi.scrollTo(0);
@@ -293,7 +293,7 @@ export default function ProductDetailView({ product }) {
           <div className="relative w-full max-w-[800px] h-[420px] md:h-[600px] flex items-center justify-center rounded-xl overflow-hidden">
             <Carousel
               className="w-full h-full pr-4"
-              opts={{ loop: true }} 
+              opts={{ loop: true }}
               plugins={[Autoplay({ delay: 4000 })]}
               setApi={setCarouselApi}
             >
@@ -314,7 +314,7 @@ export default function ProductDetailView({ product }) {
                           width: '100%',
                           height: '100%',
                           transition: 'transform 0.3s',
-                          
+
                         }}
                       />
                     </div>
@@ -369,7 +369,7 @@ export default function ProductDetailView({ product }) {
         {product.code && (
           <span className="text-sm text-black my-2 w-fit font-mono bg-gray-100 px-2 py-1 rounded border border-gray-200">Code: {product.code}</span>
         )}
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-1">
           <span className="font-semibold flex items-center">
             {(() => {
               if (Array.isArray(product?.reviews) && product.reviews.length > 0) {
@@ -407,28 +407,47 @@ export default function ProductDetailView({ product }) {
         {/* Selectors */}
         {/* Price and Coupon Section */}
         <div className="mb-2 flex items-center gap-2">
-          {hasDiscount ? (
-            <div className="flex items-center gap-2 mb-1">
-              <div className="flex flex-col">
-                <div className="flex items-center">
-                  <span className="font-bold text-xl text-black">₹{formatNumeric(Math.round(discountedPrice * quantity))}</span>
-                  
-                </div>
-                <div className="flex items-center text-sm">
-                  <del className="text-gray-600 font-semibold">₹{formatNumeric(selectedVariant?.price * quantity)}</del>
-                  <span className="border border-green-500 text-green-700 px-2 py-0.5 rounded text-xs font-semibold bg-green-50 ml-2">
-                    Coupon Applied: {couponText}
-                  </span>
+          {selectedVariant && selectedVariant.price !== undefined && selectedVariant.price !== null ? (
+            hasDiscount ? (
+              <div className="flex items-center gap-2 mb-1">
+                <div className="flex flex-col">
+                  <div className="flex items-center">
+                    {selectedVariant.qty <= 0 ? (
+                      <span className="text-red-600 text-lg font-medium">Out of Stock</span>
+                    ) : (
+                      <span className="font-bold text-xl text-black">
+                        ₹ {formatNumeric(Math.round(discountedPrice * quantity))}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <del className="text-gray-600 font-semibold">
+                      ₹{formatNumeric(selectedVariant.price * quantity)}
+                    </del>
+                    <span className="border border-green-500 text-green-700 px-2 py-0.5 rounded text-xs font-semibold bg-green-50 ml-2">
+                      Coupon Applied: {couponText}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                {selectedVariant.qty <= 0 ? (
+                  <span className="text-red-600 text-lg font-medium">Out of Stock</span>
+                ) : (
+                  <span className="font-bold text-xl text-black">
+                    ₹ {formatNumeric(selectedVariant.price * quantity)}
+                  </span>
+                )}
+              </div>
+            )
           ) : (
             <div className="flex items-center">
-              <span className="font-bold text-xl text-black">₹{formatNumeric(selectedVariant ? selectedVariant.price * quantity : 0)}</span>
-              
+              <span className="text-red-600 font-semibold text-sm">Price Not Available</span>
             </div>
           )}
         </div>
+
         {/* Stock Status */}
         {/* Quantity */}
         {(() => {
@@ -529,7 +548,7 @@ export default function ProductDetailView({ product }) {
                     <span>{size}</span>
                     <div className="h-4 w-px bg-gray-300" />
                     <span className="text-gray-600 text-md">
-                      {weight ? (Number(weight) / 1000).toFixed(2) : '0.00'}kg
+                      {weight ? (Number(weight) / 1000).toFixed(3) : '0.00'} kg
                     </span>
                   </div>
                 </button>
@@ -848,64 +867,67 @@ export default function ProductDetailView({ product }) {
           )}
         </div>
         <div className="py-2">
-          <button
+          {product.pdf > 0 && (
+
+            <button
               className="bg-black text-white py-3 px-8 font-semibold hover:bg-gray-800 w-full"
               onClick={() => setShowPdfModal(true)}
             >
               Get Package PDF
             </button>
-    
-            <Dialog open={showPdfModal} onOpenChange={setShowPdfModal}>
-              <DialogContent className="max-w-lg">
-                <DialogTitle>Package PDFs</DialogTitle>
-                {Array.isArray(product.pdfs) && product.pdfs.length > 0 ? (
-                  <div className="divide-y divide-gray-200">
-                    {product.pdfs.map((pdf, idx) => (
-                      <div key={pdf._id || pdf.key || idx} className="flex items-center justify-between py-2 gap-2">
-                        <span className="font-medium text-gray-800">{pdf.name}</span>
-                        <div className="flex gap-2">
-                          <button
-                            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm font-semibold"
-                            onClick={() => setPdfPreviewUrl(pdf.url)}
-                          >
-                            Preview
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+          )}
 
-                    <Dialog open={!!pdfPreviewUrl} onOpenChange={() => setPdfPreviewUrl(null)}>
-                      <DialogContent className="md:max-w-2xl">
-                        <DialogTitle>PDF Preview</DialogTitle>
-                        {pdfPreviewUrl && (
-                          <iframe
+          <Dialog open={showPdfModal} onOpenChange={setShowPdfModal}>
+            <DialogContent className="max-w-lg">
+              <DialogTitle>Package PDFs</DialogTitle>
+              {Array.isArray(product.pdfs) && product.pdfs.length > 0 ? (
+                <div className="divide-y divide-gray-200">
+                  {product.pdfs.map((pdf, idx) => (
+                    <div key={pdf._id || pdf.key || idx} className="flex items-center justify-between py-2 gap-2">
+                      <span className="font-medium text-gray-800">{pdf.name}</span>
+                      <div className="flex gap-2">
+                        <button
+                          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm font-semibold"
+                          onClick={() => setPdfPreviewUrl(pdf.url)}
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  <Dialog open={!!pdfPreviewUrl} onOpenChange={() => setPdfPreviewUrl(null)}>
+                    <DialogContent className="md:max-w-2xl">
+                      <DialogTitle>PDF Preview</DialogTitle>
+                      {pdfPreviewUrl && (
+                        <iframe
                           className="h-[500px]"
-                            src={pdfPreviewUrl}
-                            width="100%"
-                            height="600px"
-                            style={{ border: '1px solid #ccc', borderRadius: 8 }}
-                            title="Package PDF Preview"
-                          />
-                        )}
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">Close</button>
-                          </DialogClose>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                ) : (
-                  <div className="text-gray-500 py-4">No PDFs available for this package.</div>
-                )}
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded">Close</button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          
+                          src={pdfPreviewUrl}
+                          width="100%"
+                          height="600px"
+                          style={{ border: '1px solid #ccc', borderRadius: 8 }}
+                          title="Package PDF Preview"
+                        />
+                      )}
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">Close</button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ) : (
+                <div className="text-gray-500 py-4">No PDFs available for this package.</div>
+              )}
+              <DialogFooter>
+                <DialogClose asChild>
+                  <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded">Close</button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
 
           <div className="flex gap-4 mb-6 items-center py-2">
             {(() => {

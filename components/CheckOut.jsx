@@ -606,7 +606,8 @@ const CheckOut = () => {
             let shippingPerUnit = null;
             let totalWeight = 0;
             if (buyNowProduct.weight) {
-              totalWeight = Number(buyNowProduct.weight) * qty;
+              // Convert weight from grams to kilograms (divide by 1000)
+              totalWeight = (Number(buyNowProduct.weight) * qty) / 1000;
             }
             // Prefer weight-based shipping if weight exists, else per-qty
             if (totalWeight > 0) {
@@ -614,7 +615,10 @@ const CheckOut = () => {
                 const res = await fetch('/api/checkShipping', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ weight: totalWeight }),
+                  body: JSON.stringify({ 
+                    weight: totalWeight, // Now in kg
+                    weightInGrams: (Number(buyNowProduct.weight) * qty) // Also send in grams for reference
+                  }),
                 });
                 const data = await res.json();
                 if (data && data.available && data.shippingCharge != null && !isNaN(Number(data.shippingCharge))) {
