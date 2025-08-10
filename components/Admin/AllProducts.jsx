@@ -16,7 +16,6 @@ const AllProducts = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [productType, setProductType] = useState("");
-  const [artisan, setArtisan] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [stockStatus, setStockStatus] = useState("");
@@ -91,7 +90,6 @@ const AllProducts = () => {
     setSearch("");
     setSubmenu("");
     setProductType("");
-    setArtisan("");
     setMinPrice("");
     setMaxPrice("");
     setStockStatus("");
