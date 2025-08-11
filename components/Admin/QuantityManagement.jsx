@@ -61,7 +61,7 @@ const QuantityManagement = ({ productData, productId }) => {
       price: '', 
       qty: '', 
       color: '', 
-      weight: '',
+      weight: '', // always in grams
       profileImage: null,      // { url, key }
       subImages: [],          // array of { url, key }
       uploadingProfile: false,
@@ -576,6 +576,12 @@ const QuantityManagement = ({ productData, productId }) => {
           const found = sizes.find(s => (typeof s === 'object' ? (s._id === row.size || s.label === row.size) : s === row.size));
           if (found) sizeValue = found.label || found.name || found._id || found;
         }
+
+        // Always treat weight as grams and convert to kg
+        let weightValue = row.weight;
+        if (row.weight !== '' && !isNaN(row.weight)) {
+          weightValue = (Number(row.weight) / 1000).toFixed(3);
+        }
         
         // Process images - ensure we're sending the correct structure
         const variantData = {
@@ -583,7 +589,7 @@ const QuantityManagement = ({ productData, productId }) => {
           color: row.color,
           price: Number(row.price),
           qty: Number(row.qty),
-          weight: Number(row.weight || 0),
+          weight: Number(weightValue),
           optional: false,
           // Include both the new structure (images) and the old structure (for backward compatibility)
           images: {
@@ -642,7 +648,7 @@ const QuantityManagement = ({ productData, productId }) => {
         price: v.price || '',
         qty: v.qty || '',
         color: v.color || '',
-        weight: v.weight || '',
+        weight: v.weight ? (Number(v.weight) * 1000): '',
         profileImage: profileImage,
         subImages: subImages,
         uploadingProfile: false,
@@ -911,7 +917,7 @@ const QuantityManagement = ({ productData, productId }) => {
                                   <span className="bg-blue-100 rounded px-2 py-1 font-medium">Price: ₹{v.price}</span>
                                   <span className="bg-green-100 rounded px-2 py-1 font-medium">Qty: {v.qty}</span>
                                   <span className="bg-yellow-100 rounded px-2 py-1 font-medium">Color: {v.color}</span>
-                                  <span className="bg-yellow-100 rounded px-2 py-1 font-medium">Weight: {v.weight}g</span>
+                                  <span className="bg-yellow-100 rounded px-2 py-1 font-medium">Weight: {Math.round(v.weight * 1000)}g</span>
                                 </div>
                               );
                             })}

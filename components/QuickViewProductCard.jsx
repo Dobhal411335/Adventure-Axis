@@ -200,7 +200,7 @@ export default function QuickViewProductCard({ product, onClose }) {
         {/* SALE badge */}
         {/* <span className="bg-black text-white text-xs font-bold px-3 py-1 rounded-full w-max mb-2">SALE 20% OFF</span> */}
         {/* Title & Rating */}
-        <div className="flex items-center gap-4 justify-start">
+        <div className="flex items-start flex-col">
           <h2 className="text-xl md:text-2xl font-bold mb-1">
             {/* Defensive: if title is object, stringify for debug */}
             {typeof product?.title === 'object' ? JSON.stringify(product.title) : (product?.title || "N/A")}
@@ -282,7 +282,7 @@ export default function QuickViewProductCard({ product, onClose }) {
                   <div className="flex justify-between items-center w-full gap-2">
                     <span>{size}</span>
                     <div className="h-4 w-px bg-gray-300" />
-                    <span className="text-gray-600 text-md">{weight}g</span>
+                    <span className="text-gray-600 text-md"> {weight ? (Number(weight)).toLocaleString(): '0'} kg</span>
                   </div>
                 </button>
               );

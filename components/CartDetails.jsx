@@ -394,7 +394,7 @@ const CartDetails = () => {
                       <td className="border p-2 text-center">₹{getAfterDiscount(item)}</td>
                       <td className="border p-2 text-center">
                         {item.weight !== undefined && item.weight !== null 
-                          ? Number(item.weight).toFixed(3) 
+                          ? Number(item.weight).toLocaleString() 
                           : '0.000'} kg
                       </td>
                       <td className="border p-2 text-center">₹{(item.price * item.cgst / 100).toFixed(2)}</td>

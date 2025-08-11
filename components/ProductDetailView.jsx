@@ -548,7 +548,7 @@ export default function ProductDetailView({ product }) {
                     <span>{size}</span>
                     <div className="h-4 w-px bg-gray-300" />
                     <span className="text-gray-600 text-md">
-                      {weight ? (Number(weight) / 1000).toFixed(3) : '0.00'} kg
+                      {weight?.toLocaleString()} kg
                     </span>
                   </div>
                 </button>
@@ -958,7 +958,7 @@ export default function ProductDetailView({ product }) {
                         couponApplied: hasDiscount,
                         couponCode: coupon ? coupon.couponCode : '',
                         size: selectedSize,
-                        weight: selectedWeight / 1000, // Convert grams to kg for cart
+                        weight: selectedWeight, // Convert grams to kg for cart
                         color: selectedColor,
                         qty: quantity, // This will be used to calculate the total in the cart
                         productCode: product.code || product.productCode || '',
@@ -1001,7 +1001,7 @@ export default function ProductDetailView({ product }) {
                     couponApplied: hasDiscount,
                     couponCode: coupon ? coupon.couponCode : '',
                     size: selectedSize,
-                    weight: selectedWeight / 1000, // Convert grams to kg for cart
+                    weight: selectedWeight, // Convert grams to kg for cart
                     color: selectedColor,
                     qty: 1,
                     productCode: product.code || product.productCode || '',
@@ -1110,7 +1110,7 @@ export default function ProductDetailView({ product }) {
                   couponApplied = true;
                   couponCode = couponObj.couponCode;
                 }
-                const totalWeight = ((selectedVariant?.weight || 0) / 1000) * quantity; // Convert grams to kg for shipping calculation
+                const totalWeight = (selectedVariant?.weight || 0) * quantity; // Convert grams to kg for shipping calculation
                 // console.log(totalWeight);
                 // Fetch shipping charge from API before proceeding
                 let shippingCharge = 0;
@@ -1159,7 +1159,7 @@ export default function ProductDetailView({ product }) {
                   image: selectedImage || product.gallery?.mainImage?.url || '/placeholder.jpeg',
                   price: Math.round(discountedPrice),
                   size: selectedSize,
-                  weight: selectedWeight / 1000, // Convert grams to kg for cart
+                  weight: selectedWeight, // Convert grams to kg for cart
                   color: selectedColor,
                   originalPrice: price,
                   qty: quantity,
