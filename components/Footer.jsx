@@ -93,7 +93,6 @@ const Footer = () => {
                     </div>
                     <div className="flex items-start  gap-2">
                         <div className="py-2">
-
                             <Send className="text-blue-600" size={20} />
                         </div>
                         <div className="flex items-start flex-col gap-1 py-2">
