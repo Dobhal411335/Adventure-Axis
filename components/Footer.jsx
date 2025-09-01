@@ -58,7 +58,7 @@ const Footer = () => {
             {/* <div className="w-full flex justify-center pb-8">
                 <div className="h-[3px] bg-black w-full mx-auto px-4" />
             </div> */}
-            <div className="hidden md:flex flex-wrap lg:justify-between px-10 justify-start md:gap-20 lg:gap-0 gap-12 max-w-[22rem] md:maxw-[45rem] lg:max-w-[60rem] xl:max-w-6xl mx-auto">
+            <div className="hidden md:flex flex-wrap lg:justify-between px-10 justify-start md:gap-20 lg:gap-0 gap-12 max-w-[22rem] md:max-w-[45rem] lg:max-w-[60rem] xl:max-w-6xl mx-auto">
                 <div className="flex flex-col gap-2 px-5">
                     <h1 className="font-semibold text-xl my-4">Main Menu</h1>
                     <Link href={'/'} className="block text-white font-barlow ">Home</Link>
@@ -278,7 +278,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            <Card className="my-2 px-2 py-8 max-w-xl lg:max-w-4xl xl:max-w-7xl mx-auto">
+            <Card className="my-2 px-2 py-8 max-w-xl lg:max-w-5xl xl:max-w-7xl mx-auto">
                 <CardContent className="flex flex-col lg:flex-row items-start justify-between">
                     <div className="text-justify">
                         <Image src="/HeaderLogo.png" priority width={250} height={250} alt="footer" />

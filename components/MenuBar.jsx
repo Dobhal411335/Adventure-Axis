@@ -237,10 +237,10 @@ const MenuBar = (props) => {
 
             {/* Desktop Navigation */}
             <NavigationMenu.Root className="hidden lg:flex relative justify-center" >
-                <NavigationMenu.List className="flex space-x-2">
+                <NavigationMenu.List className="flex xl:space-x-2">
                     {menuItems.map((item, index) => (
-                        <NavigationMenu.Item key={index} className="relative flex justify-center">
-                          <NavigationMenu.Trigger className="flex items-center whitespace-nowrap px-2 py-2 justify-center text-[12px] font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
+                        <NavigationMenu.Item key={index} className="relative flex justify-start w-full max-w-7xl">
+                          <NavigationMenu.Trigger className="flex items-center whitespace-nowrap p-2 justify-center text-[11px] font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
                                 {item.title} <ArrowDown className="ml-2" size={12} />
                             </NavigationMenu.Trigger>
                             <AnimatePresence>
@@ -278,13 +278,7 @@ const MenuBar = (props) => {
                     ))}
                     {allMenuItems.length > 0 && allMenuItems.map((cat, index) => (
                         <NavigationMenu.Item key={index} className="relative flex justify-end">
-                            {cat.catTitle === "Contact Us" ? (
-                                <Link href="/contact" className="flex items-center whitespace-nowrap px-4 py-2 text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
-                                    {cat.catTitle}
-                                </Link>
-                            ) : (
-                                <>
-                                    <NavigationMenu.Trigger className="flex items-center whitespace-nowrap px-2 py-2 justify-center text-[12px] font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
+                                    <NavigationMenu.Trigger className="flex items-center whitespace-nowrap px-2 py-2 justify-center md:text-[11px] font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md xl:text-nowrap">
                                         {cat.catTitle} <ArrowDown className="ml-1" size={12} />
                                     </NavigationMenu.Trigger>
                                     <AnimatePresence>
@@ -329,9 +323,7 @@ const MenuBar = (props) => {
                                             })()}
                                         </NavigationMenu.Content>
                                     </AnimatePresence>
-                                </>
-                            )}
-                        </NavigationMenu.Item>
+                        </NavigationMenu.Item>  
                     ))}
                 </NavigationMenu.List>
             </NavigationMenu.Root>

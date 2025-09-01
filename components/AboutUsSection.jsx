@@ -10,20 +10,6 @@ const AboutUsSection = () => {
     const [featuredPackages, setFeaturedPackages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
-
-    const dummyPackages = [
-        {
-            _id: "1",
-            link: "#",
-            image: { url: "https://dummyimage.com/1280x720/000/fff" },
-            headerText: "Spiritual Retreat",
-            title: "Himalayan Pilgrimage",
-            subTitle: "Find peace in the mountains",
-            location: "Uttarakhand, India",
-            footertext: "A journey to rejuvenate your soul",
-        },
-    ];
-
     useEffect(() => {
         const fetchPackages = async () => {
             try {
@@ -97,7 +83,7 @@ const AboutUsSection = () => {
                     <br />
                     We don’t just provide equipment — we deliver complete outdoor solutions, backed by expert leadership and a vision to elevate the adventure gear industry.
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mx-auto">
                     {loading ? (
                         // Loading skeletons
                         Array.from({ length: 5 }).map((_, idx) => (
@@ -116,7 +102,7 @@ const AboutUsSection = () => {
                         featuredPackages.map((item) => (
                             <div
                                 key={item._id}
-                                className="flex flex-col items-center w-42 mx-auto md:w-80 rounded-3xl group"
+                                className="flex flex-col items-center w-42 mx-auto md:w-60 xl:w-80 rounded-3xl group"
                                 style={{ padding: "1rem 0 0.5rem 0" }}
                             >
                                 <div className="w-full aspect-[4/5] rounded-2xl border overflow-hidden flex items-end justify-center">

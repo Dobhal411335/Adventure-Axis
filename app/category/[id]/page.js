@@ -40,7 +40,7 @@ const getCategoryInfo = async (categoryData) => {
   return (
     {
       title: categoryData?.title || "Category Title",
-      bannerImage: categoryData?.banner?.url || `${process.env.NEXT_PUBLIC_BASE_URL}/categoryBanner.jpg`,
+      bannerImage: categoryData?.banner?.url || `${process.env.NEXT_PUBLIC_BASE_URL}/bg1.webp`,
     }
   )
 }
@@ -108,7 +108,7 @@ const CategoryPage = async ({ params }) => {
                 <CarouselContent className="w-full gap-5">
                   {Array.isArray(allCategories) && allCategories.flatMap(cat =>
                     Array.isArray(cat.subMenu) ? cat.subMenu.map((sub, idx) => (
-                      <CarouselItem key={`${cat._id || cat.title || idx}-${sub._id || sub.url || idx}`} className="basis-1/2 md:basis-1/6 lg:basis-1/6 min-w-0 snap-start">
+                      <CarouselItem key={`${cat._id || cat.title || idx}-${sub._id || sub.url || idx}`} className="basis-1/2 md:basis-1/4 xl:basis-1/6 min-w-0 snap-start">
                         <CategoryCard category={{
                           title: sub.title,
                           profileImage: sub.profileImage,

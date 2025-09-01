@@ -169,18 +169,11 @@ const RandomTourPackageSection = () => {
                 products.map((item, index) => (
                   <CarouselItem
                     key={index}
-                    className="pl-5 md:basis-1/2 lg:basis-1/4 min-w-0 snap-start"
+                    className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4 min-w-0 snap-start"
                   >
-                    <div className="flex flex-col md:w-[290px] ">
+                    <div className="flex flex-col md:w-[300px]">
                       {/* Image Section */}
                       <div className="relative w-full md:h-96 rounded-3xl overflow-hidden flex items-center justify-center group/image">
-                        {/* {item.productTagLine?.tagLine && item.productTagLine.tagLine.length > 0 && (
-                          <div className="absolute top-4 left-1 z-10 w-10 h-fit px-4 py-1 text-md font-bold shadow text-black tracking-tight" style={{ letterSpacing: 0 }}>
-                            {item.productTagLine.tagLine.split('').map((char, idx) => (
-                              <span key={idx} style={{ display: 'block', lineHeight: '1.2' }}>{char}</span>
-                            ))}
-                          </div>
-                        )} */}
                         {/* GET 10% OFF Tag */}
                         {(() => {
                           const coupon = item.coupon || item.coupons?.coupon;
@@ -193,8 +186,6 @@ const RandomTourPackageSection = () => {
                             offerText = <>GET {percent}% OFF</>;
                           } else if (typeof amount === 'number' && amount > 0) {
                             offerText = <>GET ₹{amount} OFF</>;
-                          } else {
-                            offerText = <>Special Offer</>;
                           }
 
                           return (
@@ -300,10 +291,10 @@ const RandomTourPackageSection = () => {
                         </div>
                       </div>
                       {/* Name and Price Section */}
-                      <div className="flex items-center justify-between px-1 pt-4 pb-2 mt-0">
+                      <div className="flex flex-col items-start px-1 pt-4 pb-2 mt-0">
                         <Link
                           href={`/product/${item.slug}`}
-                          className="font-bold hover:underline text-lg md:text-xl text-gray-900 leading-tight max-w-[200px] truncate cursor-pointer"
+                          className="font-bold hover:underline text-md xl:text-xl text-gray-900 leading-tight truncate cursor-pointer break-words whitespace-normal"
                         >
                           {item?.title}
                         </Link>
@@ -331,7 +322,7 @@ const RandomTourPackageSection = () => {
                             );
                           } else {
                             return (
-                              <span className="font-bold text-lg md:text-xl text-black">₹{formatNumeric(price)}</span>
+                              <span className="font-bold text-md xl:text-xl text-black">₹{formatNumeric(price)}</span>
                             );
                           }
                         })()}

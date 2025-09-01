@@ -159,9 +159,9 @@ const HeroSection = () => {
         </div>
       </div>
 
-      <div className="block xl:hidden w-full h-full py-2 relative max-h-[100vh]">
+      <div className="block xl:hidden w-full h-full py-2 relative h-[100vh]">
         {/* Mobile Carousel: Only show first image, center content over image, add to cart above image */}
-        <Carousel className="w-full max-w-md mx-auto" plugins={[plugin.current]} onMouseLeave={plugin.current.reset} setApi={setMobileApi} >
+        <Carousel className="w-full max-w-full mx-auto" plugins={[plugin.current]} onMouseLeave={plugin.current.reset} setApi={setMobileApi} >
           <CarouselContent>
             {banners.map((banner, index) => (
               <CarouselItem key={index} className="flex flex-col items-center justify-center relative">
@@ -171,7 +171,7 @@ const HeroSection = () => {
                   <img
                     src={banner.frontImg?.url || "/placeholder.jpeg"}
                     alt={banner.title ? `${banner.title} Front` : "Banner Image"}
-                    className="object-cover w-full h-[50vh] rounded-lg shadow-lg z-0"
+                    className="object-contain w-full h-fit rounded-lg shadow-lg z-0"
                   />
                 </div>
                 </Link>

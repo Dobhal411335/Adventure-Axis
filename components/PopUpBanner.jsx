@@ -52,7 +52,7 @@ const PopUpBanner = () => {
           <X size={28} />
         </button>
         {/* Left: Banner image */}
-        <div className="md:w-1/2 w-full flex items-center justify-center md:min-h-[340px] min-h-[200px]">
+        <div className="md:w-1/2 w-full flex items-center justify-center xl:min-h-[340px] min-h-[200px]">
           <img
             src={banner.image?.url || '/placeholder.jpeg'}
             alt="Popup Banner"
@@ -71,13 +71,13 @@ const PopUpBanner = () => {
             <div className="text-gray-700 text-sm md:text-xl md:mb-8 mb-4 max-w-md">
               Grab today’s most-loved products at
               unbeatable prices.
-<br />
-<br />
+              <br />
+              <br />
 
-             <span className="mt-5">
+              <span className="mt-5">
 
-              Best in Trend – Best in Price
-             </span>
+                Best in Trend – Best in Price
+              </span>
             </div>
             <a
               href={banner.buttonLink || '#'}

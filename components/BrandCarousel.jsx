@@ -57,7 +57,7 @@ const BrandCarousel = () => {
                   href={`/brands/${brand.slug}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="block h-12 w-28 md:h-14 md:w-28 relative"
+                  className="block h-12 w-22 md:h-14 md:w-24 xl:h-16 xl:w-28 relative"
                   >
                   {brand.frontImg?.url ? (
                       <Image
@@ -83,23 +83,6 @@ const BrandCarousel = () => {
           ))}
         </div>
       </div>
-      <style jsx>{`
-        // @keyframes marquee {
-        //   0% {
-        //     transform: translateX(0);
-        //   }
-        //   100% {
-        //     transform: translateX(-100%);
-        //   }
-        // }
-        // .animate-marquee {
-        //   display: inline-flex;
-        //   animation: marquee 50s linear infinite;
-        // }
-        // .animate-marquee:hover {
-        //   animation-play-state: paused;
-        // }
-      `}</style>
     </div>
   );
 };
