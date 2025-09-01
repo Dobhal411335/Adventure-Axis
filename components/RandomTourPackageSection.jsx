@@ -171,7 +171,7 @@ const RandomTourPackageSection = () => {
                     key={index}
                     className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4 min-w-0 snap-start"
                   >
-                    <div className="flex flex-col md:w-[300px]">
+                    <div className="flex flex-col md:w-[290px]">
                       {/* Image Section */}
                       <div className="relative w-full md:h-96 rounded-3xl overflow-hidden flex items-center justify-center group/image">
                         {/* GET 10% OFF Tag */}
@@ -316,13 +316,13 @@ const RandomTourPackageSection = () => {
                           if (hasDiscount && discountedPrice < price) {
                             return (
                               <span>
-                                <del className="text-black font-bold text-md md:text-xl">₹{formatNumeric(price)}</del>
-                                <span className="font-bold text-md md:text-xl text-black px-2">₹{formatNumeric(Math.round(discountedPrice))}</span>
+                                <del className="text-black font-bold text-md">₹{formatNumeric(price)}</del>
+                                <span className="font-bold text-md text-black px-2">₹{formatNumeric(Math.round(discountedPrice))}</span>
                               </span>
                             );
                           } else {
                             return (
-                              <span className="font-bold text-md xl:text-xl text-black">₹{formatNumeric(price)}</span>
+                              <span className="font-bold text-md text-black">₹{formatNumeric(price)}</span>
                             );
                           }
                         })()}

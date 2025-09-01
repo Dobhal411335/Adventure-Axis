@@ -52,12 +52,12 @@ const PopUpBanner = () => {
           <X size={28} />
         </button>
         {/* Left: Banner image */}
-        <div className="md:w-1/2 w-full flex items-center justify-center xl:min-h-[340px] min-h-[200px]">
+        <div className="md:w-1/2 w-full flex items-center justify-center xl:min-h-[350px] min-h-[200px]">
           <img
             src={banner.image?.url || '/placeholder.jpeg'}
             alt="Popup Banner"
-            className="w-full h-full object-cover"
-            style={{ maxHeight: 380, minHeight: 220, objectFit: 'cover' }}
+            className="w-full h-full object-contain"
+            style={{ maxHeight: 350, minHeight: 200, objectFit: 'contain' }}
           />
         </div>
         {/* Right: Text content */}

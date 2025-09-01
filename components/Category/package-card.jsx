@@ -173,7 +173,7 @@ const PackageCard = ({ pkg, wishlist = [], addToWishlist, removeFromWishlist, se
       <div className="flex flex-col items-start justify-between px-2 pt-4 pb-2 mt-0">
         <Link
           href={`/product/${pkg.slug}`}
-          className="font-bold hover:underline text-sm md:text-[15px] xl:text-[18px] text-gray-900 leading-tight break-words whitespace-normal w-44 truncate cursor-pointer"
+          className="font-bold hover:underline text-sm md:text-[15px] text-gray-900 leading-tight break-words whitespace-normal w-44 truncate cursor-pointer"
         >
           {pkg?.title}
         </Link>
@@ -198,12 +198,12 @@ const PackageCard = ({ pkg, wishlist = [], addToWishlist, removeFromWishlist, se
             return (
               <span>
                 <span className="font-semibold text-md md:text-[15px] xl:text-[18px] text-black px-2">₹{formatNumber(Math.round(discountedPrice))}</span>
-                <del className="text-black font-semibold text-sm md:text-[15px] xl:text-[18px] mr-2">₹{formatNumber(originalPrice)}</del>
+                <del className="text-black font-semibold text-sm md:text-[15px] mr-2">₹{formatNumber(originalPrice)}</del>
               </span>
             );
           } else {
             return (
-              <span className="font-semibold text-md md:text-[15px] xl:text-[18px] text-black">₹{formatNumber(price)}</span>
+              <span className="font-semibold text-md md:text-[15px] text-black">₹{formatNumber(price)}</span>
             );
           }
         })()}

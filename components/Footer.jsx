@@ -278,7 +278,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            <Card className="my-2 px-2 py-8 max-w-xl lg:max-w-5xl xl:max-w-7xl mx-auto">
+            <Card className="my-2 px-2 py-8 max-w-xl lg:max-w-6xl mx-auto">
                 <CardContent className="flex flex-col lg:flex-row items-start justify-between">
                     <div className="text-justify">
                         <Image src="/HeaderLogo.png" priority width={250} height={250} alt="footer" />

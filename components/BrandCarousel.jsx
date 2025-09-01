@@ -44,9 +44,9 @@ const BrandCarousel = () => {
   }
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full">
       <div className="flex items-center">
-        <div className="flex space-x-8 bg-white whitespace-nowrap">
+        <div className="flex space-x-10 bg-white whitespace-nowrap px-4 py-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
           {[...brands].map((brand, index) => (
             <div 
               key={`${brand._id}-${index}`} 
@@ -57,7 +57,7 @@ const BrandCarousel = () => {
                   href={`/brands/${brand.slug}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="block h-12 w-22 md:h-14 md:w-24 xl:h-16 xl:w-28 relative"
+                  className="block h-14 w-28 relative"
                   >
                   {brand.frontImg?.url ? (
                       <Image
@@ -78,7 +78,7 @@ const BrandCarousel = () => {
               ) : (
                  null
               )}
-              <div className="h-10 border-r border-black ml-5"></div>
+              <div className="h-10 border-r border-black ml-2"></div>
             </div>
           ))}
         </div>

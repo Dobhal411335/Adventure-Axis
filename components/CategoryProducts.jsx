@@ -13,7 +13,7 @@ export default function CategoryProductsGrid({ visibleProducts }) {
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 my-4">
+      <div className="flex flex-row flex-wrap items-center gap-6 md:px-10 px-4 my-4">
         {paginatedProducts.length === 0 ? (
           <div className="col-span-full text-center py-8">
             <h3 className="text-xl font-medium text-gray-600">No products found for this category</h3>
