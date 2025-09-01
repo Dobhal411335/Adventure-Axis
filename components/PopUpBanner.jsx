@@ -39,7 +39,7 @@ const PopUpBanner = () => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 transition-opacity duration-300">
       <div
-        className={`relative bg-white max-w-3xl sm:h-[100vh] md:h-[55vh] w-[85vw] p-2 md:p-5 flex flex-col md:flex-row overflow-hidden transform transition-all duration-500
+        className={`relative bg-white max-w-3xl sm:h-[100vh] md:h-[56vh] w-[85vw] p-2 md:p-5 flex flex-col md:flex-row overflow-hidden transform transition-all duration-500
         ${showAnim ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
         style={{ transitionProperty: 'transform, opacity' }}
       >
@@ -52,12 +52,12 @@ const PopUpBanner = () => {
           <X size={28} />
         </button>
         {/* Left: Banner image */}
-        <div className="md:w-1/2 w-full flex items-center justify-center xl:min-h-[350px] min-h-[200px]">
+        <div className="md:w-1/2 w-full flex items-center justify-center xl:min-h-[310px] min-h-[200px]">
           <img
             src={banner.image?.url || '/placeholder.jpeg'}
             alt="Popup Banner"
             className="w-full h-full object-contain"
-            style={{ maxHeight: 350, minHeight: 200, objectFit: 'contain' }}
+            style={{ maxHeight: 310, minHeight: 200, objectFit: 'contain' }}
           />
         </div>
         {/* Right: Text content */}
