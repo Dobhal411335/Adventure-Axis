@@ -39,7 +39,7 @@ const PopUpBanner = () => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 transition-opacity duration-300">
       <div
-        className={`relative bg-white max-w-3xl sm:h-[100vh] md:h-[56vh] w-[85vw] p-2 md:p-5 flex flex-col md:flex-row overflow-hidden transform transition-all duration-500
+        className={`relative bg-white max-w-3xl sm:h-[100vh] md:h-[57vh] w-[85vw] p-2 md:p-5 flex flex-col md:flex-row overflow-hidden transform transition-all duration-500
         ${showAnim ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
         style={{ transitionProperty: 'transform, opacity' }}
       >

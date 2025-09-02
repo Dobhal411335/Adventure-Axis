@@ -47,7 +47,7 @@ const BrandCarousel = () => {
     <div className="relative w-full">
       <div className="flex items-center">
         <div className="flex space-x-10 bg-white whitespace-nowrap px-4 py-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
-          {[...brands].map((brand, index) => (
+          {[...brands].slice(0, 8).map((brand, index) => (
             <div 
               key={`${brand._id}-${index}`} 
               className="flex items-center justify-center flex-shrink-0 hover:scale-105 transition-all ease-in-out duration-300"
@@ -78,7 +78,7 @@ const BrandCarousel = () => {
               ) : (
                  null
               )}
-              <div className="h-10 border-r border-black ml-2"></div>
+              <div className="h-10 border-r border-black ml-5"></div>
             </div>
           ))}
         </div>
