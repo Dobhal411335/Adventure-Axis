@@ -316,13 +316,13 @@ const RandomTourPackageSection = () => {
                           if (hasDiscount && discountedPrice < price) {
                             return (
                               <span>
-                                <del className="text-black font-bold text-md">₹{formatNumeric(price)}</del>
-                                <span className="font-bold text-md text-black px-2">₹{formatNumeric(Math.round(discountedPrice))}</span>
+                                <del className="text-black font-bold text-md xl:text-xl line-through">₹{formatNumeric(price)}</del>
+                                <span className="font-bold text-md text-black px-2 xl:text-xl">₹{formatNumeric(Math.round(discountedPrice))}</span>
                               </span>
                             );
                           } else {
                             return (
-                              <span className="font-bold text-md text-black">₹{formatNumeric(price)}</span>
+                              <span className="font-bold text-md text-black xl:text-xl">₹{formatNumeric(price)}</span>
                             );
                           }
                         })()}
