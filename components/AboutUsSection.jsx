@@ -83,7 +83,7 @@ const AboutUsSection = () => {
                     <br />
                     We don’t just provide equipment — we deliver complete outdoor solutions, backed by expert leadership and a vision to elevate the adventure gear industry.
                 </p>
-                <div className="flex items-center flex-wrap gap-6 mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mx-auto">
                     {loading ? (
                         // Loading skeletons
                         Array.from({ length: 5 }).map((_, idx) => (
@@ -102,7 +102,7 @@ const AboutUsSection = () => {
                         featuredPackages.map((item) => (
                             <div
                                 key={item._id}
-                                className="flex flex-col items-center w-48 mx-auto md:w-80 rounded-3xl group"
+                                className="flex flex-col items-center w-42 mx-auto md:w-60 xl:w-72 rounded-3xl group"
                                 style={{ padding: "1rem 0 0.5rem 0" }}
                             >
                                 <div className="w-full aspect-[4/5] rounded-2xl border overflow-hidden flex items-end justify-center">

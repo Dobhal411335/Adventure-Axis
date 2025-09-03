@@ -240,8 +240,8 @@ const MenuBar = (props) => {
                 <NavigationMenu.List className="flex xl:space-x-1">
                     {menuItems.map((item, index) => (
                         <NavigationMenu.Item key={index} className="relative flex justify-start w-full max-w-7xl">
-                          <NavigationMenu.Trigger className="flex items-center whitespace-nowrap p-2 justify-center md:text-[10px] xl:text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
-                                {item.title} <ArrowDown className="ml-2" size={12} />
+                          <NavigationMenu.Trigger className="flex items-center whitespace-nowrap p-2 justify-center text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
+                                {item.title}
                             </NavigationMenu.Trigger>
                             <AnimatePresence>
                                 {item.subMenu.length > 0 && (
@@ -278,8 +278,8 @@ const MenuBar = (props) => {
                     ))}
                     {allMenuItems.length > 0 && allMenuItems.map((cat, index) => (
                         <NavigationMenu.Item key={index} className="relative flex justify-end">
-                                    <NavigationMenu.Trigger className="flex items-center whitespace-nowrap px-2 py-2 justify-center md:text-[10px] xl:text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md xl:text-nowrap">
-                                        {cat.catTitle} <ArrowDown className="ml-1" size={12} />
+                                    <NavigationMenu.Trigger className="flex items-center whitespace-nowrap px-2 py-2 justify-center text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md xl:text-nowrap">
+                                        {cat.catTitle}
                                     </NavigationMenu.Trigger>
                                     <AnimatePresence>
                                         <NavigationMenu.Content asChild>
