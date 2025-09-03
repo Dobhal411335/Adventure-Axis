@@ -237,7 +237,7 @@ const MenuBar = (props) => {
 
             {/* Desktop Navigation */}
             <NavigationMenu.Root className="hidden lg:flex relative justify-center" >
-                <NavigationMenu.List className="flex xl:space-x-1">
+                <NavigationMenu.List className="flex">
                     {menuItems.map((item, index) => (
                         <NavigationMenu.Item key={index} className="relative flex justify-start w-full max-w-7xl">
                           <NavigationMenu.Trigger className="flex items-center whitespace-nowrap p-2 justify-center text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
