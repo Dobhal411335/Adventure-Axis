@@ -2,17 +2,10 @@
 const nextConfig = {
     reactStrictMode: false,
     images: {
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: '*',
-            },
-            {
-                protocol: 'http',
-                hostname: '*',
-            },
-        ]
-    }
-};
-
-export default nextConfig;
+      domains: ['res.cloudinary.com'],  // sirf Cloudinary allow karo
+      unoptimized: true, // 🚀 ye sabse important
+    },
+  };
+  
+  export default nextConfig;
+  
