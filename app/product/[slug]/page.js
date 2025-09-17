@@ -27,25 +27,25 @@ import Color from '@/models/Color';
 import PackagePdf from "@/models/PackagePdf"
 import ProductTagLine from '@/models/ProductTagLine';
 const ProductDetailPage = async ({ params }) => {
-    await connectDB();
-  
-    const { slug } = await params;
-const decodedId = decodeURIComponent(slug);
-    const rawProduct = await Product.findOne({ slug: decodedId })
+  await connectDB();
+
+  const { slug } = await params;
+  const decodedId = decodeURIComponent(slug);
+  const rawProduct = await Product.findOne({ slug: decodedId })
     .populate('size price gallery video description info categoryTag productTagLine reviews quantity coupons taxes pdfs')
     .lean();
-  
+
   // ✅ Convert to plain JSON
   const product = JSON.parse(JSON.stringify(rawProduct));
-  
-    if (!product || !product.active) {
-      return (
-        <div className="text-center py-10">
-          <h1 className="text-2xl font-bold mb-2">Product Not Available</h1>
-          <p>This product may be disabled or removed by admin.</p>
-        </div>
-      );
-    }
+
+  if (!product || !product.active) {
+    return (
+      <div className="text-center py-10">
+        <h1 className="text-2xl font-bold mb-2">Product Not Available</h1>
+        <p>This product may be disabled or removed by admin.</p>
+      </div>
+    );
+  }
 
   // ✅ Frequently Bought Together
   let frequentlyBoughtTogether = [];
@@ -105,10 +105,10 @@ const decodedId = decodeURIComponent(slug);
               categories={allCategories.flatMap(cat =>
                 Array.isArray(cat.subMenu)
                   ? cat.subMenu.map(sub => ({
-                      title: sub.title,
-                      profileImage: sub.profileImage,
-                      url: `/category/${sub.url}`
-                    }))
+                    title: sub.title,
+                    profileImage: sub.profileImage,
+                    url: `/category/${sub.url}`
+                  }))
                   : []
               )}
             />

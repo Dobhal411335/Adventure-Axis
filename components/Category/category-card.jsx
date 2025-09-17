@@ -38,7 +38,7 @@ const CategoryCard = ({ category }) => {
   // console.log(category)
   return (
 
-    <div className="group w-44 max-h-72 transition-transform mx-2 my-2 flex flex-col">
+    <div className="group w-48 max-h-72 transition-transform mx-2 my-2 flex flex-col">
       <div className="relative w-full h-60 overflow-hidden rounded-xl mb-2">
         <Image
           src={category?.profileImage?.url || "/placeholder.jpeg"}

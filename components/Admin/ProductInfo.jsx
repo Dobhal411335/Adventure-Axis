@@ -121,6 +121,17 @@ const productInfo = ({ productData, productId }) => {
     return description;
   };
 
+  // Function to reset the form
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    if (editor) {
+      editor.commands.clearContent();
+    }
+    setEditMode(false);
+    setEditIndex(null);
+  };
+
   // Save handler for form submission
   const saveSection = async (e) => {
     e.preventDefault();
@@ -140,34 +151,39 @@ const productInfo = ({ productData, productId }) => {
         const res = await fetch('/api/productInfo', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, title, description: content, sectionId: sections[editIndex]?._id })
+          body: JSON.stringify({ productId, title, description: content, sectionIndex: editIndex })
         });
         const data = await res.json();
         if (!res.ok || data.error) {
           toast.error(data.error || 'Failed to update section');
         } else {
           toast.success('Section updated successfully!');
-          setEditMode(false);
-          setEditIndex(null);
+          resetForm();
           fetchSections();
         }
       } else {
-        // POST request for create
+        // POST to add section
         const res = await fetch('/api/productInfo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, title, description: content })
+          body: JSON.stringify({ 
+            productId, 
+            title: title.trim(), 
+            description: content 
+          })
         });
         const data = await res.json();
         if (!res.ok || data.error) {
-          toast.error(data.error || 'Failed to save section');
+          toast.error(data.error || 'Failed to add section');
         } else {
-          toast.success('Section saved successfully!');
+          toast.success('Section added successfully!');
+          resetForm();
           fetchSections();
         }
       }
     } catch (err) {
       toast.error('Error saving section.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -297,11 +313,6 @@ const productInfo = ({ productData, productId }) => {
       setLoading(false);
     }
   };
-
-
-
-
-
   return (
     <div>
       <form className="page-content" onSubmit={handleSubmit}>

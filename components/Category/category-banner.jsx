@@ -3,7 +3,7 @@ import Link from "next/link"
 
 const CategoryBanner = ({ title, bannerImage, mainCategory, subCategory }) => {
   return (
-    <div className="relative w-full h-[100px] md:h-[400px]">
+    <div className="relative w-full h-[100px] md:h-[500px]">
       {/* Background image */}
       <Image
         src={bannerImage}

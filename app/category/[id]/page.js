@@ -98,9 +98,11 @@ const CategoryPage = async ({ params }) => {
             {/* Category Advertisement Banner */}
             <CategoryAds categoryAdList={categoryAdList} />
           </div>
-
           {/* Middle Section: Category Cards + Package Cards */}
           <div className="flex-1 min-w-0 gap-4 px-2">
+            {/* Product Cards Row */}
+            <CategoryProducts visibleProducts={visibleProducts} />
+            < div className="h-[1px] bg-gray-300"></div>
             {/* Category Cards Row */}
             <div>
               <h2 className="text-2xl font-bold px-4 underline">Category</h2>
@@ -122,9 +124,6 @@ const CategoryPage = async ({ params }) => {
                 <CarouselPrevious className="!left-1 !top-1/2 !-translate-y-1/2 z-10" />
               </Carousel>
             </div>
-            < div className="h-[1px] bg-gray-300"></div>
-            {/* Product Cards Row */}
-            <CategoryProducts visibleProducts={visibleProducts} />
           </div>
         </div>
       </div>

@@ -383,7 +383,7 @@ export default function ProductDetailView({ product }) {
         {(() => {
 
           if (desc === "No Description") {
-            return <p className="text-gray-700 mb-4 max-w-lg">No Description</p>;
+            return <p className="text-gray-700 text-md mb-4 max-w-lg">No Description</p>;
           }
           if (showFullDesc || words.length <= 20) {
             return (
@@ -398,7 +398,7 @@ export default function ProductDetailView({ product }) {
             );
           }
           return (
-            <div className="text-gray-700 my-4 text-sm md:text-md max-w-lg">
+            <div className="text-gray-700 my-4 text-md md:text-md max-w-lg">
               <div dangerouslySetInnerHTML={{ __html: words.slice(0, 20).join(' ') + '...' }} />
               <button className="text-blue-600 underline" onClick={() => setShowFullDesc(true)}>Read more</button>
             </div>
@@ -867,7 +867,7 @@ export default function ProductDetailView({ product }) {
           )}
         </div>
         <div className="py-2">
-          {product.pdf > 0 && (
+  
 
             <button
               className="bg-black text-white py-3 px-8 font-semibold hover:bg-gray-800 w-full"
@@ -875,7 +875,7 @@ export default function ProductDetailView({ product }) {
             >
               Get Package PDF
             </button>
-          )}
+      
 
           <Dialog open={showPdfModal} onOpenChange={setShowPdfModal}>
             <DialogContent className="max-w-lg">
@@ -922,7 +922,7 @@ export default function ProductDetailView({ product }) {
               )}
               <DialogFooter>
                 <DialogClose asChild>
-                  <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded">Close</button>
+                  <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Close</button>
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
