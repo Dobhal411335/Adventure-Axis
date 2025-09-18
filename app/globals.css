@@ -4,6 +4,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prose styles for better typography */
+.prose {
+  a {
+    @apply text-[#2563eb] underline underline-offset-2 decoration-1 hover:text-[#3b82f6] transition-colors duration-200;
+  }
+  /* Ensure links are visible in dark mode */
+  .dark a {
+    @apply text-[#60a5fa] hover:text-[#93c5fd];
+  }
+}
+
+
 @layer base {
   :root {
     --font-Barlow: 'Barlow', sans-serif;
@@ -262,7 +274,14 @@
   font-weight: bold;
   margin-bottom: 0.5em;
 }
-
+.ProseMirror a {
+  text-decoration: underline;
+  color:#2563eb
+}
+.ProseMirror a:hover {
+  text-decoration: underline;
+  color:#2563eb
+}
 .ProseMirror h2 {
   font-size: 1.5em;
   font-weight: bold;

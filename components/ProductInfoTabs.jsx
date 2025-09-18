@@ -571,7 +571,7 @@ export default function ProductInfoTabs({ product }) {
                     </button>
                 ))}
             </div>
-            <div className="py-4 px-6 text-md text-gray-700 min-h-[64px] w-full md:w-[80%] mx-auto text-start">
+            <div className="ProseMirror py-4 px-6 text-md text-gray-700 min-h-[64px] w-full md:w-[80%] mx-auto text-start">
                 {tabs[activeTab]
                     ? (activeTab < tabs.length - 1
                         ? <div dangerouslySetInnerHTML={{ __html: tabs[activeTab].content }} />

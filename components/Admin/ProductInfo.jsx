@@ -16,6 +16,7 @@ import Link from '@tiptap/extension-link'
 import { Color } from '@tiptap/extension-color'
 import ListItem from '@tiptap/extension-list-item'
 import { Extension } from '@tiptap/core'
+import Image from '@tiptap/extension-image'
 import {
   Bold,
   Italic,
@@ -91,6 +92,35 @@ const productInfo = ({ productData, productId }) => {
   }, [productId]);
 
   const [title, setTitle] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
+  const imageInputRef = React.useRef(null);
+
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    setImageUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/cloudinary', {
+        method: 'POST',
+        body: formData
+      });
+      if (!res.ok) throw new Error('Image upload failed');
+      const result = await res.json();
+      addImage(result.url);
+      toast.success('Image uploaded successfully');
+    } catch (err) {
+      toast.error('Image upload failed');
+      console.error(err);
+    } finally {
+      setImageUploading(false);
+      if (file && imageInputRef.current) imageInputRef.current.value = '';
+    }
+  };
+
+ 
 
   const editor = useEditor({
     extensions: [
@@ -104,6 +134,7 @@ const productInfo = ({ productData, productId }) => {
       Color,
       ListItem,
       FontSize,
+      Image,
     ],
     content: description,
     editorProps: {
@@ -121,6 +152,30 @@ const productInfo = ({ productData, productId }) => {
     return description;
   };
 
+  const addImage = (url) => {
+    if (!editor) return;
+    editor.chain().focus().setImage({ src: url }).run();
+  };
+  const setLink = React.useCallback(() => {
+    if (!editor) return;
+    let previousUrl = editor.getAttributes('link').href;
+    
+    // If the URL starts with /product/, remove it for editing
+    if (previousUrl && previousUrl.startsWith('/product/')) {
+      previousUrl = previousUrl.replace(/^\/product\//, '');
+    }
+    
+    const url = window.prompt('Enter URL (without /product/ prefix):', previousUrl);
+    if (url === null) return;
+    
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+    
+    // Don't modify the URL here, let the server or display component handle the prefix
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  }, [editor]);
   // Function to reset the form
   const resetForm = () => {
     setTitle('');
@@ -350,12 +405,35 @@ const productInfo = ({ productData, productId }) => {
                           >
                             <Italic className="w-4 h-4" />
                           </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleUnderline().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('underline') ? 'bg-gray-200' : ''}`}
-                          >
-                            <UnderlineIcon className="w-4 h-4" />
-                          </button>
+                          <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleUnderline().run()} className={editor?.isActive('underline') ? 'bg-gray-200' : ''}>
+                <UnderlineIcon className="w-4 h-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={setLink}
+                className={editor?.isActive('link') ? 'bg-gray-200' : ''}
+              >
+                <LinkIcon className="w-4 h-4" />
+              </Button>
+              <input
+                type="file"
+                ref={imageInputRef}
+                onChange={handleImageUpload}
+                accept="image/*"
+                className="hidden"
+                id="image-upload"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => document.getElementById('image-upload').click()}
+                disabled={imageUploading}
+              >
+                {imageUploading ? 'Uploading...' : 'Image'}
+              </Button>
                           <button type="button"
                             onClick={() => editor?.chain().focus().setParagraph().run()}
                             className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('paragraph') ? 'bg-gray-200' : ''}`}
