@@ -560,10 +560,6 @@ export default function ProductInfoTabs({ product }) {
         tabs.push(reviewsTab);
     }
     const [activeTab, setActiveTab] = useState(0);
-    // Only render if there's product info
-    if (!product?.info?.length) {
-        return null;
-    }
     
     return (
         <div className="w-full mt-10">
