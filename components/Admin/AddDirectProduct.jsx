@@ -44,7 +44,7 @@ const AddDirectProduct = ({ productId }) => {
     { key: 'quantity', label: 'Price / Quantity', component: (props) => <QuantityManagement {...props} productData={productData} productId={productId} /> },
     { key: 'apply', label: 'Apply Coupon', component: (props) => <ApplyCoupon {...props} productData={productData} productId={productId} /> },
     { key: 'tax', label: 'Apply Tax', component: (props) => <ApplyTax {...props} productData={productData} productId={productId} /> },
-    { key: 'gallery', label: 'Product Gallery', component: (props) => <ProductGallery {...props} productData={productData} productId={productId} /> },
+    { key: 'gallery', label: 'Profile Image', component: (props) => <ProductGallery {...props} productData={productData} productId={productId} /> },
     { key: 'video', label: 'Video Management', component: (props) => <VideoManagement {...props} productData={productData} productId={productId} /> },
     { key: 'description', label: 'Product Description', component: (props) => <ProductDescription {...props} productData={productData} productId={productId} /> },
     { key: 'info', label: 'Product Information', component: (props) => <ProductInfo {...props} productData={productData} productId={productId} /> },

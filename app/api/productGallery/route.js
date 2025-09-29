@@ -5,13 +5,13 @@ import Gallery from '@/models/Gallery';
 export async function POST(req) {
   await connectDB();
   try {
-    const { productId, mainImage, subImages } = await req.json();
+    const { productId, mainImage } = await req.json();
     // console.log('API DEBUG received subImages:', subImages);
     if (!productId || !mainImage) {
       return new Response(JSON.stringify({ error: 'Missing or invalid productId/mainImage' }), { status: 400 });
     }
     // Create the gallery
-    const gallery = await Gallery.create({ product: productId, mainImage, subImages });
+    const gallery = await Gallery.create({ product: productId, mainImage });
     // Push gallery reference to product
     await Product.findByIdAndUpdate(productId, { gallery: gallery._id }, { new: true });
     return new Response(JSON.stringify(gallery), { status: 201 });
@@ -34,13 +34,12 @@ export async function GET() {
 export async function PATCH(req) {
   await connectDB();
   try {
-    const { galleryId, mainImage, subImages } = await req.json();
+    const { galleryId, mainImage } = await req.json();
     if (!galleryId) {
       return new Response(JSON.stringify({ error: 'Missing galleryId' }), { status: 400 });
     }
     const update = {};
     if (mainImage !== undefined) update.mainImage = mainImage;
-    if (subImages !== undefined) update.subImages = subImages;
     if (Object.keys(update).length === 0) {
       return new Response(JSON.stringify({ error: 'No fields to update' }), { status: 400 });
     }
@@ -82,19 +81,6 @@ export async function DELETE(req) {
         errors.push(`Failed to delete main image: ${err.message}`);
       }
     }
-    // Delete sub images
-    if (Array.isArray(gallery.subImages)) {
-      for (const img of gallery.subImages) {
-        if (img && img.key) {
-          try {
-            await deleteFileFromCloudinary(img.key);
-          } catch (err) {
-            errors.push(`Failed to delete sub image (${img.key}): ${err.message}`);
-          }
-        }
-      }
-    }
-
     // Delete the gallery
     await Gallery.findByIdAndDelete(galleryId);
     if (errors.length > 0) {

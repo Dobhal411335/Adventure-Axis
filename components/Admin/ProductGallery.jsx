@@ -7,10 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 const ProductGallery = ({ productData, productId }) => {
   const imageInputRef = useRef(null);
   const [selectedMainImage, setSelectedMainImage] = useState(null); // { url, key }
-  const [selectedSubImages, setSelectedSubImages] = useState([]); // array of { url, key }
   const [imageUploading, setImageUploading] = useState(false);
-  const [subImagesUploading, setSubImagesUploading] = useState(false);
-  const subImagesInputRef = useRef(null);
 
   // --- Gallery Actions State ---
   const [viewGallery, setViewGallery] = useState(null);
@@ -22,9 +19,8 @@ const ProductGallery = ({ productData, productId }) => {
   const handleEditGallery = (gallery) => {
     setEditGallery(gallery);
     setEditMainImage(gallery.mainImage);
-    setEditSubImages(gallery.subImages || []);
   };
-  // Remove uploaded main image before save
+  // Remove uploaded main image before   save
   const handleRemoveMainImageUpload = async () => {
     if (selectedMainImage && selectedMainImage.key) {
       toast.loading('Deleting main image from Cloudinary...', { id: 'cloud-delete-main' });
@@ -46,30 +42,6 @@ const ProductGallery = ({ productData, productId }) => {
     }
     setSelectedMainImage(null);
     if (imageInputRef.current) imageInputRef.current.value = '';
-  };
-
-  // Remove uploaded sub image before save
-  const handleRemoveSubImageUpload = async (idx) => {
-    const img = selectedSubImages[idx];
-    if (img && img.key) {
-      toast.loading('Deleting sub image from Cloudinary...', { id: 'cloud-delete-sub' });
-      try {
-        const res = await fetch('/api/cloudinary', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ publicId: img.key }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-          toast.success('Sub image deleted from Cloudinary!', { id: 'cloud-delete-sub' });
-        } else {
-          toast.error('Cloudinary error: ' + (data.error || 'Failed to delete sub image'), { id: 'cloud-delete-sub' });
-        }
-      } catch (err) {
-        toast.error('Failed to delete sub image from Cloudinary (network or server error)', { id: 'cloud-delete-sub' });
-      }
-    }
-    setSelectedSubImages(prev => prev.filter((_, i) => i !== idx));
   };
 
 
@@ -97,14 +69,10 @@ const ProductGallery = ({ productData, productId }) => {
     // Find the gallery to delete in state (to get image keys)
     const galleryToDelete = galleries.find(g => g._id === deleteTargetId);
     let mainImageKey = null;
-    let subImageKeys = [];
     if (galleryToDelete) {
       // Use new schema: mainImage and subImages are objects with url and key
       if (galleryToDelete.mainImage && galleryToDelete.mainImage.key) {
         mainImageKey = galleryToDelete.mainImage.key;
-      }
-      if (Array.isArray(galleryToDelete.subImages)) {
-        subImageKeys = galleryToDelete.subImages.map(img => img && img.key ? img.key : null).filter(Boolean);
       }
     }
     try {
@@ -123,15 +91,6 @@ const ProductGallery = ({ productData, productId }) => {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ publicId: mainImageKey })
-          });
-        }
-        if (subImageKeys.length > 0) {
-          subImageKeys.forEach(key => {
-            fetch('/api/cloudinary', {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ publicId: key })
-            });
           });
         }
       } else {
@@ -163,7 +122,6 @@ const ProductGallery = ({ productData, productId }) => {
 
   const [editGallery, setEditGallery] = useState(null);
   const [editMainImage, setEditMainImage] = useState(null); // should be {url, key} or null
-  const [editSubImages, setEditSubImages] = useState([]); // should be array of {url, key}
 
   // When entering edit mode, set edit images as objects
   // Only declare handleEditGallery once
@@ -214,50 +172,7 @@ const ProductGallery = ({ productData, productId }) => {
     }
   };
 
-  const handleSubImagesUploadClick = () => {
-    if (subImagesInputRef.current) {
-      subImagesInputRef.current.value = '';
-      subImagesInputRef.current.click();
-    }
-  };
-
-  const handleSubImagesUpload = async (event) => {
-    const files = Array.from(event.target.files);
-    if (!files.length) return;
-    // Determine current sub images state based on edit mode
-    const currentSubImages = editGallery ? editSubImages : selectedSubImages;
-    if (currentSubImages.length + files.length > 10) {
-      toast.error('You can only add up to 10 sub images.');
-      return;
-    }
-    setSubImagesUploading(true);
-    try {
-      const uploaded = [];
-      for (const file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
-        const res = await fetch('/api/cloudinary', {
-          method: 'POST',
-          body: formData
-        });
-        if (!res.ok) throw new Error('Sub image upload failed');
-        const result = await res.json();
-        uploaded.push({ url: result.url, key: result.key });
-      }
-      if (editGallery) {
-        setEditSubImages(prev => [...prev, ...uploaded]);
-      } else {
-        setSelectedSubImages(prev => [...prev, ...uploaded]);
-      }
-      toast.success('Sub image(s) uploaded successfully');
-    } catch (err) {
-      toast.error('Sub image upload failed');
-    } finally {
-      setSubImagesUploading(false);
-      if (files.length && subImagesInputRef.current) subImagesInputRef.current.value = '';
-    }
-  };
-
+;
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!productId) {
@@ -274,9 +189,7 @@ const ProductGallery = ({ productData, productId }) => {
       url: selectedMainImage.url,
       key: selectedMainImage.key
     };
-    const subImages = selectedSubImages
-      .filter(img => img.url && img.key)
-      .map(img => ({ url: img.url, key: img.key }));
+
 
 
     try {
@@ -291,11 +204,11 @@ const ProductGallery = ({ productData, productId }) => {
       }
       // If gallery exists, prevent creating a duplicate
       if (galleryData && galleryData._id) {
-        toast.error('A gallery for this product already exists. Please edit or delete the existing gallery.');
+        toast.error('A profile image for this product already exists. Please edit or delete the existing profile.');
         return;
       }
       // Otherwise, create a new gallery
-      const payload = { productId, mainImage, subImages };
+      const payload = { productId, mainImage };
       const apiRes = await fetch('/api/productGallery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -305,9 +218,7 @@ const ProductGallery = ({ productData, productId }) => {
       toast.success('Product gallery saved successfully');
       // Clear form state
       setSelectedMainImage(null);
-      setSelectedSubImages([]);
       if (imageInputRef.current) imageInputRef.current.value = '';
-      if (subImagesInputRef.current) subImagesInputRef.current.value = '';
       // Refresh galleries table
       refreshGalleries();
     } catch (err) {
@@ -342,12 +253,11 @@ const ProductGallery = ({ productData, productId }) => {
       return;
     }
     const mainImage = editMainImage;
-    const subImages = editSubImages;
     try {
       const apiRes = await fetch('/api/productGallery', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ galleryId: editGallery._id, mainImage, subImages })
+        body: JSON.stringify({ galleryId: editGallery._id, mainImage })
       });
       if (!apiRes.ok) throw new Error('Failed to update gallery');
       toast.success('Product gallery updated successfully');
@@ -362,7 +272,7 @@ const ProductGallery = ({ productData, productId }) => {
   return (
     <div className="flex justify-center items-center py-5 w-full">
       <div className="w-full max-w-2xl">
-        <h4 className="font-bold mb-4 text-center">Product Image Gallery</h4>
+        <h4 className="font-bold mb-4 text-center">Profile Image</h4>
         <form onSubmit={editGallery ? handleEditSubmit : handleSubmit}>
           <div className="mb-4">
             <label className="font-semibold">Product Name</label>
@@ -376,7 +286,7 @@ const ProductGallery = ({ productData, productId }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="font-semibold">Product Main Photo</label>
+            <label className="font-semibold">Product Image</label>
             <div className="border rounded p-4 bg-gray-50">
               <div className="text-center">
                 {(editGallery ? editMainImage?.url : selectedMainImage?.url) ? (
@@ -432,63 +342,7 @@ const ProductGallery = ({ productData, productId }) => {
               </div>
             </div>
           </div>
-          {/* Sub Images */}
-          <div className="mb-4">
-            <label className="font-semibold">Product Sub Images</label>
-            <div className="border rounded p-4 bg-gray-50">
-              <div className="flex flex-wrap gap-2 mb-3">
-                {(editGallery ? editSubImages : selectedSubImages).length > 0 ? (
-                  (editGallery ? editSubImages : selectedSubImages).map((img, idx) => (
-                    <div key={img.key || idx} className="relative inline-block group">
-                      <img
-                        src={img.url}
-                        alt={`Sub ${idx + 1}`}
-                        className="rounded object-contain"
-                        style={{ maxHeight: '100px', maxWidth: '100px', display: 'block' }}
-                      />
-                      <button
-                        type="button"
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 text-md opacity-80 hover:opacity-100 group-hover:opacity-100"
-                        style={{ transform: 'translate(40%,-40%)' }}
-                        onClick={() => {
-                          if (editGallery) {
-                            setEditSubImages(editSubImages.filter((s, i) => i !== idx));
-                          } else {
-                            handleRemoveSubImageUpload(idx);
-                          }
-                        }}
-                        aria-label={`Remove sub image ${idx + 1}`}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <span className="text-gray-400">No sub images selected.</span>
-                )}
-              </div>
-              <input
-                type="file"
-                id="subImagesUpload"
-                className="hidden"
-                accept="image/*"
-                multiple
-                ref={subImagesInputRef}
-                onChange={handleSubImagesUpload}
-              />
-              <div className="text-center mt-3">
-                <Button
-                  type="button"
-                  className="bg-gray-800 text-white px-4 py-2"
-                  onClick={handleSubImagesUploadClick}
-                >
-                  {subImagesUploading ? 'Uploading...' : ((editGallery ? editSubImages : selectedSubImages).length > 0 ? 'Add More Images' : 'Choose Images')}
-                </Button>
-                <div className="text-xs text-gray-500 mt-1">Max 10 images. Selected: {(editGallery ? editSubImages : selectedSubImages).length}</div>
-              </div>
-            </div>
-            {/* Submit Button */}
-            <div className="text-center">
+          <div className="text-center">
               {editGallery ? (
                 <>
                   <Button type="submit" className="bg-green-600 px-5 font-semibold mt-3 mr-2">Update</Button>
@@ -500,11 +354,10 @@ const ProductGallery = ({ productData, productId }) => {
                 </Button>
               )}
             </div>
-          </div>
         </form>
         {/* Gallery Table */}
         <div className="mt-8">
-          <h5 className="font-semibold mb-2">Existing Galleries</h5>
+          <h5 className="font-semibold mb-2">Existing Profile Image</h5>
           {loadingGalleries ? (
             <div>Loading galleries...</div>
           ) : (
@@ -551,25 +404,13 @@ const ProductGallery = ({ productData, productId }) => {
         <Dialog open={!!viewGallery} onOpenChange={() => setViewGallery(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Gallery Details</DialogTitle>
+              <DialogTitle>Profile Image Details</DialogTitle>
             </DialogHeader>
             {viewGallery && (
               <div>
                 <div className="mb-4">
                   <div className="font-semibold text-gray-800 mb-1">Main Image</div>
                   <img src={viewGallery.mainImage?.url} alt="main" className="mx-auto rounded border" width={200} />
-                </div>
-                <div className="mb-4">
-                  <div className="font-semibold text-gray-800 mb-1">Sub Images</div>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {viewGallery.subImages && viewGallery.subImages.length > 0 ? (
-                      viewGallery.subImages.map((img, i) => (
-                        <img key={i} src={img.url} alt={`sub-${i}`} width={60} className="rounded border" />
-                      ))
-                    ) : (
-                      <span className="text-gray-400">No sub images</span>
-                    )}
-                  </div>
                 </div>
               </div>
             )}

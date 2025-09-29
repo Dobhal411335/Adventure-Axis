@@ -13,6 +13,11 @@ import Image from 'next/image';
 import { toast } from 'react-hot-toast';
 
 export default function ProductInfoTabs({ product }) {
+    // If there's no product data, don't render anything
+    if (!product) {
+        return null;
+    }
+    
     // console.log(product)
     // Example: dynamic tab data from API/product object
     let tabs = [];
@@ -555,6 +560,11 @@ export default function ProductInfoTabs({ product }) {
         tabs.push(reviewsTab);
     }
     const [activeTab, setActiveTab] = useState(0);
+    // Only render if there's product info
+    if (!product?.info?.length) {
+        return null;
+    }
+    
     return (
         <div className="w-full mt-10">
             <div className="border-b grid grid-cols-2 sm:flex flex-wrap justify-center gap-2 sm:gap-4">
@@ -576,7 +586,7 @@ export default function ProductInfoTabs({ product }) {
                     ? (activeTab < tabs.length - 1
                         ? <div dangerouslySetInnerHTML={{ __html: tabs[activeTab].content }} />
                         : tabs[activeTab].content)
-                    : <span>No information available.</span>
+                    : null
                 }
             </div>
         </div>
