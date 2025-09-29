@@ -560,7 +560,9 @@ export default function ProductInfoTabs({ product }) {
         tabs.push(reviewsTab);
     }
     const [activeTab, setActiveTab] = useState(0);
-    
+        if (!product?.info?.info.length) {
+        return null;
+    }
     return (
         <div className="w-full mt-10">
             <div className="border-b grid grid-cols-2 sm:flex flex-wrap justify-center gap-2 sm:gap-4">
