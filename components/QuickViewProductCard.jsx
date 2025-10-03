@@ -408,7 +408,7 @@ export default function QuickViewProductCard({ product, onClose }) {
 
           >ADD TO CART</button>
           <button
-            className="border border-black py-1 font-semibold hover:bg-gray-100 w-1/2 flex items-center justify-center gap-2 bg-white hover:bg-[#b3a7a3]"
+            className="border border-black py-1 font-semibold w-1/2 flex items-center justify-center gap-2 bg-white hover:bg-[#b3a7a3]"
             onClick={() => {
               if (wishlist.some(i => i.id === product._id)) {
                 removeFromWishlist(product._id);

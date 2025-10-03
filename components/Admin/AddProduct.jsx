@@ -38,20 +38,25 @@ const AddProduct = ({ id }) => {
 
     // Handler to fill form for editing
     const handleEditProduct = (prod) => {
+        // Get the brand ID, handling both populated and non-populated brand fields
+        const brandId = prod.brand?._id?.toString() || prod.brand?.toString() || '';
+        
         reset({
             title: prod.title || '',
             order: prod.order || 1,
             active: typeof prod.active === 'boolean' ? prod.active : true,
             code: prod.code || '',
-            setSelectedBrand:prod.brand || ''   
+            brand: brandId
         });
+        
         setActive(typeof prod.active === 'boolean' ? prod.active : true);
         setOrder(prod.order || 1);
         setTitle(prod.title || '');
         setCode(prod.code || '');
-        setSelectedBrand(prod.brand || ''); // Set the selected brand if it exists
-        setEditingId(prod._id); // Set the editing ID
+        setSelectedBrand(brandId);
+        setEditingId(prod._id);
         setIsEditing(true);
+        
         if (formRef.current) {
             formRef.current.scrollIntoView({ behavior: 'smooth' });
         }
@@ -291,7 +296,7 @@ const AddProduct = ({ id }) => {
 
                 // Handle brand category updates if brand was changed or this is a new product
                 const isBrandChanged = isEditing && previousBrandId !== selectedBrand;
-                // console.log('Is brand changed:', isBrandChanged, 'Previous:', previousBrandId, 'New:', selectedBrand);
+                // console.log('Brand update - isBrandChanged:', isBrandChanged, 'Previous:', previousBrandId, 'New:', selectedBrand);
 
                 if (isBrandChanged || !isEditing) {
                     try {
@@ -301,7 +306,10 @@ const AddProduct = ({ id }) => {
                             const removeResponse = await fetch('/api/brand-categories/remove-product', {
                                 method: 'PATCH',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ productId })
+                                body: JSON.stringify({ 
+                                    productId,
+                                    brandId: previousBrandId 
+                                })
                             });
                             
                             if (!removeResponse.ok) {
@@ -314,97 +322,103 @@ const AddProduct = ({ id }) => {
 
                         // Only proceed if we have a selected brand to add to
                         if (selectedBrand) {
+                            // console.log('Adding product to brand:', selectedBrand);
+                            
+                            // Prepare product data for the brand category
                             const productData = {
                                 product: productId,
-                                productName: title
+                                productName: title || 'Unnamed Product'
                             };
 
-                            // Fetch all brands and find the selected one
-                            const brandsResponse = await fetch('/api/addBrand');
-                            if (!brandsResponse.ok) {
-                                throw new Error('Failed to fetch brands');
+                            // Fetch the selected brand data
+                            const brandResponse = await fetch(`/api/addBrand`);
+                            if (!brandResponse.ok) {
+                                throw new Error('Failed to fetch brand data');
                             }
-                            const allBrands = await brandsResponse.json();
-                            const selectedBrandData = allBrands.find(brand => brand._id === selectedBrand);
-
+                            
+                            const brands = await brandResponse.json();
+                            const selectedBrandData = brands.find(b => b._id === selectedBrand);
+                            
                             if (!selectedBrandData) {
                                 throw new Error('Selected brand not found');
                             }
 
-                            // First, check if the brand category exists for this brand
-                            let brandCategory = null;
-                            try {
-                                // First try to find by brand ID
-                                const brandCategoryResponse = await fetch(`/api/brand-categories?brand=${selectedBrand}`);
-                                if (brandCategoryResponse.ok) {
-                                    const categories = await brandCategoryResponse.json();
-                                    brandCategory = categories[0] || null; // Take the first one if found
-                                }
-                            } catch (error) {
-                                console.error('Error fetching brand category:', error);
-                                // Brand category doesn't exist yet, will create a new one
-                            }
-
-                            // Check if product already exists in this brand category
-                            const productExists = brandCategory?.products?.some(p => p.product === productId);
-                            
-                            if (!productExists) {
-                                // Prepare the update data
-                                let updateData;
-                                const productUpdate = {
+                            // Create or update the brand category
+                            const brandCategoryData = {
+                                title: selectedBrandData.buttonLink || `Products - ${selectedBrandData.title}`,
+                                brand: selectedBrand,
+                                products: [{
                                     product: productId,
-                                    productName: title // Use the title from state
-                                };
+                                    productName: title || 'Unnamed Product'
+                                }],
+                                active: true
+                            };
 
-                                let brandResponse;
+                            // console.log('Updating brand category with data:', brandCategoryData);
+                            
+                            try {
+                                // First, try to find if a brand category already exists for this brand
+                                const checkResponse = await fetch(`/api/brand-categories?brand=${selectedBrand}`);
+                                const existingCategories = await checkResponse.json();
                                 
-                                if (brandCategory) {
-                                    // Add the product to the existing brand category
-                                    updateData = {
-                                        $push: {
-                                            products: productUpdate
-                                        }
-                                    };
-                                    
+                                let updateResponse;
+                                
+                                if (existingCategories && existingCategories.length > 0) {
                                     // Update existing brand category
-                                    brandResponse = await fetch(`/api/brand-categories/${brandCategory._id}`, {
+                                    const categoryId = existingCategories[0]._id;
+                                    updateResponse = await fetch(`/api/brand-categories/${categoryId}`, {
                                         method: 'PATCH',
                                         headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify(updateData)
+                                        body: JSON.stringify({
+                                            $addToSet: {
+                                                products: {
+                                                    product: productId,
+                                                    productName: title || 'Unnamed Product'
+                                                }
+                                            }
+                                        })
                                     });
                                 } else {
-                                    // Create a new brand category with this product
-                                    const newCategoryData = {
-                                        title: selectedBrandData.buttonLink || 'New Brand Category',
-                                        slug: (selectedBrandData.buttonLink || 'new-brand-category').toLowerCase().replace(/\s+/g, '-'),
-                                        buttonLink: selectedBrandData.buttonLink || '',
-                                        brand: selectedBrand,
-                                        brandCategory: selectedBrandData.buttonLink || '',
-                                        products: [productUpdate],
-                                        active: true,
-                                        order: 0
-                                    };
-                                    
                                     // Create new brand category
-                                    brandResponse = await fetch('/api/brand-categories', {
+                                    updateResponse = await fetch('/api/brand-categories', {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify(newCategoryData)
+                                        body: JSON.stringify(brandCategoryData)
                                     });
                                 }
-
-                                if (!brandResponse.ok) {
-                                    const brandResult = await brandResponse.json();
-                                    throw new Error(brandResult.message || 'Failed to update brand category');
+                                
+                                const updateResult = await updateResponse.json();
+                                
+                                if (!updateResponse.ok) {
+                                    console.error('Failed to update brand category:', {
+                                        status: updateResponse.status,
+                                        statusText: updateResponse.statusText,
+                                        result: updateResult
+                                    });
+                                    throw new Error(updateResult.error || 'Failed to update brand category');
                                 }
+                                
+                                // console.log('Successfully updated brand category:', updateResult);
+                            } catch (error) {
+                                console.error('Error in brand category update:', {
+                                    error: error.message,
+                                    stack: error.stack,
+                                    brandCategoryData
+                                });
+                                // Don't re-throw to prevent blocking the main operation
                             }
                         }
-                    } catch (error) {
-                        console.error('Error updating brand categories:', error);
-                        // Don't fail the operation, just log the error
                     }
+                    catch (error) {
+                        console.error('Error in brand category update:', {
+                            error: error.message,
+                            stack: error.stack,
+                            brandCategoryData
+                        });
+                        // Don't re-throw to prevent blocking the main operation
+                    }
+                    toast.success(isEditing ? 'Product updated successfully!' : 'Product added successfully!');
                 }
-                toast.success(isEditing ? 'Product updated successfully!' : 'Product added successfully!');
                 reset({
                     title: '',
                     order: 1,

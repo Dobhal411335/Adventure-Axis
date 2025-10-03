@@ -39,7 +39,9 @@ export async function POST(req) {
             code: body.code,
             isDirect: false,
             // Save subMenuId as category if present
-            ...(body.subMenuId ? { category: body.subMenuId } : {})
+            ...(body.subMenuId ? { category: body.subMenuId } : {}),
+            // Include brand if provided
+            ...(body.brand && { brand: body.brand })
         });
 
         // Step 3: Link new product to submenu
@@ -78,6 +80,11 @@ export async function PUT(req) {
         // Prepare update fields
         const updateFields = { ...body };
         delete updateFields._id;
+        
+        // If brand is being updated, ensure it's a valid ObjectId
+        if (updateFields.brand && !mongoose.Types.ObjectId.isValid(updateFields.brand)) {
+            delete updateFields.brand;
+        }
         // Allow code updates by not deleting it from updateFields
         // Update product
         const updatedProduct = await Product.findOneAndUpdate(identifier, updateFields, { new: true });

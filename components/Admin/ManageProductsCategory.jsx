@@ -475,14 +475,14 @@ const ManageProductsCategory = () => {
                                     <Label>Upload Banner</Label>
                                     {bannerImage && !editItem && (
                                         <div className="relative h-32">
-                                            <Image className="w-full h-full w-full object-contain object-center rounded-lg" src={bannerImage?.url} quality={50} alt="Banner" width={400} height={192} />
+                                            <Image className="h-full w-full object-contain object-center rounded-lg" src={bannerImage?.url} quality={50} alt="Banner" width={400} height={192} />
                                             <button type="button" className="absolute top-2 right-2 bg-red-500 text-white rounded-full" onClick={() => handleRemoveImage(bannerImage?.key, "banner")}><X className="w-6 h-6" /></button>
                                         </div>
                                     )}
                                     {/* Edit dialog banner image */}
                                     {editBannerImage && editItem && typeof editBannerImage.url === 'string' && editBannerImage.url.trim() !== '' ? (
                                         <div className="relative h-32">
-                                            <Image className="w-full h-full w-full object-contain object-center rounded-lg" src={editBannerImage.url} quality={50} alt="Banner" width={400} height={192} />
+                                            <Image className="h-full w-full object-contain object-center rounded-lg" src={editBannerImage.url} quality={50} alt="Banner" width={400} height={192} />
                                             <button type="button" className="absolute top-2 right-2 bg-red-500 text-white rounded-full" onClick={() => handleRemoveImage(editBannerImage.key, "editBanner")}><X className="w-6 h-6" /></button>
                                         </div>
                                     ) : null}
@@ -530,14 +530,14 @@ const ManageProductsCategory = () => {
                                     <Label>Upload Profile Image</Label>
                                     {profileImage && !editItem && (
                                         <div className="relative h-32">
-                                            <Image className="w-full h-full w-full object-contain object-center rounded-lg" src={profileImage?.url} quality={50} alt="Profile" width={400} height={192} />
+                                            <Image className="h-full w-full object-contain object-center rounded-lg" src={profileImage?.url} quality={50} alt="Profile" width={400} height={192} />
                                             <button type="button" className="absolute top-2 right-2 bg-red-500 text-white rounded-full" onClick={() => handleRemoveImage(profileImage?.key, "profile")}><X className="w-6 h-6" /></button>
                                         </div>
                                     )}
                                     {/* Edit dialog profile image */}
                                     {editProfileImage && editItem && typeof editProfileImage.url === 'string' && editProfileImage.url.trim() !== '' ? (
                                         <div className="relative h-32">
-                                            <Image className="w-full h-full w-full object-contain object-center rounded-lg" src={editProfileImage.url} quality={50} alt="Profile" width={400} height={192} />
+                                            <Image className="h-full w-full object-contain object-center rounded-lg" src={editProfileImage.url} quality={50} alt="Profile" width={400} height={192} />
                                             <button type="button" className="absolute top-2 right-2 bg-red-500 text-white rounded-full" onClick={() => handleRemoveImage(editProfileImage.key, "editProfile")}><X className="w-6 h-6" /></button>
                                         </div>
                                     ) : null}

@@ -225,17 +225,19 @@ const LinkProductToBrand = () => {
                 .replace(/-+$/, '');            // Trim - from end of text
 
             const brandData = {
-                title,
+                title: selectedBrandData.buttonLink,
                 slug,
                 buttonLink: formData.buttonLink || `/brands/${slug}`,
                 banner: formData.banner,
                 profileImage: formData.profileImage,
                 order: formData.order || 0,
                 active: formData.active !== false, // Default to true if not set
-                brandId: formData.brandId,
+                brand: formData.brandId, // Changed from brandId to brand
                 brandCategory: selectedBrandData.buttonLink,
                 _id: formData._id // Include the _id for updates
             };
+            
+            // console.log('Sending brand data:', JSON.stringify(brandData, null, 2));
 
             // Check if we're updating an existing brand category
             const isUpdating = formData._id; // Check if we have an _id for update

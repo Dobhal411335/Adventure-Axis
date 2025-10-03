@@ -18,12 +18,10 @@ const PackageCard = ({ pkg, wishlist = [], addToWishlist, removeFromWishlist, se
   const formatNumber = (number) => new Intl.NumberFormat('en-IN').format(number)
 
   return (
-    <div className="flex flex-col w-58 md:w-80 rounded-3xl mb-2 group cursor-pointer">
+    <div className="flex flex-col w-58 md:w-64 rounded-3xl mb-2 group cursor-pointer">
       {/* Image Section */}
-      <Link
-        href={`/product/${pkg.slug}`}
-      >
-        <div className="relative w-full md:h-80 rounded-3xl overflow-hidden flex items-center justify-center group/image">
+      <div className="cursor-pointer" onClick={() => window.location.href = `/product/${pkg.slug}`}>
+        <div className="relative w-full md:h-80 rounded-3xl overflow-hidden flex items-center justify-center group/image border border-gray-500">
           {/* GET 10% OFF Tag */}
           <div className="absolute top-6 left-4 z-10">
             {(() => {
@@ -56,7 +54,6 @@ const PackageCard = ({ pkg, wishlist = [], addToWishlist, removeFromWishlist, se
             quality={60}
             className="object-cover w-full h-full rounded-3xl transition-transform duration-300 group-hover/image:scale-105"
           />
-
         </div>
         {/* Name and Price Section */}
         <div className="flex flex-col items-start justify-between px-2 pt-4 pb-2 mt-0">
@@ -97,7 +94,7 @@ const PackageCard = ({ pkg, wishlist = [], addToWishlist, removeFromWishlist, se
             }
           })()}
         </div>
-      </Link>
+      </div>
     </div>
   )
 }
