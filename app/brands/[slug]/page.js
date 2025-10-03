@@ -4,6 +4,7 @@ import BrandCategory from "@/models/BrandCategory";
 import Brand from "@/models/Brand";
 import Product from "@/models/Product";
 import Gallery from "@/models/Gallery";
+import Quantity from "@/models/Quantity";
 import CategoryBanner from "@/components/Category/category-banner"
 import PackageCard from "@/components/Category/package-card"
 import CategoryProducts from "@/components/CategoryProducts"
